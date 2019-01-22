@@ -14,7 +14,7 @@ else
     @test !isempty(GLFW.GetVideoModes(monitor))
     @test !isempty(GLFW.GetMonitorName(monitor))
     mode = GLFW.GetVideoMode(monitor)
-    @test mode.refreshrate > 0
+    @test mode.refreshrate >= 0
 end
 
 end # module test_glfw_monitor
