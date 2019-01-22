@@ -1,4 +1,5 @@
-module test_glfw_window
+using Jive
+@If isempty(get(ENV, "TRAVIS", "")) module test_glfw_window
 
 using Test
 using GLFW

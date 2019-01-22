@@ -4,6 +4,9 @@ os:
   - linux
 julia:
   - 1.1
+cache:
+  directories:
+  - "$HOME/.julia"
 matrix:
   fast_finish: true
 notifications:
