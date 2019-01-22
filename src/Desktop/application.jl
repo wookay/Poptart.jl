@@ -1,8 +1,9 @@
 # module Poptart.Desktop
 
 abstract type UIApplication end
+abstract type UIWindow end
 
-struct Window
+struct Window <: UIWindow
 
     function Window(; props...)
         new()

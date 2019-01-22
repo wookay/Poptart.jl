@@ -16,3 +16,4 @@ addons:
     - xorg-dev
 before_script:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start; fi
+  - julia --color=yes -e 'using Pkg; pkg"add https://github.com/Gnimuc/Nuklear.jl.git"'
