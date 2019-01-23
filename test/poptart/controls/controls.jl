@@ -1,7 +1,7 @@
 module test_poptart_controls
 
 using Test
-using Poptart.Controls # UIControl Button Slider willSet didSet willSend didSend
+using Poptart.Controls # Mouse UIControl Button Slider willSet didSet willSend didSend didClick
 
 button = Button()
 @test button isa UIControl
@@ -24,6 +24,10 @@ didSend(button) do event
     push!(observered, (didSend, event))
 end
 
+didClick(button) do event
+    push!(observered, (didClick, event))
+end
+
 button.frame = (x=1, y=2, width=10, height=20)
 @test button.frame == (x=1, y=2, width=10, height=20)
 
@@ -42,5 +46,16 @@ slider.value = 2
                      (didSet, (x = 1, y = 2, width = 10, height = 20)),
                      (willSet, 2),
                      (didSet, 2)]
+
+empty!(observered)
+
+Mouse.click(button)
+Mouse.double_click(button)
+
+@test observered == [(willSend, (action = Mouse.click,)),
+                     (didSend, (action = Mouse.click,)),
+                     (didClick, (action = Mouse.click,)),
+                     (willSend, (action = Mouse.double_click,)),
+                     (didSend, (action = Mouse.double_click,))]
 
 end # module test_poptart_controls
