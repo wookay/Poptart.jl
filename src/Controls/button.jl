@@ -1,10 +1,9 @@
 # module Poptart.Controls
 
-struct Button <: UIControl
+@UI Button
 
-    function Button(; props...)
-        new()
-    end
+function properties(control::Button)
+    (properties(super(control))..., :title,)
 end
 
 # module Poptart.Controls

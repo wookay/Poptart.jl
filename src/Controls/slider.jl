@@ -1,17 +1,9 @@
 # module Poptart.Controls
 
-struct Slider <: UIControl
+@UI Slider
 
-    function Slider(; props...)
-        new()
-    end
-end
-
-function Base.setproperty!(control::Slider, prop::Symbol, val)
-    if prop in (:value,)
-    else
-        setproperty!(control, prop, val)
-    end
+function properties(control::Slider)
+    (properties(super(control))..., :range, :value, )
 end
 
 # module Poptart.Controls
