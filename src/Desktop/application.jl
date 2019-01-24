@@ -1,25 +1,13 @@
 # module Poptart.Desktop
 
-abstract type UIApplication end
-abstract type UIWindow end
-
-struct Window <: UIWindow
-
-    function Window(; props...)
-        new()
-    end
-end
-
 struct Application <: UIApplication
     windows
 
-    function Application(; props...)
-        window = Window()
+    function Application(; window=Windows.Window(), props...)
         windows = [window]
         new(windows)
     end
 end
-
 
 function Base.getproperty(app::A, prop::Symbol) where {A <: UIApplication}
     if prop in (:window,)
