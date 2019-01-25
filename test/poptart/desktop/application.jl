@@ -21,13 +21,17 @@ put!(window2, label, slider1, slider2)
 observered = []
 
 didClick(button) do event
-    push!(observered, (didClick, event))
+    push!(observered, (didClick, button, event))
     @info :didClick event
 end
 
-Mouse.click(button)
-Mouse.double_click(button)
+didClick(slider1) do event
+    push!(observered, (didClick, slider1, event))
+    @info :didClick (event, slider1.value)
+end
 
-@test observered == [(didClick, (action=Mouse.click,))]
+Mouse.click(button)
+
+@test observered == [(didClick, button, (action=Mouse.click,))]
 
 end # module test_poptart_desktop_application

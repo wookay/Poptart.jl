@@ -22,9 +22,13 @@ put!(window2, label, slider1, slider2)
 didClick(button) do event
     @info :didClick event
 end
+
+didClick(slider1) do event
+    @info :didClick (event, slider1.value)
+end
 ```
 
-<img src="https://wookay.github.io/docs/Poptart.jl/assets/poptart/app.png" width="400" alt="app.png" />
+<img src="https://wookay.github.io/docs/Poptart.jl/assets/poptart/app.png" width="500" alt="app.png" />
 
 
 ### Requirements

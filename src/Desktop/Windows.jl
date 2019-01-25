@@ -50,7 +50,9 @@ function setup_window(ctx, window::Window; frame, flags, title="")
                 min = minimum(item.range)
                 max = maximum(item.range)
                 val = item.value
-                f(ctx, min, val, max, step)
+                if f(ctx, min, val, max, step) == 1
+                    @async Mouse.click(item)
+                end
             end
         end
     end
