@@ -3,7 +3,7 @@ using Jive
 
 using Test
 using Poptart.Desktop # Application Windows put!
-using Poptart.Controls # Mouse Button Label Slider didClick
+using Poptart.Controls # Mouse Button Label Slider Checkbox didClick
 
 window1 = Windows.Window(title="A", frame=(x=10,y=20,width=200,height=200))
 window2 = Windows.Window(title="B", frame=(x=220,y=20,width=200,height=200))
@@ -25,13 +25,24 @@ didClick(button) do event
     @info :didClick event
 end
 
-didClick(slider1) do event
-    push!(observered, (didClick, slider1, event))
-    @info :didClick (event, slider1.value)
-end
-
 Mouse.click(button)
 
 @test observered == [(didClick, button, (action=Mouse.click,))]
+
+didClick(slider1) do event
+    @info :didClick (event, Int(slider1.value[]))
+end
+
+checkbox1 = Checkbox(text="Active", active=Ref{Cint}(true))
+put!(window2, checkbox1)
+
+didClick(checkbox1) do event
+    if Bool(checkbox1.active[])
+        checkbox1.text = "Active"
+    else
+        checkbox1.text = "Inactive"
+    end
+    @info :didClick (event, Bool(checkbox1.active[]))
+end
 
 end # module test_poptart_desktop_application

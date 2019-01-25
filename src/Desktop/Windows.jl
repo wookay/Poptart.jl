@@ -53,6 +53,10 @@ function setup_window(ctx, window::Window; frame, flags, title="")
                 if f(ctx, min, val, max, step) == 1
                     @async Mouse.click(item)
                 end
+            elseif item isa Checkbox
+                if nk_checkbox_label(ctx, item.text, item.active) == 1
+                    @async Mouse.click(item)
+                end
             end
         end
     end

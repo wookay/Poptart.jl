@@ -17,4 +17,7 @@ include("Controls/slider.jl")
 export Label
 include("Controls/label.jl")
 
+export Checkbox
+include("Controls/checkbox.jl")
+
 end # module Poptart.Controls
