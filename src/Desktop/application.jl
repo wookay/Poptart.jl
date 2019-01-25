@@ -8,8 +8,8 @@ using ModernGL # glViewport glClear glClearColor
 
 
 mutable struct ApplicationMain <: UIApplication
-    windows
-    runloop
+    windows::Vector{W} where {W <: Windows.UIWindow}
+    runloop::Bool
 end
 
 const MAX_VERTEX_BUFFER = 512 * 1024
@@ -31,7 +31,7 @@ function setup_app(app; title="App", frame=(width=400, height=300))
 
     win = GLFW.CreateWindow(frame.width, frame.height, title)
     GLFW.MakeContextCurrent(win)
-    env[win.handle] = app
+    env[win.handle] = (app, current_task())
     glViewport(0, 0, frame.width, frame.height)
 
     # init context
@@ -71,9 +71,9 @@ end
 function Application(; windows=[Windows.Window()], props...)
     current_context = GLFW.GetCurrentContext()
     if current_context.handle !== C_NULL && haskey(env, current_context.handle)
-        app = env[current_context.handle]
+        (app, task) = env[current_context.handle]
         app.windows = windows
-        return
+        return (app, task)
     end
     app = ApplicationMain(windows, true)
     task = @async setup_app(app; props...)
