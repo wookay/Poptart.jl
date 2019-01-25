@@ -8,7 +8,7 @@ using Poptart.Controls # Mouse Button Label Slider didClick
 window1 = Windows.Window(title="A", frame=(x=10,y=20,width=200,height=200))
 window2 = Windows.Window(title="B", frame=(x=220,y=20,width=200,height=200))
 windows = [window1, window2]
-app = Application(windows=windows, title="App", frame=(width=430, height=300))
+Application(windows=windows, title="App", frame=(width=430, height=300))
 
 button = Button(title="Hello", frame=(width=80, height=30))
 put!(window1, button)
