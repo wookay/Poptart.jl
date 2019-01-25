@@ -7,10 +7,10 @@ version = "0.1.0-DEV"
 Nuklear = "c56d6e7e-f17c-11e8-0f80-f72558d7afa6"
 GLFW = "f7f18e0c-5ee9-5ccd-a5bf-e8befd85ed98"
 ModernGL = "66fc600b-dfda-50eb-8b99-91cfa97b1301"
+Jive = "ba5e3d4b-8524-549f-bc71-e76ad9e9deed"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-Jive = "ba5e3d4b-8524-549f-bc71-e76ad9e9deed"
 
 [targets]
-test = ["Test", "Jive"]
+test = ["Test"]

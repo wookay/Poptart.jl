@@ -1,10 +1,7 @@
 # module Poptart.Desktop
 
-function Base.put!(window::Windows.TextWindow, control::C) where {C <: Controls.UIControl}
-end
-
-function Base.put!(window::Windows.Window, control::C) where {C <: Controls.UIControl}
-    push!(window.container.items, control)
+function Base.put!(window::Windows.Window, controls...)
+    push!(window.container.items, controls...)
 end
 
 # module Poptart.Desktop

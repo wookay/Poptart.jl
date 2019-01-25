@@ -1,2 +1,3 @@
 using Jive
-runtests(@__DIR__, skip=["revise.jl"])
+travis = haskey(ENV, "TRAVIS") ? ["poptart/desktop/application.jl"] : []
+runtests(@__DIR__, skip=["revise.jl", travis...])

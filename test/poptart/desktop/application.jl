@@ -3,13 +3,20 @@ using Jive
 
 using Test
 using Poptart.Desktop # Application Windows put!
-using Poptart.Controls # Mouse Button Slider didClick
+using Poptart.Controls # Mouse Button Label Slider didClick
 
-window = haskey(ENV, "TRAVIS") ? Windows.TextWindow() : Windows.Window()
-app = Application(window=window)
+window1 = Windows.Window(title="A", frame=(x=10,y=20,width=200,height=200))
+window2 = Windows.Window(title="B", frame=(x=220,y=20,width=200,height=200))
+windows = [window1, window2]
+app = Application(windows=windows, title="App", frame=(width=430, height=300))
 
-button = Button(title="Hello", frame=(x=1, y=2, width=80, height=30))
-slider = Slider(range=1:10, value=2, frame=(x=1, y=100, width=20, height=20))
+button = Button(title="Hello", frame=(width=80, height=30))
+put!(window1, button)
+
+label = Label(text="Range:")
+slider1 = Slider(range=1:10, value=Ref{Cint}(2))
+slider2 = Slider(range=1.0:10.0, value=Ref{Cfloat}(2.0))
+put!(window2, label, slider1, slider2)
 
 observered = []
 
@@ -17,11 +24,6 @@ didClick(button) do event
     push!(observered, (didClick, event))
     @info :didClick event
 end
-
-put!(app.window, button)
-put!(app.window, slider)
-
-@test app.window isa Windows.UIWindow
 
 Mouse.click(button)
 Mouse.double_click(button)
