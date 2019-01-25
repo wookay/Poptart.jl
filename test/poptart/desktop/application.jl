@@ -14,7 +14,7 @@ button = Button(title="Hello", frame=(width=80, height=30))
 put!(window1, button)
 
 label = Label(text="Range:")
-slider1 = Slider(range=1:10, value=Ref{Cint}(2))
+slider1 = Slider(range=1:10, value=Ref{Cint}(5))
 slider2 = Slider(range=1.0:10.0, value=Ref{Cfloat}(2.0))
 put!(window2, label, slider1, slider2)
 

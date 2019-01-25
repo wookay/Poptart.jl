@@ -7,14 +7,17 @@ using Nuklear.GLFWBackend
 using ModernGL # glViewport glClear glClearColor
 
 
-struct ApplicationMain <: UIApplication
+mutable struct ApplicationMain <: UIApplication
     windows
+    runloop
 end
 
 const MAX_VERTEX_BUFFER = 512 * 1024
 const MAX_ELEMENT_BUFFER = 128 * 1024
 
-function setup_app(windows; title="App", frame=(width=400, height=300))
+env = Dict()
+
+function setup_app(app; title="App", frame=(width=400, height=300))
     @static if Sys.isapple()
         VERSION_MAJOR = 3
         VERSION_MINOR = 3
@@ -28,15 +31,15 @@ function setup_app(windows; title="App", frame=(width=400, height=300))
 
     win = GLFW.CreateWindow(frame.width, frame.height, title)
     GLFW.MakeContextCurrent(win)
+    env[win.handle] = app
     glViewport(0, 0, frame.width, frame.height)
 
     # init context
     ctx = nk_glfw3_init(win, NK_GLFW3_INSTALL_CALLBACKS, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER)
-
     nk_glfw3_font_stash_begin()
     nk_glfw3_font_stash_end()
 
-    while !GLFW.WindowShouldClose(win)
+    while !GLFW.WindowShouldClose(win) && app.runloop
         yield()
 
         GLFW.PollEvents()
@@ -45,7 +48,7 @@ function setup_app(windows; title="App", frame=(width=400, height=300))
         defaultprops = (frame=(x=0, y=0, frame...),
                         flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
 
-        for window in windows
+        for window in app.windows
             Windows.setup_window(ctx, window; merge(defaultprops, window.props)...)
         end
 
@@ -58,6 +61,7 @@ function setup_app(windows; title="App", frame=(width=400, height=300))
     end
     nk_glfw3_shutdown()
     GLFW.DestroyWindow(win)
+    empty!(env)
 end
 
 function Base.getproperty(app::A, prop::Symbol) where {A <: UIApplication}
@@ -65,8 +69,14 @@ function Base.getproperty(app::A, prop::Symbol) where {A <: UIApplication}
 end
 
 function Application(; windows=[Windows.Window()], props...)
-    app = ApplicationMain(windows)
-    task = @async setup_app(windows; props...)
+    current_context = GLFW.GetCurrentContext()
+    if current_context.handle !== C_NULL && haskey(env, current_context.handle)
+        app = env[current_context.handle]
+        app.windows = windows
+        return
+    end
+    app = ApplicationMain(windows, true)
+    task = @async setup_app(app; props...)
     (app, task)
 end
 
