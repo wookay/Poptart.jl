@@ -29,7 +29,7 @@ didClick(button) do event
 end
 
 didClick(slider1) do event
-    @info :didClick (event, Int(slider1.value[]))
+    @info :didClick (event, slider1.value[])
 end
 ```
 
