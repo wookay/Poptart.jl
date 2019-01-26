@@ -45,4 +45,4 @@ didClick(button) do event
     println()
 end
 
-#Base.JLOptions().isinteractive==0 && wait()
+Base.JLOptions().isinteractive==0 && wait()
