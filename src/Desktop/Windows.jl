@@ -48,6 +48,11 @@ function nuklear_widget(nk_ctx, item::Label)
     nk_label(nk_ctx, item.text, NK_TEXT_LEFT)
 end
 
+function nuklear_widget(nk_ctx, item::SelectableLabel)
+    nk_layout_row_dynamic(nk_ctx, 20, 1)
+    nk_selectable_label(nk_ctx, item.text, NK_TEXT_LEFT, item.selected) == 1 && @async Mouse.click(item)
+end
+
 function nuklear_widget(nk_ctx, item::Slider)
     if item.range isa StepRangeLen{Float64}
         f = nk_slider_float
@@ -65,15 +70,11 @@ function nuklear_widget(nk_ctx, item::Slider)
     f(nk_ctx, min, val, max, step) == 1 && @async Mouse.click(item)
 end
 
-function nuklear_widget(nk_ctx, item::CheckBox)
+function nuklear_widget(nk_ctx, item::Checkbox)
     nk_checkbox_label(nk_ctx, item.text, item.active) == 1 && @async Mouse.click(item)
 end
 
-function nuklear_widget(nk_ctx, item::ProgressBar)
-    nk_progress(nk_ctx, item.value, item.max, item.modifyable ? NK_MODIFIABLE : NK_FIXED) == 1 && @async Mouse.click(item)
-end
-
-function nuklear_widget(nk_ctx, item::OptionLabel)
+function nuklear_widget(nk_ctx, item::Radio)
     for (name, value) in pairs(item.options)
         if nk_option_label(nk_ctx, String(name), item.value == value) == 1
             if item.value != value
@@ -82,6 +83,10 @@ function nuklear_widget(nk_ctx, item::OptionLabel)
             end
         end
     end
+end
+
+function nuklear_widget(nk_ctx, item::ProgressBar)
+    nk_progress(nk_ctx, item.value, item.max, item.modifyable ? NK_MODIFIABLE : NK_FIXED) == 1 && @async Mouse.click(item)
 end
 
 function nuklear_widget(nk_ctx, item::Any)

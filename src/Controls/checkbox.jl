@@ -1,8 +1,8 @@
 # module Poptart.Controls
 
-@UI CheckBox
+@UI Checkbox
 
-function properties(control::CheckBox)
+function properties(control::Checkbox)
     (properties(super(control))..., :text, :active, )
 end
 

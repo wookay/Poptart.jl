@@ -14,16 +14,16 @@ include("Controls/button.jl")
 export Slider
 include("Controls/slider.jl")
 
-export Label
+export Label, SelectableLabel
 include("Controls/label.jl")
 
-export CheckBox
+export Checkbox
 include("Controls/checkbox.jl")
+
+export Radio
+include("Controls/radio.jl")
 
 export ProgressBar
 include("Controls/progressbar.jl")
-
-export OptionLabel
-include("Controls/optionlabel.jl")
 
 end # module Poptart.Controls

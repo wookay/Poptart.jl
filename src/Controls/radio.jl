@@ -1,8 +1,8 @@
 # module Poptart.Controls
 
-@UI OptionLabel
+@UI Radio
 
-function properties(control::OptionLabel)
+function properties(control::Radio)
     (properties(super(control))..., :options, :value, )
 end
 
