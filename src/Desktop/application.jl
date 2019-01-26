@@ -36,7 +36,7 @@ function setup_app(app, title, frame)
     glViewport(0, 0, frame.width, frame.height)
 
     # init context
-    ctx = nk_glfw3_init(win, NK_GLFW3_INSTALL_CALLBACKS, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER)
+    nk_ctx = nk_glfw3_init(win, NK_GLFW3_INSTALL_CALLBACKS, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER)
     nk_glfw3_font_stash_begin()
     nk_glfw3_font_stash_end()
 
@@ -50,7 +50,7 @@ function setup_app(app, title, frame)
                         flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
 
         for window in app.windows
-            Windows.setup_window(ctx, window; merge(defaultprops, window.props)...)
+            Windows.setup_window(nk_ctx, window; merge(defaultprops, window.props)...)
         end
 
         # draw
@@ -66,15 +66,23 @@ function setup_app(app, title, frame)
 end
 
 function Base.getproperty(app::A, prop::Symbol) where {A <: UIApplication}
-    getfield(app, prop)
+    if prop in (:props, :windows, :runloop)
+        getfield(app, prop)
+    elseif prop in properties(app)
+        app.props[prop]
+    end
+end
+
+function properties(::A) where {A <: UIApplication}
+    (:title, :frame)
 end
 
 function Application(; windows=[Windows.Window()], title="App", frame=(width=400, height=300))
-    current_context = GLFW.GetCurrentContext()
-    if current_context.handle !== C_NULL && haskey(env, current_context.handle)
-        (app, task) = env[current_context.handle]
-        app.props.title != title && GLFW.SetWindowTitle(current_context, title)
-        app.props.frame != frame && GLFW.SetWindowSize(current_context, frame.width, frame.height)
+    win = GLFW.GetCurrentContext()
+    if win.handle !== C_NULL && haskey(env, win.handle)
+        (app, task) = env[win.handle]
+        app.props.title != title && GLFW.SetWindowTitle(win, title)
+        app.props.frame != frame && GLFW.SetWindowSize(win, frame.width, frame.height)
         app.props = (title=title, frame=frame)
         app.windows = windows
         return (app, task)
