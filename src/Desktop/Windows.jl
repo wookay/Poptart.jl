@@ -73,6 +73,17 @@ function nuklear_widget(nk_ctx, item::ProgressBar)
     nk_progress(nk_ctx, item.value, item.max, item.modifyable ? NK_MODIFIABLE : NK_FIXED) == 1 && @async Mouse.click(item)
 end
 
+function nuklear_widget(nk_ctx, item::OptionLabel)
+    for (name, value) in pairs(item.options)
+        if nk_option_label(nk_ctx, String(name), item.value == value) == 1
+            if item.value != value
+                item.value = value
+                @async Mouse.click(item)
+            end
+        end
+    end
+end
+
 function nuklear_widget(nk_ctx, item::Any)
     @info "not implemented" item
 end

@@ -23,4 +23,7 @@ include("Controls/checkbox.jl")
 export ProgressBar
 include("Controls/progressbar.jl")
 
+export OptionLabel
+include("Controls/optionlabel.jl")
+
 end # module Poptart.Controls
