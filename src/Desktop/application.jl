@@ -8,6 +8,7 @@ using ModernGL # glViewport glClear glClearColor
 
 
 mutable struct ApplicationMain <: UIApplication
+    props
     windows::Vector{W} where {W <: Windows.UIWindow}
     runloop::Bool
 end
@@ -17,7 +18,7 @@ const MAX_ELEMENT_BUFFER = 128 * 1024
 
 env = Dict()
 
-function setup_app(app; title="App", frame=(width=400, height=300))
+function setup_app(app, title, frame)
     @static if Sys.isapple()
         VERSION_MAJOR = 3
         VERSION_MINOR = 3
@@ -68,15 +69,18 @@ function Base.getproperty(app::A, prop::Symbol) where {A <: UIApplication}
     getfield(app, prop)
 end
 
-function Application(; windows=[Windows.Window()], props...)
+function Application(; windows=[Windows.Window()], title="App", frame=(width=400, height=300))
     current_context = GLFW.GetCurrentContext()
     if current_context.handle !== C_NULL && haskey(env, current_context.handle)
         (app, task) = env[current_context.handle]
+        app.props.title != title && GLFW.SetWindowTitle(current_context, title)
+        app.props.frame != frame && GLFW.SetWindowSize(current_context, frame.width, frame.height)
+        app.props = (title=title, frame=frame)
         app.windows = windows
         return (app, task)
     end
-    app = ApplicationMain(windows, true)
-    task = @async setup_app(app; props...)
+    app = ApplicationMain((title=title, frame=frame), windows, true)
+    task = @async setup_app(app, title, frame)
     (app, task)
 end
 
