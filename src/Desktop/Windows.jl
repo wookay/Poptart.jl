@@ -136,4 +136,8 @@ function iscollapsed(app::A, window::W) where {A <: UIApplication, W <: UIWindow
     nk_window_is_collapsed(app.nk_ctx, window.title) != 0
 end
 
+function setbounds(app::A, window::W, frame::T) where {A <: UIApplication, W <: UIWindow, T <: NamedTuple{(:x, :y, :width, :height)}}
+    nk_window_set_bounds(app.nk_ctx, window.title, nk_rect(values(frame)...))
+end
+
 end # Poptart.Desktop.Windows
