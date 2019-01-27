@@ -1,6 +1,6 @@
 module Windows # Poptart.Desktop
 
-using ..Desktop
+using ..Desktop: UIApplication, Window
 using ..Controls
 
 using GLFW
@@ -8,22 +8,6 @@ using Nuklear
 using Nuklear.LibNuklear
 using Nuklear.GLFWBackend
 using ModernGL # glViewport glClear glClearColor
-
-abstract type UIWindow end
-
-struct Container
-    items
-end
-
-struct Window <: UIWindow
-    container
-    props
-
-    function Window(items = []; props...)
-        container = Container(items)
-        new(container, props)
-    end
-end
 
 function Base.getproperty(window::Window, prop::Symbol)
     if prop in (:container, :props)
@@ -98,6 +82,12 @@ function setup_window(nk_ctx, window::Window; frame, flags, title="")
         nuklear_widget.(nk_ctx, window.container.items)
     end
     nk_end(nk_ctx)
+end
+
+
+# window states
+function iscollapsed(app::A, window::Window) where {A <: UIApplication}
+    nk_window_is_collapsed(app.nk_ctx, window.title) != 0
 end
 
 end # Poptart.Desktop.Windows

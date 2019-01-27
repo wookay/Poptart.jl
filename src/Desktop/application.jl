@@ -7,18 +7,12 @@ using Nuklear.GLFWBackend
 using ModernGL # glViewport glClear glClearColor
 
 
-mutable struct ApplicationMain <: UIApplication
-    props
-    windows::Vector{W} where {W <: Windows.UIWindow}
-    runloop::Bool
-end
-
 const MAX_VERTEX_BUFFER = 512 * 1024
 const MAX_ELEMENT_BUFFER = 128 * 1024
 
 env = Dict()
 
-function setup_app(app, title, frame)
+function setup_glfw(; title, frame)
     @static if Sys.isapple()
         VERSION_MAJOR = 3
         VERSION_MINOR = 3
@@ -32,7 +26,6 @@ function setup_app(app, title, frame)
 
     win = GLFW.CreateWindow(frame.width, frame.height, title)
     GLFW.MakeContextCurrent(win)
-    env[win.handle] = (app, current_task())
     glViewport(0, 0, frame.width, frame.height)
 
     # init context
@@ -40,17 +33,21 @@ function setup_app(app, title, frame)
     nk_glfw3_font_stash_begin()
     nk_glfw3_font_stash_end()
 
-    while !GLFW.WindowShouldClose(win) && app.runloop
+    (win, nk_ctx)
+end
+
+function runloop(win, appmain)
+    while !GLFW.WindowShouldClose(win)
         yield()
 
         GLFW.PollEvents()
         nk_glfw3_new_frame()
 
-        defaultprops = (frame=(x=0, y=0, frame...),
+        defaultprops = (frame=(x=0, y=0, appmain.frame...),
                         flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
 
-        for window in app.windows
-            Windows.setup_window(nk_ctx, window; merge(defaultprops, window.props)...)
+        for window in appmain.windows
+            Windows.setup_window(appmain.nk_ctx, window; merge(defaultprops, window.props)...)
         end
 
         # draw
@@ -66,10 +63,18 @@ function setup_app(app, title, frame)
 end
 
 function Base.getproperty(app::A, prop::Symbol) where {A <: UIApplication}
-    if prop in (:props, :windows, :runloop)
+    if prop in (:props, :windows, :nk_ctx, :task)
         getfield(app, prop)
     elseif prop in properties(app)
         app.props[prop]
+    end
+end
+
+function Base.setproperty!(app::A, prop::Symbol, val) where {A <: UIApplication}
+    if prop in (:props, :windows, :nk_ctx, :task)
+        setfield!(app, prop, val)
+    elseif prop in properties(app)
+        app.props[prop] = val
     end
 end
 
@@ -80,16 +85,26 @@ end
 function Application(; windows=[Windows.Window()], title="App", frame=(width=400, height=300))
     win = GLFW.GetCurrentContext()
     if win.handle !== C_NULL && haskey(env, win.handle)
-        (app, task) = env[win.handle]
-        app.props.title != title && GLFW.SetWindowTitle(win, title)
-        app.props.frame != frame && GLFW.SetWindowSize(win, frame.width, frame.height)
-        app.props = (title=title, frame=frame)
-        app.windows = windows
-        return (app, task)
+        appmain = env[win.handle]
+        if appmain.title != title
+            GLFW.SetWindowTitle(win, title)
+            appmain.title = title
+        end
+        if appmain.frame != frame
+            GLFW.SetWindowSize(win, frame.width, frame.height)
+            appmain.frame = frame
+        end
+        appmain.windows = windows
+        env[win.handle] = appmain
+        return appmain
     end
-    app = ApplicationMain((title=title, frame=frame), windows, true)
-    task = @async setup_app(app, title, frame)
-    (app, task)
+    appmain = ApplicationMain(Dict(:title=>title, :frame=>frame), windows, nothing, nothing)
+    (win, nk_ctx) = setup_glfw(; title=appmain.title, frame=appmain.frame)
+    appmain.nk_ctx = nk_ctx
+    task = @async runloop(win, appmain)
+    appmain.task = task
+    env[win.handle] = appmain
+    appmain
 end
 
 # module Poptart.Desktop

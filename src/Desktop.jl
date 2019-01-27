@@ -2,7 +2,7 @@ module Desktop # Poptart
 
 using ..Controls
 
-abstract type UIApplication end
+include("Desktop/types.jl")
 
 export Windows
 include("Desktop/Windows.jl")
