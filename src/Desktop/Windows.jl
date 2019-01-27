@@ -1,6 +1,6 @@
 module Windows # Poptart.Desktop
 
-using ..Desktop: UIApplication, Window
+using ..Desktop: UIApplication, UIWindow
 using ..Controls
 
 using GLFW
@@ -9,7 +9,29 @@ using Nuklear.LibNuklear
 using Nuklear.GLFWBackend
 using ModernGL # glViewport glClear glClearColor
 
-function Base.getproperty(window::Window, prop::Symbol)
+struct Container
+    items
+end
+
+struct Window <: UIWindow
+    container
+    props
+
+    function Window(items = []; props...)
+        container = Container(items)
+        new(container, Dict(props...))
+    end
+end
+
+function Base.setproperty!(window::W, prop::Symbol, val) where {W <: UIWindow}
+    if prop in (:container, :props)
+        setfield!(window, prop, val)
+    elseif prop in properties(window)
+        window.props[prop] = val
+    end
+end
+
+function Base.getproperty(window::W, prop::Symbol) where {W <: UIWindow}
     if prop in (:container, :props)
         getfield(window, prop)
     elseif prop in properties(window)
@@ -17,7 +39,7 @@ function Base.getproperty(window::Window, prop::Symbol)
     end
 end
 
-function properties(::Window)
+function properties(::W) where {W <: UIWindow}
     (:title, :frame)
 end
 
@@ -77,7 +99,7 @@ function nuklear_widget(nk_ctx, item::Any)
     @info "not implemented" item
 end
 
-function setup_window(nk_ctx, window::Window; frame, flags, title="")
+function setup_window(nk_ctx, window::W; frame, flags, title="") where {W <: UIWindow}
     if Bool(nk_begin(nk_ctx, title, nk_rect(values(frame)...), flags))
         nuklear_widget.(nk_ctx, window.container.items)
     end
@@ -86,7 +108,7 @@ end
 
 
 # window states
-function iscollapsed(app::A, window::Window) where {A <: UIApplication}
+function iscollapsed(app::A, window::W) where {A <: UIApplication, W <: UIWindow}
     nk_window_is_collapsed(app.nk_ctx, window.title) != 0
 end
 

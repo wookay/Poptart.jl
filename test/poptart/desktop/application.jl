@@ -10,6 +10,7 @@ window2 = Windows.Window(title="B", frame=(x=215,y=20,width=200,height=250))
 window3 = Windows.Window(title="C", frame=(x=420,y=20,width=200,height=250))
 windows = [window1, window2, window3]
 app = Application(windows=windows, title="App", frame=(width=630, height=350))
+@test app isa Application
 @test !Windows.iscollapsed(app, window1)
 
 button = Button(title="Hello", frame=(width=80, height=30))

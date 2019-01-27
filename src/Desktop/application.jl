@@ -36,18 +36,18 @@ function setup_glfw(; title, frame)
     (win, nk_ctx)
 end
 
-function runloop(win, appmain)
+function runloop(win, app)
     while !GLFW.WindowShouldClose(win)
         yield()
 
         GLFW.PollEvents()
         nk_glfw3_new_frame()
 
-        defaultprops = (frame=(x=0, y=0, appmain.frame...),
+        defaultprops = (frame=(x=0, y=0, app.frame...),
                         flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
 
-        for window in appmain.windows
-            Windows.setup_window(appmain.nk_ctx, window; merge(defaultprops, window.props)...)
+        for window in app.windows
+            Windows.setup_window(app.nk_ctx, window; merge(defaultprops, window.props)...)
         end
 
         # draw
@@ -62,14 +62,6 @@ function runloop(win, appmain)
     empty!(env)
 end
 
-function Base.getproperty(app::A, prop::Symbol) where {A <: UIApplication}
-    if prop in (:props, :windows, :nk_ctx, :task)
-        getfield(app, prop)
-    elseif prop in properties(app)
-        app.props[prop]
-    end
-end
-
 function Base.setproperty!(app::A, prop::Symbol, val) where {A <: UIApplication}
     if prop in (:props, :windows, :nk_ctx, :task)
         setfield!(app, prop, val)
@@ -78,33 +70,49 @@ function Base.setproperty!(app::A, prop::Symbol, val) where {A <: UIApplication}
     end
 end
 
+function Base.getproperty(app::A, prop::Symbol) where {A <: UIApplication}
+    if prop in (:props, :windows, :nk_ctx, :task)
+        getfield(app, prop)
+    elseif prop in properties(app)
+        app.props[prop]
+    end
+end
+
 function properties(::A) where {A <: UIApplication}
     (:title, :frame)
 end
 
-function Application(; windows=[Windows.Window()], title="App", frame=(width=400, height=300))
-    win = GLFW.GetCurrentContext()
-    if win.handle !== C_NULL && haskey(env, win.handle)
-        appmain = env[win.handle]
-        if appmain.title != title
-            GLFW.SetWindowTitle(win, title)
-            appmain.title = title
+
+mutable struct Application <: UIApplication
+    props
+    windows::Vector{W} where {W <: UIWindow}
+    nk_ctx
+    task
+
+    function Application(; windows=[Windows.Window()], title="App", frame=(width=400, height=300))
+        win = GLFW.GetCurrentContext()
+        if win.handle !== C_NULL && haskey(env, win.handle)
+            app = env[win.handle]
+            if app.title != title
+                GLFW.SetWindowTitle(win, title)
+                app.title = title
+            end
+            if app.frame != frame
+                GLFW.SetWindowSize(win, frame.width, frame.height)
+                app.frame = frame
+            end
+            app.windows = windows
+            env[win.handle] = app
+            return app
         end
-        if appmain.frame != frame
-            GLFW.SetWindowSize(win, frame.width, frame.height)
-            appmain.frame = frame
-        end
-        appmain.windows = windows
-        env[win.handle] = appmain
-        return appmain
+        app = new(Dict(:title=>title, :frame=>frame), windows, nothing, nothing)
+        (win, nk_ctx) = setup_glfw(; title=app.title, frame=app.frame)
+        app.nk_ctx = nk_ctx
+        task = @async runloop(win, app)
+        app.task = task
+        env[win.handle] = app
+        app
     end
-    appmain = ApplicationMain(Dict(:title=>title, :frame=>frame), windows, nothing, nothing)
-    (win, nk_ctx) = setup_glfw(; title=appmain.title, frame=appmain.frame)
-    appmain.nk_ctx = nk_ctx
-    task = @async runloop(win, appmain)
-    appmain.task = task
-    env[win.handle] = appmain
-    appmain
 end
 
 # module Poptart.Desktop
