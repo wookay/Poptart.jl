@@ -10,9 +10,9 @@ using ModernGL # glViewport glClear glClearColor
 const MAX_VERTEX_BUFFER = 512 * 1024
 const MAX_ELEMENT_BUFFER = 128 * 1024
 
-env = Dict()
+env = Dict{Ptr{Cvoid},A where {A <: UIApplication}}()
 
-function setup_glfw(; title, frame)
+function setup_glfw(; title::String, frame)
     @static if Sys.isapple()
         VERSION_MAJOR = 3
         VERSION_MINOR = 3
@@ -36,7 +36,7 @@ function setup_glfw(; title, frame)
     (win, nk_ctx)
 end
 
-function runloop(win, app)
+function runloop(win::GLFW.Window, app::A) where {A <: UIApplication}
     while !GLFW.WindowShouldClose(win)
         yield()
 
@@ -59,15 +59,8 @@ function runloop(win, app)
     end
     nk_glfw3_shutdown()
     GLFW.DestroyWindow(win)
+    app.nk_ctx = nothing
     empty!(env)
-end
-
-function Base.setproperty!(app::A, prop::Symbol, val) where {A <: UIApplication}
-    if prop in (:props, :windows, :nk_ctx, :task)
-        setfield!(app, prop, val)
-    elseif prop in properties(app)
-        app.props[prop] = val
-    end
 end
 
 function Base.getproperty(app::A, prop::Symbol) where {A <: UIApplication}
@@ -75,6 +68,8 @@ function Base.getproperty(app::A, prop::Symbol) where {A <: UIApplication}
         getfield(app, prop)
     elseif prop in properties(app)
         app.props[prop]
+    else
+        throw(KeyError(prop))
     end
 end
 
@@ -84,21 +79,19 @@ end
 
 
 mutable struct Application <: UIApplication
-    props
+    props::Dict{Symbol,Any}
     windows::Vector{W} where {W <: UIWindow}
-    nk_ctx
-    task
+    nk_ctx::Union{Nothing,Ptr{LibNuklear.nk_context}}
+    task::Union{Nothing,Task}
 
-    function Application(; windows=[Windows.Window()], title="App", frame=(width=400, height=300))
+    function Application(; windows=[Windows.Window()], title::String="App", frame=(width=400, height=300))
         win = GLFW.GetCurrentContext()
         if win.handle !== C_NULL && haskey(env, win.handle)
             app = env[win.handle]
             if app.title != title
-                GLFW.SetWindowTitle(win, title)
                 app.title = title
             end
             if app.frame != frame
-                GLFW.SetWindowSize(win, frame.width, frame.height)
                 app.frame = frame
             end
             app.windows = windows
@@ -112,6 +105,22 @@ mutable struct Application <: UIApplication
         app.task = task
         env[win.handle] = app
         app
+    end
+end
+
+function Base.setproperty!(app::Application, prop::Symbol, val)
+    if prop in (:props, :windows, :nk_ctx, :task)
+        setfield!(app, prop, val)
+    elseif prop in properties(app)
+        app.props[prop] = val
+        win = GLFW.GetCurrentContext()
+        if prop === :title
+            GLFW.SetWindowTitle(win, val)
+        elseif prop === :frame
+            GLFW.SetWindowSize(win, val.width, val.height)
+        end
+    else
+        throw(KeyError(prop))
     end
 end
 

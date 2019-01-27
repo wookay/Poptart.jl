@@ -10,12 +10,12 @@ using Nuklear.GLFWBackend
 using ModernGL # glViewport glClear glClearColor
 
 struct Container
-    items
+    items::Vector
 end
 
 struct Window <: UIWindow
-    container
-    props
+    container::Container
+    props::Dict{Symbol,Any}
 
     function Window(items = []; props...)
         container = Container(items)
@@ -28,6 +28,8 @@ function Base.setproperty!(window::W, prop::Symbol, val) where {W <: UIWindow}
         setfield!(window, prop, val)
     elseif prop in properties(window)
         window.props[prop] = val
+    else
+        throw(KeyError(prop))
     end
 end
 
@@ -36,6 +38,8 @@ function Base.getproperty(window::W, prop::Symbol) where {W <: UIWindow}
         getfield(window, prop)
     elseif prop in properties(window)
         window.props[prop]
+    else
+        throw(KeyError(prop))
     end
 end
 

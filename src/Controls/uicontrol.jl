@@ -56,6 +56,8 @@ macro UI(sym::Symbol)
                 getfield(control, prop)
             elseif prop in properties(control)
                 control.props[prop]
+            else
+                throw(KeyError(prop))
             end
         end
 
@@ -66,6 +68,8 @@ macro UI(sym::Symbol)
                 haskey(control.observers, :willSet) && broadcast(f -> f(val), control.observers[:willSet])
                 control.props[prop] = val
                 haskey(control.observers, :didSet) && broadcast(f -> f(val), control.observers[:didSet])
+            else
+                throw(KeyError(prop))
             end
         end
     end # quote
