@@ -40,15 +40,14 @@ function didClick(block, control::C) where {C <: UIControl}
     end
 end
 
-macro UI(sym::Symbol)
+# @UI
+function build_ui(sym::Symbol, constructor::Expr)
     quot = quote
         struct $sym <: UIControl
             props::Dict{Symbol, Any}
             observers::Dict{Symbol, Vector}
 
-            function $sym(; props...)
-                new(Dict{Symbol, Any}(props...), Dict{Symbol, Vector}())
-            end
+            $constructor
         end # struct
 
         function Base.getproperty(control::$sym, prop::Symbol)
@@ -74,6 +73,18 @@ macro UI(sym::Symbol)
         end
     end # quote
     esc(quot)
+end
+
+macro UI(sym::Symbol, constructor::Expr)
+    build_ui(sym, constructor)
+end
+
+macro UI(sym::Symbol)
+    build_ui(sym, quote
+            function $sym(; props...)
+                new(Dict{Symbol, Any}(props...), Dict{Symbol, Vector}())
+            end
+    end)
 end
 
 function properties(::Type{Super{C}}) where {C <: UIControl}

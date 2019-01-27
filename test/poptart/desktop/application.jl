@@ -9,7 +9,7 @@ window1 = Windows.Window(title="A", frame=(x=10,y=20,width=200,height=200))
 window2 = Windows.Window(title="B", frame=(x=215,y=20,width=200,height=250))
 window3 = Windows.Window(title="C", frame=(x=420,y=20,width=200,height=250))
 windows = [window1, window2, window3]
-app = Application(windows=windows, title="App", frame=(width=630, height=350))
+app = Application(windows=windows, title="App", frame=(width=630, height=400))
 @test app isa Application
 @test !Windows.iscollapsed(app, window1)
 
@@ -61,5 +61,9 @@ put!(window3, Label(text="Radio:"), radio1)
 didClick(radio1) do event
     @info :didClick (event, radio1.value)
 end
+
+window4 = Windows.Window(title="D", frame=(x=10,y=230,width=125,height=150))
+put!(window4, ImageView(path=normpath(@__DIR__, "..", "..", "assets", "julia-tan.png")))
+push!(app.windows, window4)
 
 end # module test_poptart_desktop_application

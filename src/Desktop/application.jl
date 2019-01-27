@@ -10,7 +10,7 @@ using ModernGL # glViewport glClear glClearColor
 const MAX_VERTEX_BUFFER = 512 * 1024
 const MAX_ELEMENT_BUFFER = 128 * 1024
 
-env = Dict{Ptr{Cvoid},A where {A <: UIApplication}}()
+env = Dict{Ptr{Cvoid}, A where {A <: UIApplication}}()
 
 function setup_glfw(; title::String, frame)
     @static if Sys.isapple()

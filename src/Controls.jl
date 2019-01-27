@@ -26,4 +26,7 @@ include("Controls/radio.jl")
 export ProgressBar
 include("Controls/progressbar.jl")
 
+export ImageView
+include("Controls/imageview.jl")
+
 end # module Poptart.Controls
