@@ -8,7 +8,6 @@ using Nuklear
 using Nuklear.LibNuklear
 using Nuklear.GLFWBackend # nk_glfw3_create_texture
 using ModernGL # glViewport glClear glClearColor GL_RGBA GL_FLOAT
-using Images
 
 struct Container
     items::Vector
@@ -100,16 +99,21 @@ function nuklear_widget(nk_ctx, item::ProgressBar)
     nk_progress(nk_ctx, item.value, item.max, item.modifyable ? NK_MODIFIABLE : NK_FIXED) == 1 && @async Mouse.click(item)
 end
 
+function nuklear_imageview(item::ImageView)
+    data = transpose(Controls.Images.load(item.path))
+    (img_width, img_height) = Base.size(data)
+    texture_index = nk_glfw3_create_texture(img_width, img_height, format=GL_RGBA, type=GL_FLOAT)
+    chanview = Controls.Images.channelview(data)
+    img = Array{Float32}(chanview)
+    nk_glfw3_update_texture(texture_index, img, img_width, img_height, format=GL_RGBA, type=GL_FLOAT)
+    return texture_index
+end
+
 function nuklear_widget(nk_ctx, item::ImageView)
     canvas = nk_window_get_canvas(nk_ctx)
     region = nk_window_get_content_region(nk_ctx)
     if !haskey(item.props, :imageref)
-        data = transpose(Controls.Images.load(item.path))
-        (img_width, img_height) = Base.size(data)
-        texture_index = nk_glfw3_create_texture(img_width, img_height, format=GL_RGBA, type=GL_FLOAT)
-        chanview = Controls.Images.channelview(data)
-        img = Array{Float32}(chanview)
-        nk_glfw3_update_texture(texture_index, img, img_width, img_height, format=GL_RGBA, type=GL_FLOAT)
+        texture_index = Base.invokelatest(nuklear_imageview, item)
         item.props[:imageref] = Ref(create_nk_image(texture_index))
     end
     nk_draw_image(canvas, region, item.props[:imageref], nk_rgba(255, 255, 255, 255))
