@@ -29,4 +29,7 @@ include("Controls/progressbar.jl")
 export ImageView
 include("Controls/imageview.jl")
 
+export Canvas
+include("Controls/canvas.jl")
+
 end # module Poptart.Controls

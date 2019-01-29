@@ -9,16 +9,12 @@ using Nuklear.LibNuklear
 using Nuklear.GLFWBackend # nk_glfw3_create_texture
 using ModernGL # glViewport glClear glClearColor GL_RGBA GL_FLOAT
 
-struct Container
-    items::Vector
-end
-
 struct Window <: UIWindow
-    container::Container
+    container::Controls.Container
     props::Dict{Symbol,Any}
 
     function Window(items = []; props...)
-        container = Container(items)
+        container = Controls.Container(items)
         new(container, Dict(props...))
     end
 end
@@ -47,23 +43,23 @@ function properties(::W) where {W <: UIWindow}
     (:title, :frame)
 end
 
-# nuklear_widget
-function nuklear_widget(nk_ctx, item::Button)
+# nuklear_item
+function nuklear_item(nk_ctx, item::Button)
     nk_layout_row_static(nk_ctx, item.frame.height, item.frame.width, 1)
     nk_button_label(nk_ctx, item.title) == 1 && @async Mouse.click(item)
 end
 
-function nuklear_widget(nk_ctx, item::Label)
+function nuklear_item(nk_ctx, item::Label)
     nk_layout_row_dynamic(nk_ctx, 20, 1)
     nk_label(nk_ctx, item.text, NK_TEXT_LEFT)
 end
 
-function nuklear_widget(nk_ctx, item::SelectableLabel)
+function nuklear_item(nk_ctx, item::SelectableLabel)
     nk_layout_row_dynamic(nk_ctx, 20, 1)
     nk_selectable_label(nk_ctx, item.text, NK_TEXT_LEFT, item.selected) == 1 && @async Mouse.click(item)
 end
 
-function nuklear_widget(nk_ctx, item::Slider)
+function nuklear_item(nk_ctx, item::Slider)
     if item.range isa StepRangeLen{Float64}
         f = nk_slider_float
         step = Float64(item.range.step)
@@ -80,11 +76,11 @@ function nuklear_widget(nk_ctx, item::Slider)
     f(nk_ctx, min, val, max, step) == 1 && @async Mouse.click(item)
 end
 
-function nuklear_widget(nk_ctx, item::Checkbox)
+function nuklear_item(nk_ctx, item::Checkbox)
     nk_checkbox_label(nk_ctx, item.text, item.active) == 1 && @async Mouse.click(item)
 end
 
-function nuklear_widget(nk_ctx, item::Radio)
+function nuklear_item(nk_ctx, item::Radio)
     for (name, value) in pairs(item.options)
         if nk_option_label(nk_ctx, String(name), item.value == value) == 1
             if item.value != value
@@ -95,11 +91,11 @@ function nuklear_widget(nk_ctx, item::Radio)
     end
 end
 
-function nuklear_widget(nk_ctx, item::ProgressBar)
+function nuklear_item(nk_ctx, item::ProgressBar)
     nk_progress(nk_ctx, item.value, item.max, item.modifyable ? NK_MODIFIABLE : NK_FIXED) == 1 && @async Mouse.click(item)
 end
 
-function nuklear_imageview(item::ImageView)
+function nuklear_item_imageview(item::ImageView)
     data = transpose(Controls.Images.load(item.path))
     (img_width, img_height) = Base.size(data)
     texture_index = nk_glfw3_create_texture(img_width, img_height, format=GL_RGBA, type=GL_FLOAT)
@@ -109,23 +105,24 @@ function nuklear_imageview(item::ImageView)
     return texture_index
 end
 
-function nuklear_widget(nk_ctx, item::ImageView)
+function nuklear_item(nk_ctx, item::ImageView)
     canvas = nk_window_get_canvas(nk_ctx)
     region = nk_window_get_content_region(nk_ctx)
     if !haskey(item.props, :imageref)
-        texture_index = Base.invokelatest(nuklear_imageview, item)
+        !isdefined(Controls, :Images) && Base.eval(Controls, :(using Images))
+        texture_index = Base.invokelatest(nuklear_item_imageview, item)
         item.props[:imageref] = Ref(create_nk_image(texture_index))
     end
     nk_draw_image(canvas, region, item.props[:imageref], nk_rgba(255, 255, 255, 255))
 end
 
-function nuklear_widget(nk_ctx, item::Any)
+function nuklear_item(nk_ctx, item::Any)
     @info "not implemented" item
 end
 
 function setup_window(nk_ctx, window::W; frame, flags, title="") where {W <: UIWindow}
     if Bool(nk_begin(nk_ctx, title, nk_rect(values(frame)...), flags))
-        nuklear_widget.(nk_ctx, window.container.items)
+        nuklear_item.(nk_ctx, window.container.items)
     end
     nk_end(nk_ctx)
 end
@@ -138,6 +135,11 @@ end
 
 function setbounds(app::A, window::W, frame::T) where {A <: UIApplication, W <: UIWindow, T <: NamedTuple{(:x, :y, :width, :height)}}
     nk_window_set_bounds(app.nk_ctx, window.title, nk_rect(values(frame)...))
+end
+
+
+function Base.put!(window::W, controls...) where {W <: UIWindow}
+    push!(window.container.items, controls...)
 end
 
 end # Poptart.Desktop.Windows

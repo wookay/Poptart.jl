@@ -1,8 +1,7 @@
 # module Poptart.Controls
 
-@UI ImageView begin
+@UI ImageView quote
     function ImageView(; props...)
-        !isdefined(Controls, :Images) && Base.eval(Controls, :(using Images))
         new(Dict{Symbol, Any}(props...), Dict{Symbol, Vector}())
     end
 end

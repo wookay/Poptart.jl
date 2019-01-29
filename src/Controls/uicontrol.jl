@@ -7,6 +7,10 @@ function super(::C) where {C <: UIControl}
     Super{C}
 end
 
+struct Container
+    items::Vector
+end
+
 
 function haskey_push_or_set!(block, control::C, sym::Symbol) where {C <: UIControl}
     if haskey(control.observers, sym)
@@ -46,12 +50,10 @@ function build_ui(sym::Symbol, constructor::Expr)
         struct $sym <: UIControl
             props::Dict{Symbol, Any}
             observers::Dict{Symbol, Vector}
-
-            $constructor
         end # struct
 
         function Base.getproperty(control::$sym, prop::Symbol)
-            if prop in (:props, :observers)
+            if prop in fieldnames($sym)
                 getfield(control, prop)
             elseif prop in properties(control)
                 control.props[prop]
@@ -61,7 +63,7 @@ function build_ui(sym::Symbol, constructor::Expr)
         end
 
         function Base.setproperty!(control::$sym, prop::Symbol, val)
-            if prop in (:props, :observers)
+            if prop in fieldnames($sym)
                 setfield!(control, prop, val)
             elseif prop in properties(control)
                 haskey(control.observers, :willSet) && broadcast(f -> f(val), control.observers[:willSet])
@@ -72,6 +74,7 @@ function build_ui(sym::Symbol, constructor::Expr)
             end
         end
     end # quote
+    append!(quot.args[2].args[end].args, constructor.args)
     esc(quot)
 end
 
@@ -81,9 +84,9 @@ end
 
 macro UI(sym::Symbol)
     build_ui(sym, quote
-            function $sym(; props...)
-                new(Dict{Symbol, Any}(props...), Dict{Symbol, Vector}())
-            end
+        function $sym(; props...)
+            new(Dict{Symbol, Any}(props...), Dict{Symbol, Vector}())
+        end
     end)
 end
 
