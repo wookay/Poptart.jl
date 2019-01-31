@@ -84,7 +84,7 @@ mutable struct Application <: UIApplication
     nk_ctx::Union{Nothing,Ptr{LibNuklear.nk_context}}
     task::Union{Nothing,Task}
 
-    function Application(; windows=[Windows.Window()], title::String="App", frame=(width=400, height=300))
+    function Application(; windows=[Windows.Window()], title::String="App", frame=(width=400, height=300), async=true)
         win = GLFW.GetCurrentContext()
         if win.handle !== C_NULL && haskey(env, win.handle)
             app = env[win.handle]
@@ -101,8 +101,11 @@ mutable struct Application <: UIApplication
         app = new(Dict(:title=>title, :frame=>frame), windows, nothing, nothing)
         (win, nk_ctx) = setup_glfw(; title=app.title, frame=app.frame)
         app.nk_ctx = nk_ctx
-        #task = nothing; runloop(win, app)
-        task = @async runloop(win, app)
+        if async
+            task = @async runloop(win, app)
+        else
+            task = nothing; runloop(win, app)
+        end
         app.task = task
         env[win.handle] = app
         app

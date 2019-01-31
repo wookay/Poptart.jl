@@ -5,7 +5,7 @@ using Colors
 
 @test RGBA(colorant"red", 1) == RGBA(1,0,0,1)
 
-c = RGB(1,0,0)
-@test 0xff .* (c.r,c.g,c.b) == (255, 0, 0)
+c = RGBA(1,0,0,0.5)
+@test round.(Int, 0xff .* (c.r,c.g,c.b,c.alpha)) == (255, 0, 0, 128)
 
 end # module test_colors_rgba

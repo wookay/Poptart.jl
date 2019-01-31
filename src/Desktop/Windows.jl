@@ -2,7 +2,7 @@ module Windows # Poptart.Desktop
 
 using ..Desktop: UIApplication, UIWindow
 using ...Controls
-using ...Drawings # Line
+using ...Drawings # Line Rect stroke fill
 import ...Props: properties
 
 using GLFW
@@ -136,7 +136,7 @@ function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::ImageView) 
 end
 
 function nuklear_rgba(c::RGBA)
-    nk_rgba((0xff .* (c.r, c.g, c.b, c.alpha))...)
+    nk_rgba(round.(Int, 0xff .* (c.r,c.g,c.b,c.alpha))...)
 end
 
 function nuklear_drawing_item(canvas::Ptr{LibNuklear.nk_command_buffer}, ::Drawings.Drawing{stroke}, element::Line)
@@ -146,11 +146,51 @@ function nuklear_drawing_item(canvas::Ptr{LibNuklear.nk_command_buffer}, ::Drawi
     nk_stroke_line(canvas, point1..., point2..., thickness, color)
 end
 
+using Jive
+function nuklear_drawing_item(canvas::Ptr{LibNuklear.nk_command_buffer}, ::Drawings.Drawing{stroke}, element::Rect)
+    @onlyonce begin
+        @info element
+    end
+    rect = nk_rect(element.rect...)
+    rounding = element.rounding
+    thickness = element.thickness
+    color = nuklear_rgba(element.color)
+    nk_stroke_rect(canvas, rect, rounding, thickness, color)
+end
+
+function nuklear_drawing_item(canvas::Ptr{LibNuklear.nk_command_buffer}, ::Drawings.Drawing{fill}, element::Rect)
+    @onlyonce begin
+        @info element
+    end
+    rect = nk_rect(element.rect...)
+    rounding = element.rounding
+    color = nuklear_rgba(element.color)
+    nk_fill_rect(canvas, rect, rounding, color)
+end
+
 function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, window::W, item::Canvas) where {W <: UIWindow}
     canvas = nk_window_get_canvas(nk_ctx)
+    #=
+    https://github.com/vurtun/nuklear/blob/master/example/canvas.c#L358
+
+    /* save style properties which will be overwritten */
+    canvas->panel_padding = ctx->style.window.padding;
+    canvas->item_spacing = ctx->style.window.spacing;
+    canvas->window_background = ctx->style.window.fixed_background;
+
+    /* use the complete window space and set background */
+    ctx->style.window.spacing = nk_vec2(0,0);
+    ctx->style.window.padding = nk_vec2(0,0);
+    ctx->style.window.fixed_background = nk_style_item_color(background_color);
+    =#
     for drawing in item.container.items
         nuklear_drawing_item(canvas, drawing, drawing.element)
     end
+    #=
+    ctx->style.window.spacing = canvas->panel_padding;
+    ctx->style.window.padding = canvas->item_spacing;
+    ctx->style.window.fixed_background = canvas->window_background;
+    =#
 end
 
 function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Any) where {W <: UIWindow}

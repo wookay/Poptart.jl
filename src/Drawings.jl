@@ -50,7 +50,7 @@ macro DrawingElement(sym::Symbol, props::Expr)
 end
 
 @DrawingElement Line (points, thickness, color)
-@DrawingElement Rect (rect, color)
+@DrawingElement Rect (rect, rounding, thickness, color)
 @DrawingElement Circle (rect, color)
 @DrawingElement Triangle (points, color)
 @DrawingElement Arc (center, radius, angle, color)
