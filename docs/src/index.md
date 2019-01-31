@@ -43,12 +43,9 @@ using Poptart.Drawings # Line Rect Circle Triangle stroke fill
 using Nuklear.LibNuklear: NK_WINDOW_TITLE
 using Colors: RGBA
 
-window1 = Windows.Window(title="A", frame=(x=0, y=0, width=500, height=400), flags=NK_WINDOW_TITLE)
-windows = [window1]
-app = Application(windows=windows, title="App", frame=(width=500, height=400))
-
 canvas = Canvas()
-put!(window1, canvas)
+window1 = Windows.Window([canvas], title="A", frame=(x=0, y=0, width=500, height=400), flags=NK_WINDOW_TITLE)
+Application(windows=[window1], title="App", frame=(width=500, height=400))
 
 strokeColor = RGBA(0,0.7,0,1)
 fillColor   = RGBA(0.1, 0.7,0.8,0.9)
