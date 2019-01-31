@@ -4,7 +4,7 @@ keywords = ["GUI"]
 license = "MIT"
 desc = "GUI programming in Julia based on Nuklear.jl"
 authors = ["WooKyoung Noh <wookay.noh@gmail.com>"]
-version = "0.1.0-DEV"
+version = "0.1.0"
 
 [deps]
 Nuklear = "8d0e9305-38f4-5c97-8ceb-e1429a1a2d0c"
