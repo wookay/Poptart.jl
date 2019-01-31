@@ -51,9 +51,9 @@ end
 
 @DrawingElement Line (points, thickness, color)
 @DrawingElement Rect (rect, rounding, thickness, color)
-@DrawingElement Circle (rect, color)
-@DrawingElement Triangle (points, color)
-@DrawingElement Arc (center, radius, angle, color)
+@DrawingElement Circle (rect, thickness, color)
+@DrawingElement Triangle (points, thickness, color)
+@DrawingElement Arc (center, radius, angle, thickness, color)
 @DrawingElement Curve (startPoint, control1, control2, endPoint, thickness, color)
 @DrawingElement Polyline (points, thickness, color)
 @DrawingElement Polygon (points, thickness, color)
