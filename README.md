@@ -1,8 +1,8 @@
 # Poptart.jl 🏂
 
-|  **Build Status**                                               |
-|:---------------------------------------------------------------:|
-|  [![][travis-img]][travis-url]  [![][codecov-img]][codecov-url] |
+|  **Build Status**                                                                                  |
+|:--------------------------------------------------------------------------------------------------:|
+|  [![][travis-img]][travis-url]  [![][appveyor-img]][appveyor-url]  [![][codecov-img]][codecov-url] |
 
 
 GUI programming in Julia based on [Nuklear.jl](https://github.com/Gnimuc/Nuklear.jl)
@@ -103,6 +103,9 @@ put!(canvas,
 
 [travis-img]: https://api.travis-ci.org/wookay/Poptart.jl.svg?branch=master
 [travis-url]: https://travis-ci.org/wookay/Poptart.jl
+
+[appveyor-img]: https://ci.appveyor.com/api/projects/status/69br6a0jnr2dnr5b?svg=true
+[appveyor-url]: https://ci.appveyor.com/project/wookay/poptart-jl
 
 [codecov-img]: https://codecov.io/gh/wookay/Poptart.jl/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/wookay/Poptart.jl/branch/master
