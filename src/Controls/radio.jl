@@ -1,5 +1,10 @@
 # module Poptart.Controls
 
+"""
+    Radio(; options, value)
+"""
+Radio
+
 @UI Radio
 
 function properties(control::Radio)

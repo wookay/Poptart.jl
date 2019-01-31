@@ -8,8 +8,7 @@ using Poptart.Controls # Mouse Button Label Slider CheckBox ProgressBar Selectab
 window1 = Windows.Window(title="A", frame=(x=10,y=20,width=200,height=200))
 window2 = Windows.Window(title="B", frame=(x=215,y=20,width=200,height=250))
 window3 = Windows.Window(title="C", frame=(x=420,y=20,width=200,height=250))
-windows = [window1, window2, window3]
-app = Application(windows=windows, title="App", frame=(width=630, height=400))
+app = Application(windows=[window1, window2, window3], title="App", frame=(width=630, height=400))
 @test app isa Application
 @test !Windows.iscollapsed(app, window1)
 

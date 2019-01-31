@@ -38,6 +38,9 @@ function didSend(block, control::C) where {C <: UIControl}
     haskey_push_or_set!(block, control, :didSend)
 end
 
+"""
+    didClick(block, control::C) where {C <: UIControl}
+"""
 function didClick(block, control::C) where {C <: UIControl}
     haskey_push_or_set!(control, :didSend) do event
         (event.action === Mouse.click) && block(event)

@@ -13,6 +13,9 @@ using ModernGL # glViewport glClear glClearColor GL_RGBA GL_FLOAT
 using Colors # RGBA
 using ProgressMeter
 
+"""
+    Window(items = []; props...)
+"""
 struct Window <: UIWindow
     container::Controls.Container
     props::Dict{Symbol,Any}
@@ -269,6 +272,9 @@ function setbounds(app::A, window::W, frame::T) where {A <: UIApplication, W <: 
 end
 
 
+"""
+    put!(window::W, controls::UIControl...) where {W <: UIWindow}
+"""
 function Base.put!(window::W, controls::UIControl...) where {W <: UIWindow}
     push!(window.container.items, controls...)
 end

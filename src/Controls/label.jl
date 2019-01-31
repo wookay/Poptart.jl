@@ -1,6 +1,17 @@
 # module Poptart.Controls
 
+"""
+    Label(; text::String)
+"""
+Label
+
 @UI Label
+
+"""
+    SelectableLabel(; text::String, selected::Ref)
+"""
+SelectableLabel
+
 @UI SelectableLabel
 
 function properties(control::Label)

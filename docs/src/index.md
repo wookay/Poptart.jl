@@ -7,12 +7,11 @@ GUI programming in Julia based on [Nuklear.jl](https://github.com/Gnimuc/Nuklear
 
 ```julia
 using Poptart.Desktop # Application Windows put!
-using Poptart.Controls # Mouse Button Label Slider didClick
+using Poptart.Controls # Button Label Slider didClick
 
 window1 = Windows.Window(title="A", frame=(x=10,y=20,width=200,height=200))
 window2 = Windows.Window(title="B", frame=(x=220,y=20,width=200,height=200))
-windows = [window1, window2]
-Application(windows=windows, title="App", frame=(width=430, height=300))
+Application(windows=[window1, window2], title="App", frame=(width=430, height=300))
 
 button = Button(title="Hello", frame=(width=80, height=30))
 put!(window1, button)
@@ -31,7 +30,7 @@ didClick(slider1) do event
 end
 ```
 
-<img src="https://wookay.github.io/docs/Poptart.jl/assets/poptart/app.png" width="500" alt="app.png" />
+![app.png](https://wookay.github.io/docs/Poptart.jl/assets/poptart/app.png)
 
 
 ### Poptart.Drawings
@@ -39,7 +38,7 @@ end
 ```julia
 using Poptart.Desktop # Application Windows put!
 using Poptart.Controls # Canvas
-using Poptart.Drawings # Line Rect Circle Triangle stroke fill
+using Poptart.Drawings # Line Rect Circle Triangle Arc Curve Polyline Polygon stroke fill
 using Nuklear.LibNuklear: NK_WINDOW_TITLE
 using Colors: RGBA
 
@@ -85,7 +84,7 @@ put!(canvas,
     stroke(polygon1), fill(polygon2))
 ```
 
-<img src="https://wookay.github.io/docs/Poptart.jl/assets/poptart/drawings.png" width="500" alt="drawings.png" />
+![drawings.png](https://wookay.github.io/docs/Poptart.jl/assets/poptart/drawings.png)
 
 
 ### Requirements

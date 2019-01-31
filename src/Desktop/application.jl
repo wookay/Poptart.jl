@@ -78,6 +78,9 @@ function properties(::A) where {A <: UIApplication}
 end
 
 
+"""
+    Application(; windows=[Windows.Window()], title::String="App", frame=(width=400, height=300), async=true)
+"""
 mutable struct Application <: UIApplication
     props::Dict{Symbol,Any}
     windows::Vector{W} where {W <: UIWindow}

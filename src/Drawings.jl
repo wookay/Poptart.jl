@@ -49,13 +49,60 @@ macro DrawingElement(sym::Symbol, props::Expr)
     build_drawing_element(sym, Vector{Symbol}(props.args))
 end
 
+"""
+    Line(; points::Vector{<:Tuple}, thickness, color)
+"""
+Line
+
 @DrawingElement Line (points, thickness, color)
+
+"""
+    Rect(; rect, rounding, [thickness], color)
+"""
+Rect
+
 @DrawingElement Rect (rect, rounding, thickness, color)
+
+"""
+    Circle(; rect, [thickness], color)
+"""
+Circle
+
 @DrawingElement Circle (rect, thickness, color)
+
+"""
+    Triangle(; points::Vector{<:Tuple}, [thickness], color)
+"""
+Triangle
+
 @DrawingElement Triangle (points, thickness, color)
+
+"""
+    Arc(; center, radius, angle, [thickness], color)
+"""
+Arc
+
 @DrawingElement Arc (center, radius, angle, thickness, color)
+
+"""
+    Curve(; startPoint, control1, control2, endPoint, thickness, color)
+"""
+Curve
+
 @DrawingElement Curve (startPoint, control1, control2, endPoint, thickness, color)
+
+"""
+    Polyline(; points::Vector{<:Tuple}, thickness, color)
+"""
+Polyline
+
 @DrawingElement Polyline (points, thickness, color)
+
+"""
+    Polygon(; points::Vector{<:Tuple}, [thickness], color)
+"""
+Polygon
+
 @DrawingElement Polygon (points, thickness, color)
 
 @DrawingElement Image ()
@@ -65,10 +112,16 @@ struct Drawing{paint}
     element::E where {E <: DrawingElement}
 end
 
+"""
+    Drawings.stroke(element::E) where {E <: DrawingElement}
+"""
 function stroke(element::E) where {E <: DrawingElement}
     Drawing{stroke}(element)
 end
 
+"""
+    Drawings.fill(element::E) where {E <: DrawingElement}
+"""
 function Base.fill(element::E) where {E <: DrawingElement}
     Drawing{fill}(element)
 end

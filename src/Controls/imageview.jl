@@ -1,5 +1,10 @@
 # module Poptart.Controls
 
+"""
+    ImageView(; path::String)
+"""
+ImageView
+
 @UI ImageView quote
     function ImageView(; props...)
         new(Dict{Symbol, Any}(props...), Dict{Symbol, Vector}())
