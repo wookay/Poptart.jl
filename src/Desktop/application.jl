@@ -64,7 +64,7 @@ function runloop(win::GLFW.Window, app::A) where {A <: UIApplication}
 end
 
 function Base.getproperty(app::A, prop::Symbol) where {A <: UIApplication}
-    if prop in (:props, :windows, :nk_ctx, :task)
+    if prop in fieldnames(A)
         getfield(app, prop)
     elseif prop in properties(app)
         app.props[prop]
@@ -101,6 +101,7 @@ mutable struct Application <: UIApplication
         app = new(Dict(:title=>title, :frame=>frame), windows, nothing, nothing)
         (win, nk_ctx) = setup_glfw(; title=app.title, frame=app.frame)
         app.nk_ctx = nk_ctx
+        #task = nothing; runloop(win, app)
         task = @async runloop(win, app)
         app.task = task
         env[win.handle] = app
@@ -109,7 +110,7 @@ mutable struct Application <: UIApplication
 end
 
 function Base.setproperty!(app::Application, prop::Symbol, val)
-    if prop in (:props, :windows, :nk_ctx, :task)
+    if prop in fieldnames(Application)
         setfield!(app, prop, val)
     elseif prop in properties(app)
         app.props[prop] = val

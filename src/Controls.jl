@@ -1,5 +1,7 @@
 module Controls # Poptart
 
+import ..Props: properties
+
 abstract type UIControl end
 
 export Mouse

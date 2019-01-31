@@ -3,7 +3,7 @@ using Jive
 
 using Test
 using Poptart.Desktop # Application Windows put!
-using Poptart.Controls # Mouse Button Label Slider CheckBox ProgressBar didClick
+using Poptart.Controls # Mouse Button Label Slider CheckBox ProgressBar SelectableLabel Radio didClick
 
 window1 = Windows.Window(title="A", frame=(x=10,y=20,width=200,height=200))
 window2 = Windows.Window(title="B", frame=(x=215,y=20,width=200,height=250))
@@ -61,9 +61,5 @@ put!(window3, Label(text="Radio:"), radio1)
 didClick(radio1) do event
     @info :didClick (event, radio1.value)
 end
-
-window4 = Windows.Window(title="D", frame=(x=10,y=230,width=125,height=150))
-put!(window4, ImageView(path=normpath(@__DIR__, "..", "..", "assets", "julia-tan.png")))
-push!(app.windows, window4)
 
 end # module test_poptart_desktop_application
