@@ -146,7 +146,6 @@ function nuklear_drawing_item(canvas::Ptr{LibNuklear.nk_command_buffer}, ::Drawi
     nk_stroke_line(canvas, point1..., point2..., thickness, color)
 end
 
-using Jive
 function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, window::W, item::Canvas) where {W <: UIWindow}
     canvas = nk_window_get_canvas(nk_ctx)
     for drawing in item.container.items
