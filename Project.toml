@@ -1,6 +1,9 @@
-authors = ["WooKyoung Noh <wookay.noh@gmail.com>"]
 name = "Poptart"
 uuid = "afa1a75a-17c8-11e9-3158-25bb238ab730"
+keywords = ["GUI"]
+license = "MIT"
+desc = "GUI programming in Julia based on Nuklear.jl"
+authors = ["WooKyoung Noh <wookay.noh@gmail.com>"]
 version = "0.1.0-DEV"
 
 [deps]
