@@ -43,12 +43,7 @@ function runloop(win::GLFW.Window, app::A) where {A <: UIApplication}
         GLFW.PollEvents()
         nk_glfw3_new_frame()
 
-        defaultprops = (frame=(x=0, y=0, app.frame...),
-                        flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
-
-        for window in app.windows
-            Windows.setup_window(app.nk_ctx, window; merge(defaultprops, window.props)...)
-        end
+        Windows.setup_window.(app.nk_ctx, app.windows)
 
         # draw
         bg = nk_colorf(0.10, 0.18, 0.24, 1.0)
@@ -79,7 +74,7 @@ end
 
 
 """
-    Application(; windows=[Windows.Window()], title::String="App", frame=(width=400, height=300), async=true)
+    Application(; title::String="App", frame::NamedTuple{(:width,:height)}=(width=400, height=300), windows=[Windows.Window(title="", frame=(x=0,y=0,frame...))], async=true)
 """
 mutable struct Application <: UIApplication
     props::Dict{Symbol,Any}
@@ -87,7 +82,7 @@ mutable struct Application <: UIApplication
     nk_ctx::Union{Nothing,Ptr{LibNuklear.nk_context}}
     task::Union{Nothing,Task}
 
-    function Application(; windows=[Windows.Window()], title::String="App", frame=(width=400, height=300), async=true)
+    function Application(; title::String="App", frame::NamedTuple{(:width,:height)}=(width=400, height=300), windows=[Windows.Window(title="", frame=(x=0,y=0,frame...))], async=true)
         win = GLFW.GetCurrentContext()
         if win.handle !== C_NULL && haskey(env, win.handle)
             app = env[win.handle]

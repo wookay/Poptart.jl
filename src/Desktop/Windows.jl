@@ -14,15 +14,16 @@ using Colors # RGBA
 using ProgressMeter
 
 """
-    Window(items = []; props...)
+    Window(items = []; title::String, frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
 """
 struct Window <: UIWindow
     container::Controls.Container
     props::Dict{Symbol,Any}
 
-    function Window(items = []; props...)
+    function Window(items = []; title::String, frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
         container = Controls.Container(items)
-        new(container, Dict(props...))
+        props = Dict{Symbol,Any}(:title => title, :frame => frame, :name => name, :flags => flags)
+        window = new(container, props)
     end
 end
 
@@ -47,7 +48,16 @@ function Base.getproperty(window::W, prop::Symbol) where {W <: UIWindow}
 end
 
 function properties(::W) where {W <: UIWindow}
-    (:title, :frame)
+    (:title, :frame, :name, :flags, )
+end
+
+# nuklear convert
+function nuklear_rect(frame::NamedTuple{(:x,:y,:width,:height)})
+    nk_rect(values(frame)...)
+end
+
+function nuklear_rgba(c::RGBA)
+    nk_rgba(round.(Int, 0xff .* (c.r,c.g,c.b,c.alpha))...)
 end
 
 # nuklear_item
@@ -136,10 +146,6 @@ function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::ImageView) 
         #= =# p !== nothing && ProgressMeter.move_cursor_up_while_clearing_lines(p.output, p.numprintedvalues+1)
     end
     nk_draw_image(canvas, region, item.props[:imageref], nk_rgba(255, 255, 255, 255))
-end
-
-function nuklear_rgba(c::RGBA)
-    nk_rgba(round.(Int, 0xff .* (c.r,c.g,c.b,c.alpha))...)
 end
 
 function nuklear_drawing_item(canvas::Ptr{LibNuklear.nk_command_buffer}, ::Drawings.Drawing{stroke}, element::Line)
@@ -252,8 +258,14 @@ function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Any) where 
     @info "not implemented" item
 end
 
-function setup_window(nk_ctx::Ptr{LibNuklear.nk_context}, window::W; frame::NT, flags, title="") where {W <: UIWindow, NT <: NamedTuple{(:x,:y,:width,:height)}}
-    if Bool(nk_begin(nk_ctx, title, nk_rect(values(frame)...), flags))
+function setup_window(nk_ctx::Ptr{LibNuklear.nk_context}, window::W) where {W <: UIWindow}
+    rect = nuklear_rect(window.frame)
+    if window.name === nothing
+        can_be_filled_up_with_widgets = nk_begin(nk_ctx, window.title, rect, window.flags)
+    else
+        can_be_filled_up_with_widgets = nk_begin_titled(nk_ctx, window.name, window.title, rect, window.flags)
+    end
+    if Bool(can_be_filled_up_with_widgets)
         for item in window.container.items
             nuklear_item(nk_ctx, window, item)
         end
@@ -263,12 +275,15 @@ end
 
 
 # window states
+
+get_window_name(window::W) where {W <: UIWindow} = window.name === nothing ? window.title : window.name
+
 function iscollapsed(app::A, window::W) where {A <: UIApplication, W <: UIWindow}
-    nk_window_is_collapsed(app.nk_ctx, window.title) != 0
+    nk_window_is_collapsed(app.nk_ctx, get_window_name(window)) != 0
 end
 
-function setbounds(app::A, window::W, frame::T) where {A <: UIApplication, W <: UIWindow, T <: NamedTuple{(:x, :y, :width, :height)}}
-    nk_window_set_bounds(app.nk_ctx, window.title, nk_rect(values(frame)...))
+function setbounds(app::A, window::W, frame::NamedTuple{(:x,:y,:width,:height)}) where {A <: UIApplication, W <: UIWindow}
+    nk_window_set_bounds(app.nk_ctx, get_window_name(window), nuklear_rect(frame))
 end
 
 
