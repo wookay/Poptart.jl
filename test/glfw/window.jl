@@ -4,8 +4,8 @@ using Jive
 using Test
 using GLFW
 
-window = GLFW.GetCurrentContext()
-if window.handle === C_NULL
+glwin = GLFW.GetCurrentContext()
+if glwin.handle === C_NULL
     w = GLFW.CreateWindow(640, 480, "GLFW.jl")
     GLFW.MakeContextCurrent(w)
     GLFW.SwapBuffers(w)
@@ -14,7 +14,7 @@ if window.handle === C_NULL
     @test GLFW.WindowShouldClose(w)
     GLFW.DestroyWindow(w)
     w = GLFW.GetCurrentContext()
-    @test window.handle === C_NULL
+    @test w.handle === C_NULL
 end
 
 end # module test_glfw_window

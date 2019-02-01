@@ -12,7 +12,7 @@ const MAX_ELEMENT_BUFFER = 128 * 1024
 
 env = Dict{Ptr{Cvoid}, A where {A <: UIApplication}}()
 
-function setup_glfw(; title::String, frame)
+function setup_glfw(; title::String, frame::NamedTuple{(:width,:height)})
     VERSION_MAJOR = 3
     VERSION_MINOR = 3
     GLFW.WindowHint(GLFW.CONTEXT_VERSION_MAJOR, VERSION_MAJOR)
@@ -20,20 +20,20 @@ function setup_glfw(; title::String, frame)
     GLFW.WindowHint(GLFW.OPENGL_PROFILE, GLFW.OPENGL_CORE_PROFILE)
     GLFW.WindowHint(GLFW.OPENGL_FORWARD_COMPAT, GL_TRUE)
 
-    win = GLFW.CreateWindow(frame.width, frame.height, title)
-    GLFW.MakeContextCurrent(win)
+    glwin = GLFW.CreateWindow(frame.width, frame.height, title)
+    GLFW.MakeContextCurrent(glwin)
     glViewport(0, 0, frame.width, frame.height)
 
     # init context
-    nk_ctx = nk_glfw3_init(win, NK_GLFW3_INSTALL_CALLBACKS, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER)
+    nk_ctx = nk_glfw3_init(glwin, NK_GLFW3_INSTALL_CALLBACKS, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER)
     nk_glfw3_font_stash_begin()
     nk_glfw3_font_stash_end()
 
-    (win, nk_ctx)
+    (glwin, nk_ctx)
 end
 
-function runloop(win::GLFW.Window, app::A) where {A <: UIApplication}
-    while !GLFW.WindowShouldClose(win)
+function runloop(glwin::GLFW.Window, app::A) where {A <: UIApplication}
+    while !GLFW.WindowShouldClose(glwin)
         yield()
 
         GLFW.PollEvents()
@@ -46,10 +46,10 @@ function runloop(win::GLFW.Window, app::A) where {A <: UIApplication}
         glClear(GL_COLOR_BUFFER_BIT)
         glClearColor(bg.r, bg.g, bg.b, bg.a)
         nk_glfw3_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER)
-        GLFW.SwapBuffers(win)
+        GLFW.SwapBuffers(glwin)
     end
     nk_glfw3_shutdown()
-    GLFW.DestroyWindow(win)
+    GLFW.DestroyWindow(glwin)
     app.nk_ctx = nothing
     empty!(env)
 end
@@ -79,9 +79,9 @@ mutable struct Application <: UIApplication
     task::Union{Nothing,Task}
 
     function Application(; title::String="App", frame::NamedTuple{(:width,:height)}=(width=400, height=300), windows=[Windows.Window(title="", frame=(x=0,y=0,frame...))], async=true)
-        win = GLFW.GetCurrentContext()
-        if win.handle !== C_NULL && haskey(env, win.handle)
-            app = env[win.handle]
+        glwin = GLFW.GetCurrentContext()
+        if glwin.handle !== C_NULL && haskey(env, glwin.handle)
+            app = env[glwin.handle]
             if app.title != title
                 app.title = title
             end
@@ -89,19 +89,19 @@ mutable struct Application <: UIApplication
                 app.frame = frame
             end
             app.windows = windows
-            env[win.handle] = app
+            env[glwin.handle] = app
             return app
         end
         app = new(Dict(:title=>title, :frame=>frame), windows, nothing, nothing)
-        (win, nk_ctx) = setup_glfw(; title=app.title, frame=app.frame)
+        (glwin, nk_ctx) = setup_glfw(; title=app.title, frame=app.frame)
         app.nk_ctx = nk_ctx
         if async
-            task = @async runloop(win, app)
+            task = @async runloop(glwin, app)
         else
-            task = nothing; runloop(win, app)
+            task = nothing; runloop(glwin, app)
         end
         app.task = task
-        env[win.handle] = app
+        env[glwin.handle] = app
         app
     end
 end
@@ -111,11 +111,11 @@ function Base.setproperty!(app::Application, prop::Symbol, val)
         setfield!(app, prop, val)
     elseif prop in properties(app)
         app.props[prop] = val
-        win = GLFW.GetCurrentContext()
+        glwin = GLFW.GetCurrentContext()
         if prop === :title
-            GLFW.SetWindowTitle(win, val)
+            GLFW.SetWindowTitle(glwin, val)
         elseif prop === :frame
-            GLFW.SetWindowSize(win, val.width, val.height)
+            GLFW.SetWindowSize(glwin, val.width, val.height)
         end
     else
         throw(KeyError(prop))
