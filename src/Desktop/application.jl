@@ -13,16 +13,12 @@ const MAX_ELEMENT_BUFFER = 128 * 1024
 env = Dict{Ptr{Cvoid}, A where {A <: UIApplication}}()
 
 function setup_glfw(; title::String, frame)
-    @static if Sys.isapple()
-        VERSION_MAJOR = 3
-        VERSION_MINOR = 3
-        GLFW.WindowHint(GLFW.CONTEXT_VERSION_MAJOR, VERSION_MAJOR)
-        GLFW.WindowHint(GLFW.CONTEXT_VERSION_MINOR, VERSION_MINOR)
-        GLFW.WindowHint(GLFW.OPENGL_PROFILE, GLFW.OPENGL_CORE_PROFILE)
-        GLFW.WindowHint(GLFW.OPENGL_FORWARD_COMPAT, GL_TRUE)
-    else
-        GLFW.DefaultWindowHints()
-    end
+    VERSION_MAJOR = 3
+    VERSION_MINOR = 3
+    GLFW.WindowHint(GLFW.CONTEXT_VERSION_MAJOR, VERSION_MAJOR)
+    GLFW.WindowHint(GLFW.CONTEXT_VERSION_MINOR, VERSION_MINOR)
+    GLFW.WindowHint(GLFW.OPENGL_PROFILE, GLFW.OPENGL_CORE_PROFILE)
+    GLFW.WindowHint(GLFW.OPENGL_FORWARD_COMPAT, GL_TRUE)
 
     win = GLFW.CreateWindow(frame.width, frame.height, title)
     GLFW.MakeContextCurrent(win)
