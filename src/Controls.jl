@@ -16,6 +16,9 @@ include("Controls/button.jl")
 export Slider
 include("Controls/slider.jl")
 
+export Property
+include("Controls/property.jl")
+
 export Label, SelectableLabel
 include("Controls/label.jl")
 

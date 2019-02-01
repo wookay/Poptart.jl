@@ -6,7 +6,7 @@ using Poptart.Desktop # Application Windows put!
 using Poptart.Controls # Mouse Button Label Slider CheckBox ProgressBar SelectableLabel Radio didClick
 
 window1 = Windows.Window(title="A", frame=(x=10,y=20,width=200,height=200))
-window2 = Windows.Window(title="B", frame=(x=215,y=20,width=200,height=250))
+window2 = Windows.Window(title="B", frame=(x=215,y=20,width=200,height=350))
 window3 = Windows.Window(title="C", frame=(x=420,y=20,width=200,height=250))
 app = Application(windows=[window1, window2, window3], title="App", frame=(width=630, height=400))
 @test app isa Application
@@ -14,13 +14,7 @@ app = Application(windows=[window1, window2, window3], title="App", frame=(width
 
 button = Button(title="Hello", frame=(width=80, height=30))
 put!(window1, button)
-
-slider1 = Slider(range=1:10, value=Ref{Cint}(5))
-slider2 = Slider(range=1.0:10.0, value=Ref{Cfloat}(2.0))
-put!(window2, Label(text="Slider:"), slider1, slider2)
-
 observered = []
-
 didClick(button) do event
     push!(observered, (didClick, button, event))
     @info :didClick event
@@ -28,9 +22,17 @@ end
 Mouse.click(button)
 @test observered == [(didClick, button, (action=Mouse.click,))]
 
+slider1 = Slider(range=1:10, value=Ref{Cint}(5))
+slider2 = Slider(range=1:10, value=Ref{Cfloat}(2.0))
+put!(window2, Label(text="Slider:"), slider1, slider2)
 didClick(slider1) do event
     @info :didClick (event, slider1.value[])
 end
+
+property1 = Property(name="property1", range=1:10, value=Ref{Cint}(5))
+property2 = Property(name="property2", range=1:10, value=Ref{Cdouble}(2.0))
+property3 = Property(name="property3", range=1:10, value=Ref{Cfloat}(8.0))
+put!(window2, Label(text="Property:"), property1, property2, property3)
 
 checkbox1 = CheckBox(text="is active", active=Ref{Cint}(true))
 put!(window2, Label(text="CheckBox:"), checkbox1)
