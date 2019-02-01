@@ -5,7 +5,7 @@ Button
 Slider
 Label
 SelectableLabel
-Checkbox
+CheckBox
 Radio
 ProgressBar
 ImageView

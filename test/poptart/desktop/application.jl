@@ -32,8 +32,8 @@ didClick(slider1) do event
     @info :didClick (event, slider1.value[])
 end
 
-checkbox1 = Checkbox(text="is active", active=Ref{Cint}(true))
-put!(window2, Label(text="Checkbox:"), checkbox1)
+checkbox1 = CheckBox(text="is active", active=Ref{Cint}(true))
+put!(window2, Label(text="CheckBox:"), checkbox1)
 didClick(checkbox1) do event
     if Bool(checkbox1.active[])
         checkbox1.text = "is active"

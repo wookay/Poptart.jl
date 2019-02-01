@@ -93,7 +93,7 @@ function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Slider) whe
     f(nk_ctx, min, val, max, step) == 1 && @async Mouse.click(item)
 end
 
-function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Checkbox) where {W <: UIWindow}
+function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::CheckBox) where {W <: UIWindow}
     nk_checkbox_label(nk_ctx, item.text, item.active) == 1 && @async Mouse.click(item)
 end
 

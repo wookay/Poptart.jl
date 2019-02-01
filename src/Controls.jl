@@ -19,7 +19,7 @@ include("Controls/slider.jl")
 export Label, SelectableLabel
 include("Controls/label.jl")
 
-export Checkbox
+export CheckBox
 include("Controls/checkbox.jl")
 
 export Radio
