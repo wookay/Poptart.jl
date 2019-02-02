@@ -1,7 +1,7 @@
 # module Poptart.Controls
 
 """
-    ProgressBar(; value::Ref, max::nk_size, modifyable::Bool)
+    ProgressBar(; value::Ref, max::nk_size, modifyable::Bool, [frame])
 """
 ProgressBar
 

@@ -1,7 +1,7 @@
 # module Poptart.Controls
 
 """
-    Slider(; range, value::Ref)
+    Slider(; range, value::Ref, [frame])
 """
 Slider
 

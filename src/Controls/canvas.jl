@@ -1,7 +1,7 @@
 # module Poptart.Controls
 
 """
-    Canvas(elements = []; props...)
+    Canvas(elements::Vector{<:Drawing} = Drawing[]; [frame])
 """
 Canvas
 
@@ -10,8 +10,11 @@ Canvas
     # observers::Dict{Symbol, Vector}
     container::Container
 
-    function Canvas(elements = []; props...)
-        new(Dict{Symbol, Any}(props...), Dict{Symbol, Vector}(), Container(elements))
+    function Canvas(elements::Vector{<:Drawing} = Drawing[]; kwargs...)
+        props = Dict{Symbol, Any}(kwargs...)
+        observers = Dict{Symbol, Vector}()
+        container = Container(elements)
+        new(props, observers, container)
     end
 end
 

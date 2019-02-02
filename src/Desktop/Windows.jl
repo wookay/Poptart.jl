@@ -14,13 +14,13 @@ using Colors # RGBA
 using ProgressMeter
 
 """
-    Window(items = []; title::String, frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
+    Window(items::Vector{<:UIControl} = UIControl[]; title::String, frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
 """
 struct Window <: UIWindow
     container::Controls.Container
     props::Dict{Symbol,Any}
 
-    function Window(items = []; title::String, frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
+    function Window(items::Vector{<:UIControl} = UIControl[]; title::String, frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
         container = Controls.Container(items)
         props = Dict{Symbol,Any}(:title => title, :frame => frame, :name => name, :flags => flags)
         window = new(container, props)

@@ -1,7 +1,7 @@
 # module Poptart.Controls
 
 """
-    CheckBox(; text::String, active::Ref)
+    CheckBox(; text::String, active::Ref, [frame])
 """
 CheckBox
 

@@ -12,19 +12,19 @@ Label
     end
 end
 
+function properties(control::Label)
+    (properties(super(control))..., :text, :alignment, :color, )
+end
+
 """
-    SelectableLabel(; text::String, selected::Ref)
+    SelectableLabel(; text::String, selected::Ref, [frame])
 """
 SelectableLabel
 
 @UI SelectableLabel
 
-function properties(control::Label)
-    (properties(super(control))..., :text, :alignment, :color, )
-end
-
 function properties(control::SelectableLabel)
-    (properties(super(control))..., :text, :selected)
+    (properties(super(control))..., :text, :selected, )
 end
 
 # module Poptart.Controls

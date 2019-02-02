@@ -6,9 +6,13 @@
 StaticRow
 
 @UI StaticRow quote
+    # props::Dict{Symbol, Any}
+    # observers::Dict{Symbol, Vector}
     widgets::Vector{<:UIControl}
-    function StaticRow(widgets::Vector{<:UIControl}; props...)
-        new(Dict{Symbol, Any}(props...), Dict{Symbol, Vector}(), widgets)
+    function StaticRow(widgets::Vector{<:UIControl}; kwargs...)
+        props = Dict{Symbol, Any}(kwargs...)
+        observers = Dict{Symbol, Vector}()
+        new(props, observers, widgets)
     end
 end
 
@@ -23,8 +27,10 @@ DynamicRow
 
 @UI DynamicRow quote
     widgets::Vector{<:UIControl}
-    function DynamicRow(widgets::Vector{<:UIControl}; props...)
-        new(Dict{Symbol, Any}(props...), Dict{Symbol, Vector}(), widgets)
+    function DynamicRow(widgets::Vector{<:UIControl}; kwargs...)
+        props = Dict{Symbol, Any}(kwargs...)
+        observers = Dict{Symbol, Vector}()
+        new(props, observers, widgets)
     end
 end
 

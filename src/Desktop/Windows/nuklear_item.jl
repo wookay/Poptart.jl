@@ -42,7 +42,7 @@ end
 
 function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Button; layout=nuklear_layout) where {W <: UIWindow}
     layout(nk_ctx, item)
-    nk_button_label(nk_ctx, item.title) == 1 && @async Mouse.click(item)
+    Bool(nk_button_label(nk_ctx, item.title)) && @async Mouse.click(item)
 end
 
 function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Label; layout=nuklear_layout) where {W <: UIWindow}
@@ -57,7 +57,7 @@ end
 
 function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::SelectableLabel; layout=nuklear_layout) where {W <: UIWindow}
     layout(nk_ctx, item)
-    nk_selectable_label(nk_ctx, item.text, NK_TEXT_LEFT, item.selected) == 1 && @async Mouse.click(item)
+    Bool(nk_selectable_label(nk_ctx, item.text, NK_TEXT_LEFT, item.selected)) && @async Mouse.click(item)
 end
 
 function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Slider; layout=nuklear_layout) where {W <: UIWindow}
@@ -74,7 +74,7 @@ function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Slider; lay
     end
     min = minimum(item.range)
     max = maximum(item.range)
-    f(nk_ctx, min, item.value, max, step) == 1 && @async Mouse.click(item)
+    Bool(f(nk_ctx, min, item.value, max, step)) && @async Mouse.click(item)
 end
 
 function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, window::W, item::Property; layout=nuklear_layout) where {W <: UIWindow}
@@ -101,13 +101,13 @@ end
 
 function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::CheckBox; layout=nuklear_layout) where {W <: UIWindow}
     layout(nk_ctx, item)
-    nk_checkbox_label(nk_ctx, item.text, item.active) == 1 && @async Mouse.click(item)
+    Bool(nk_checkbox_label(nk_ctx, item.text, item.active)) && @async Mouse.click(item)
 end
 
 function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Radio; layout=nuklear_layout) where {W <: UIWindow}
     layout(nk_ctx, item)
     for (name, value) in pairs(item.options)
-        if nk_option_label(nk_ctx, String(name), item.value == value) == 1
+        if Bool(nk_option_label(nk_ctx, String(name), item.value == value))
             if item.value != value
                 item.value = value
                 @async Mouse.click(item)
@@ -144,7 +144,7 @@ end
 
 function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::ProgressBar; layout=nuklear_layout) where {W <: UIWindow}
     layout(nk_ctx, item)
-    nk_progress(nk_ctx, item.value, item.max, item.modifyable ? NK_MODIFIABLE : NK_FIXED) == 1 && @async Mouse.click(item)
+    Bool(nk_progress(nk_ctx, item.value, item.max, item.modifyable ? NK_MODIFIABLE : NK_FIXED)) && @async Mouse.click(item)
 end
 
 function nuklear_item_imageview(item::ImageView, p::Union{Nothing,ProgressMeter.Progress})

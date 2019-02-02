@@ -87,8 +87,8 @@ end
 
 macro UI(sym::Symbol)
     build_ui(sym, quote
-        function $sym(; props...)
-            new(Dict{Symbol, Any}(props...), Dict{Symbol, Vector}())
+        function $sym(; kwargs...)
+            new(Dict{Symbol, Any}(kwargs...), Dict{Symbol, Vector}())
         end
     end)
 end

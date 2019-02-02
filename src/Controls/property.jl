@@ -1,7 +1,7 @@
 # module Poptart.Controls
 
 """
-    Property(; name::String, range, value::Ref)
+    Property(; name::String, range, value::Ref, [frame])
 """
 Property
 
