@@ -14,6 +14,8 @@ ImageView
 Canvas
 StaticRow
 DynamicRow
+ToolTip
 didClick(block, control::C) where {C <: UIControl}
+onHover(block, control::C) where {C <: UIControl}
 put!(canvas::Canvas, elements::Drawings.Drawing...)
 ```

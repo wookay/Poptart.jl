@@ -50,12 +50,12 @@ slider.value = 2
 empty!(observered)
 
 Mouse.click(button)
-Mouse.double_click(button)
+Mouse.doubleClick(button)
 
 @test observered == [(willSend, (action = Mouse.click,)),
                      (didSend, (action = Mouse.click,)),
                      (didClick, (action = Mouse.click,)),
-                     (willSend, (action = Mouse.double_click,)),
-                     (didSend, (action = Mouse.double_click,))]
+                     (willSend, (action = Mouse.doubleClick,)),
+                     (didSend, (action = Mouse.doubleClick,))]
 
 end # module test_poptart_controls

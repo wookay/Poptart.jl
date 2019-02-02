@@ -12,8 +12,13 @@ function click(control::C; kwargs...) where {C <: UIControl}
     haskey_and_broadcast_event(control, event)
 end
 
-function double_click(control::C; kwargs...) where {C <: UIControl}
-    event = (action=double_click, kwargs...)
+function doubleClick(control::C; kwargs...) where {C <: UIControl}
+    event = (action=doubleClick, kwargs...)
+    haskey_and_broadcast_event(control, event)
+end
+
+function hover(control::C; kwargs...) where {C <: UIControl}
+    event = (action=hover, kwargs...)
     haskey_and_broadcast_event(control, event)
 end
 

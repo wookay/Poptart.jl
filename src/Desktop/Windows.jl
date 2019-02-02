@@ -63,6 +63,13 @@ end
 include("Windows/nuklear_item.jl")
 include("Windows/nuklear_drawing_item.jl")
 
+function show(nk_ctx::Ptr{LibNuklear.nk_context}, controls::UIControl...)
+    for item in controls
+        nuklear_item(nk_ctx, item) do nk_ctx, item
+        end
+    end
+end
+
 function setup_window(nk_ctx::Ptr{LibNuklear.nk_context}, window::W) where {W <: UIWindow}
     rect = nuklear_rect(window.frame)
     if window.name === nothing
@@ -72,7 +79,13 @@ function setup_window(nk_ctx::Ptr{LibNuklear.nk_context}, window::W) where {W <:
     end
     if Bool(can_be_filled_up_with_widgets)
         for item in window.container.items
-            nuklear_item(nk_ctx, window, item)
+            nuklear_item(nk_ctx, item) do nk_ctx, item
+                if haskey(item.observers, :ongoing)
+                    for ongoing in item.observers[:ongoing]
+                        Bool(nk_widget_is_hovered(nk_ctx)) && ongoing((action=Mouse.hover, context=nk_ctx,))
+                    end
+                end
+            end
         end
     end
     nk_end(nk_ctx)
@@ -90,7 +103,6 @@ end
 function set_bounds(app::A, window::W, frame::NamedTuple{(:x,:y,:width,:height)}) where {A <: UIApplication, W <: UIWindow}
     nk_window_set_bounds(app.nk_ctx, get_window_name(window), nuklear_rect(frame))
 end
-
 
 """
     put!(window::W, controls::UIControl...) where {W <: UIWindow}
