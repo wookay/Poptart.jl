@@ -37,4 +37,7 @@ include("Controls/imageview.jl")
 export Canvas
 include("Controls/canvas.jl")
 
+export StaticRow, DynamicRow
+include("Controls/layout.jl")
+
 end # module Poptart.Controls

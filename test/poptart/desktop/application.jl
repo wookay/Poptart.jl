@@ -33,6 +33,9 @@ property1 = Property(name="property1", range=1:10, value=Ref{Cint}(5))
 property2 = Property(name="property2", range=1:10, value=Ref{Cdouble}(2.0))
 property3 = Property(name="property3", range=1:10, value=Ref{Cfloat}(8.0))
 put!(window2, Label(text="Property:"), property1, property2, property3)
+didClick(property1) do event
+    @info :didClick (event, property1.value[])
+end
 
 checkbox1 = CheckBox(text="is active", active=Ref{Cint}(true))
 put!(window2, Label(text="CheckBox:"), checkbox1)

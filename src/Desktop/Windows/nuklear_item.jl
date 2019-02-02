@@ -1,21 +1,62 @@
 # module Poptart.Desktop.Windows
 
-function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Button) where {W <: UIWindow}
-    nk_layout_row_static(nk_ctx, item.frame.height, item.frame.width, 1)
+env = Dict{Symbol, Any}(
+    :default_layout_height => 21,
+)
+
+# layout
+nuklear_no_layout(nk_ctx::Ptr{LibNuklear.nk_context}, item::UIControl) = nothing
+
+function nuklear_layout(nk_ctx::Ptr{LibNuklear.nk_context}, item::UIControl)
+    if haskey(item.props, :frame)
+        frame = item.frame
+        if haskey(frame, :height)
+            if haskey(frame, :width)
+                nk_layout_row_static(nk_ctx, frame.height, frame.width, 1)
+            else
+                nk_layout_row_dynamic(nk_ctx, frame.height, 1)
+            end
+        else
+            nk_layout_row_dynamic(nk_ctx, env[:default_layout_height], 1)
+        end
+    else
+        nk_layout_row_dynamic(nk_ctx, env[:default_layout_height], 1)
+    end
+end
+
+function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, window::W, item::StaticRow) where {W <: UIWindow}
+    cols = haskey(item.props, :cols) ? item.cols : length(item.widgets)
+    nk_layout_row_static(nk_ctx, item.height, item.width, cols)
+    for widget in item.widgets
+        nuklear_item(nk_ctx, window, widget; layout=nuklear_no_layout)
+    end
+end
+
+function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, window::W, item::DynamicRow) where {W <: UIWindow}
+    cols = haskey(item.props, :cols) ? item.cols : length(item.widgets)
+    nk_layout_row_dynamic(nk_ctx, item.height, cols)
+    for widget in item.widgets
+        nuklear_item(nk_ctx, window, widget; layout=nuklear_no_layout)
+    end
+end
+
+function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Button; layout=nuklear_layout) where {W <: UIWindow}
+    layout(nk_ctx, item)
     nk_button_label(nk_ctx, item.title) == 1 && @async Mouse.click(item)
 end
 
-function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Label) where {W <: UIWindow}
-    nk_layout_row_dynamic(nk_ctx, 20, 1)
+function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Label; layout=nuklear_layout) where {W <: UIWindow}
+    layout(nk_ctx, item)
     nk_label(nk_ctx, item.text, NK_TEXT_LEFT)
 end
 
-function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::SelectableLabel) where {W <: UIWindow}
-    nk_layout_row_dynamic(nk_ctx, 20, 1)
+function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::SelectableLabel; layout=nuklear_layout) where {W <: UIWindow}
+    layout(nk_ctx, item)
     nk_selectable_label(nk_ctx, item.text, NK_TEXT_LEFT, item.selected) == 1 && @async Mouse.click(item)
 end
 
-function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Slider) where {W <: UIWindow}
+function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Slider; layout=nuklear_layout) where {W <: UIWindow}
+    layout(nk_ctx, item)
     if item.range isa UnitRange{Int}
         step = 1
     else
@@ -31,7 +72,8 @@ function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Slider) whe
     f(nk_ctx, min, item.value, max, step) == 1 && @async Mouse.click(item)
 end
 
-function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, window::W, item::Property) where {W <: UIWindow}
+function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, window::W, item::Property; layout=nuklear_layout) where {W <: UIWindow}
+    layout(nk_ctx, item)
     if item.range isa UnitRange{Int}
         step = 1
     else
@@ -47,14 +89,18 @@ function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, window::W, item::Prope
     min = minimum(item.range)
     max = maximum(item.range)
     inc_per_pixel = 1
+    old_value = item.value[]
     f(nk_ctx, item.name, min, item.value, max, step, inc_per_pixel)
+    old_value != item.value[] && @async Mouse.click(item)
 end
 
-function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::CheckBox) where {W <: UIWindow}
+function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::CheckBox; layout=nuklear_layout) where {W <: UIWindow}
+    layout(nk_ctx, item)
     nk_checkbox_label(nk_ctx, item.text, item.active) == 1 && @async Mouse.click(item)
 end
 
-function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Radio) where {W <: UIWindow}
+function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Radio; layout=nuklear_layout) where {W <: UIWindow}
+    layout(nk_ctx, item)
     for (name, value) in pairs(item.options)
         if nk_option_label(nk_ctx, String(name), item.value == value) == 1
             if item.value != value
@@ -65,7 +111,8 @@ function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Radio) wher
     end
 end
 
-function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::ProgressBar) where {W <: UIWindow}
+function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::ProgressBar; layout=nuklear_layout) where {W <: UIWindow}
+    layout(nk_ctx, item)
     nk_progress(nk_ctx, item.value, item.max, item.modifyable ? NK_MODIFIABLE : NK_FIXED) == 1 && @async Mouse.click(item)
 end
 
@@ -85,7 +132,8 @@ function nuklear_item_imageview(item::ImageView, p::Union{Nothing,ProgressMeter.
     return texture_index
 end
 
-function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::ImageView) where {W <: UIWindow}
+function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::ImageView; layout=nuklear_layout) where {W <: UIWindow}
+    layout(nk_ctx, item)
     canvas = nk_window_get_canvas(nk_ctx)
     region = nk_window_get_content_region(nk_ctx)
     if !haskey(item.props, :imageref)
@@ -105,7 +153,8 @@ function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::ImageView) 
     nk_draw_image(canvas, region, item.props[:imageref], nk_rgba(255, 255, 255, 255))
 end
 
-function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, window::W, item::Canvas) where {W <: UIWindow}
+function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, window::W, item::Canvas; layout=nuklear_layout) where {W <: UIWindow}
+    layout(nk_ctx, item)
     canvas = nk_window_get_canvas(nk_ctx)
     #=
     https://github.com/vurtun/nuklear/blob/master/example/canvas.c#L358
@@ -130,7 +179,7 @@ function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, window::W, item::Canva
     =#
 end
 
-function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Any) where {W <: UIWindow}
+function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Any; layout=nuklear_layout) where {W <: UIWindow}
     @info "not implemented" item
 end
 
