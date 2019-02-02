@@ -49,4 +49,7 @@ include("Controls/layout.jl")
 export ToolTip
 include("Controls/tooltip.jl")
 
+export Chart
+include("Controls/chart.jl")
+
 end # module Poptart.Controls

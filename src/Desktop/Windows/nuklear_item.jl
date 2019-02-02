@@ -230,6 +230,22 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::ToolTip; 
     nk_tooltip(nk_ctx, item.text)
 end
 
+function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Chart; layout=nuklear_layout)
+    layout(nk_ctx, item)
+    block(nk_ctx, item)
+    if item.color !== nothing && item.highlight !== nothing
+        color = nuklear_rgba(item.color)
+        highlight = nuklear_rgba(item.highlight)
+        chart_begin = nk_chart_begin_colored(nk_ctx, item.chart_type, color, highlight, length(item.chart_items), item.min, item.max)
+    else
+        chart_begin = nk_chart_begin(nk_ctx, item.chart_type, length(item.chart_items), item.min, item.max)
+    end
+    if Bool(chart_begin)
+        nk_chart_push.(nk_ctx, item.chart_items)
+        nk_chart_end(nk_ctx)
+    end
+end
+
 using Jive
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Any; layout=nuklear_layout)
     @onlyonce begin
