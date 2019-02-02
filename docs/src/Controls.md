@@ -8,6 +8,7 @@ Label
 SelectableLabel
 CheckBox
 Radio
+ComboBox
 ProgressBar
 ImageView
 Canvas

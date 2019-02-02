@@ -1,6 +1,9 @@
 module Controls # Poptart
 
 import ..Props: properties
+using ..Drawings: Drawing
+using Nuklear.LibNuklear: NK_TEXT_LEFT
+using Colors: RGBA
 
 abstract type UIControl end
 
@@ -27,6 +30,9 @@ include("Controls/checkbox.jl")
 
 export Radio
 include("Controls/radio.jl")
+
+export ComboBox
+include("Controls/combobox.jl")
 
 export ProgressBar
 include("Controls/progressbar.jl")

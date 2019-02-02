@@ -47,7 +47,12 @@ end
 
 function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Label; layout=nuklear_layout) where {W <: UIWindow}
     layout(nk_ctx, item)
-    nk_label(nk_ctx, item.text, NK_TEXT_LEFT)
+    if item.color === nothing
+        nk_label(nk_ctx, item.text, item.alignment)
+    else
+        color = nuklear_rgba(item.color)
+        nk_label_colored(nk_ctx, item.text, item.alignment, color)
+    end
 end
 
 function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::SelectableLabel; layout=nuklear_layout) where {W <: UIWindow}
@@ -108,6 +113,32 @@ function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, ::W, item::Radio; layo
                 @async Mouse.click(item)
             end
         end
+    end
+end
+
+function nuklear_item(nk_ctx::Ptr{LibNuklear.nk_context}, window::W, item::ComboBox; layout=nuklear_layout) where {W <: UIWindow}
+    layout(nk_ctx, item)
+    selected = String(findfirst(isequal(item.value), item.options))
+    (width, height) = (nk_widget_width(nk_ctx), env[:default_layout_height] * (length(item.options) + 1))
+    if haskey(item.props, :frame)
+        if haskey(item.frame, :width)
+            width = item.frame.width
+        end
+        if haskey(item.frame, :height)
+            height = item.frame.height
+        end
+    end
+    if Bool(nk_combo_begin_label(nk_ctx, selected, nk_vec2(width, height)))
+        nk_layout_row_dynamic(nk_ctx, env[:default_layout_height], 1);
+        for (name, value) in pairs(item.options)
+            if Bool(nk_combo_item_label(nk_ctx, String(name), NK_TEXT_LEFT))
+                if item.value != value
+                    item.value = value
+                    @async Mouse.click(item)
+                end
+            end
+        end
+        nk_combo_end(nk_ctx)
     end
 end
 

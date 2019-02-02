@@ -66,4 +66,10 @@ didClick(radio1) do event
     @info :didClick (event, radio1.value)
 end
 
+combobox1 = ComboBox(options=(easy=0, normal=1, hard=2, Symbol("very hard")=>3), value=1)
+put!(window3, Label(text="ComboBox:"), combobox1)
+didClick(combobox1) do event
+    @info :didClick (event, combobox1.value)
+end
+
 end # module test_poptart_desktop_application

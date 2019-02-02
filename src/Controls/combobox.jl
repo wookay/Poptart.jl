@@ -1,13 +1,13 @@
 # module Poptart.Controls
 
 """
-    Radio(; options, value, [frame])
+    ComboBox(; options, value, [frame])
 """
-Radio
+ComboBox
 
-@UI Radio
+@UI ComboBox
 
-function properties(control::Radio)
+function properties(control::ComboBox)
     (properties(super(control))..., :options, :value, )
 end
 

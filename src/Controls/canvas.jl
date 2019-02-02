@@ -1,7 +1,5 @@
 # module Poptart.Controls
 
-using ..Drawings
-
 """
     Canvas(elements = []; props...)
 """
@@ -24,7 +22,7 @@ end
 """
     put!(canvas::Canvas, elements::Drawings.Drawing...)
 """
-function Base.put!(canvas::Canvas, elements::Drawings.Drawing...)
+function Base.put!(canvas::Canvas, elements::Drawing...)
     push!(canvas.container.items, elements...)
 end
 
