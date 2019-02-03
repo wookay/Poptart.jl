@@ -189,6 +189,7 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::ImageView
             #= =# ProgressMeter.update!(p, 3)
         end
         texture_index = Base.invokelatest(nuklear_item_imageview, item, p)
+        item.props[:texture_index] = texture_index
         #= =# p !== nothing && ProgressMeter.next!(p)
         item.props[:imageref] = Ref(create_nk_image(texture_index))
         #= =# p !== nothing && ProgressMeter.finish!(p)
@@ -251,6 +252,19 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Any; layo
     @onlyonce begin
         @info "not implemented" item
     end
+end
+
+function remove_nuklear_item(item::ImageView)
+    if haskey(item.props, :imageref)
+        texture_index = item.props[:texture_index]
+        imageref = item.props[:imageref]
+        delete!(item.props, :texture_index)
+        delete!(item.props, :imageref)
+        nk_glfw3_delete_texture(texture_index)
+    end
+end
+
+function remove_nuklear_item(item::Any)
 end
 
 # module Poptart.Desktop.Windows

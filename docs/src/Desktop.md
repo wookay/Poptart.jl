@@ -2,6 +2,10 @@
 
 ```@docs
 Application
+```
+
+```@docs
 Windows.Window
-put!(window::W, controls::UIControl...) where {W <: UIWindow}
+Windows.put!(window::W, controls::UIControl...) where {W <: UIWindow}
+Windows.remove!(window::W, controls::UIControl...) where {W <: UIWindow}
 ```

@@ -1,6 +1,7 @@
 module Controls # Poptart
 
-import ..Props: properties
+export put!, remove!
+import ..Interfaces: properties, put!, remove!
 using ..Drawings: Drawing
 using Nuklear.LibNuklear: NK_TEXT_LEFT
 using Colors: RGBA

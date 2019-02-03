@@ -2,8 +2,8 @@ using Jive
 @useinside module test_poptart_desktop_drawings
 
 using Test
-using Poptart.Desktop # Application Windows put!
-using Poptart.Controls # Canvas
+using Poptart.Desktop # Application Windows
+using Poptart.Controls # Canvas put! remove!
 using Poptart.Drawings # Line Rect Circle Triangle stroke fill
 using Nuklear.LibNuklear: NK_WINDOW_TITLE
 using Colors: RGBA
@@ -48,5 +48,10 @@ put!(canvas,
     stroke(curve1),
     stroke(polyline1),
     stroke(polygon1), fill(polygon2))
+
+rect3 = Rect(rect=(80, 270, 50, 50), rounding=0, thickness=7.5, color=strokeColor)
+stroke1 = stroke(rect3)
+put!(canvas, stroke1)
+remove!(canvas, stroke1)
 
 end # module test_poptart_desktop_drawings

@@ -23,10 +23,20 @@ function properties(control::Canvas)
 end
 
 """
-    put!(canvas::Canvas, elements::Drawings.Drawing...)
+    Controls.put!(canvas::Canvas, elements::Drawings.Drawing...)
 """
-function Base.put!(canvas::Canvas, elements::Drawing...)
+function put!(canvas::Canvas, elements::Drawing...)
     push!(canvas.container.items, elements...)
+    nothing
+end
+
+"""
+    Controls.remove!(canvas::Canvas, elements::Drawings.Drawing...)
+"""
+function remove!(canvas::Canvas, elements::Drawing...)
+    indices = filter(x -> x !== nothing, indexin(elements, canvas.container.items))
+    deleteat!(canvas.container.items, indices)
+    nothing
 end
 
 # module Poptart.Controls

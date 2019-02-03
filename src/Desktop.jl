@@ -4,7 +4,7 @@ using ..Controls
 
 include("Desktop/types.jl")
 
-export Windows
+export Windows, put!, remove!
 include("Desktop/Windows.jl")
 
 export Application

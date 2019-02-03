@@ -9,7 +9,7 @@ using Documenter
 
 makedocs(
     build = joinpath(@__DIR__, "local" in ARGS ? "build_local" : "build"),
-    modules = [Poptart, Desktop, Controls, Drawings],
+    modules = [Poptart],
     clean = false,
     format = Documenter.HTML(),
     sitename = "Poptart.jl 🏂",

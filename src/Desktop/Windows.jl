@@ -1,9 +1,10 @@
 module Windows # Poptart.Desktop
 
+export put!, remove!
+import ...Interfaces: properties, put!, remove!
 using ..Desktop: UIApplication, UIWindow
 using ...Controls
 using ...Drawings # Line Rect Circle Arc Curve Polyline Polygon stroke fill
-import ...Props: properties
 
 using GLFW
 using Nuklear
@@ -105,10 +106,21 @@ function set_bounds(app::A, window::W, frame::NamedTuple{(:x,:y,:width,:height)}
 end
 
 """
-    put!(window::W, controls::UIControl...) where {W <: UIWindow}
+    Windows.put!(window::W, controls::UIControl...) where {W <: UIWindow}
 """
-function Base.put!(window::W, controls::UIControl...) where {W <: UIWindow}
+function put!(window::W, controls::UIControl...) where {W <: UIWindow}
     push!(window.container.items, controls...)
+    nothing
+end
+
+"""
+    Windows.remove!(window::W, controls::UIControl...) where {W <: UIWindow}
+"""
+function remove!(window::W, controls::UIControl...) where {W <: UIWindow}
+    indices = filter(x -> x !== nothing, indexin(controls, window.container.items))
+    deleteat!(window.container.items, indices)
+    remove_nuklear_item.(controls)
+    nothing
 end
 
 end # Poptart.Desktop.Windows

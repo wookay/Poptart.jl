@@ -1,6 +1,6 @@
 module Drawings # Poptart
 
-import ..Props: properties
+import ..Interfaces: properties
 
 export Line, Rect, Circle, Triangle, Arc, Curve, Polyline, Polygon
 export stroke, fill, draw
