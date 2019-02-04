@@ -2,7 +2,7 @@ module Drawings # Poptart
 
 import ..Interfaces: properties
 
-export Line, Rect, Circle, Triangle, Arc, Curve, Polyline, Polygon
+export Line, Rect, RectMultiColor, Circle, Triangle, Arc, Curve, Polyline, Polygon
 export stroke, fill, draw
 
 abstract type DrawingElement end
@@ -62,6 +62,13 @@ Line
 Rect
 
 @DrawingElement Rect (rect, rounding, thickness, color)
+
+"""
+    RectMultiColor(; rect, left, top, right, bottom)
+"""
+RectMultiColor
+
+@DrawingElement RectMultiColor (rect, left, top, right, bottom)
 
 """
     Circle(; rect, [thickness], color)

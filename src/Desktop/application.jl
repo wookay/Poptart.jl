@@ -78,7 +78,8 @@ mutable struct Application <: UIApplication
     nk_ctx::Union{Nothing,Ptr{LibNuklear.nk_context}}
     task::Union{Nothing,Task}
 
-    function Application(; title::String="App", frame::NamedTuple{(:width,:height)}=(width=400, height=300), windows=[Windows.Window(title="", frame=(x=0,y=0,frame...))], async=true)
+    function Application(; title::String="App", frame::NamedTuple{(:width,:height)}=(width=400, height=300), windows=[Windows.Window(title="Title", frame=(x=0,y=0,frame...))], async=true)
+        app_windows = isempty(windows) ? UIWindow[] : windows
         glwin = GLFW.GetCurrentContext()
         if glwin.handle !== C_NULL && haskey(env, glwin.handle)
             app = env[glwin.handle]
@@ -88,11 +89,11 @@ mutable struct Application <: UIApplication
             if app.frame != frame
                 app.frame = frame
             end
-            app.windows = windows
+            app.windows = app_windows
             env[glwin.handle] = app
             return app
         end
-        app = new(Dict(:title=>title, :frame=>frame), windows, nothing, nothing)
+        app = new(Dict(:title=>title, :frame=>frame), app_windows, nothing, nothing)
         (glwin, nk_ctx) = setup_glfw(; title=app.title, frame=app.frame)
         app.nk_ctx = nk_ctx
         if async

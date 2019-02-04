@@ -3,6 +3,7 @@
 ```@docs
 Line
 Rect
+RectMultiColor
 Circle
 Triangle
 Arc

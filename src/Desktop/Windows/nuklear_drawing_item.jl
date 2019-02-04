@@ -18,6 +18,12 @@ function nuklear_drawing_item(canvas::Ptr{LibNuklear.nk_command_buffer}, ::Drawi
     nk_fill_rect(canvas, rect, element.rounding, color)
 end
 
+function nuklear_drawing_item(canvas::Ptr{LibNuklear.nk_command_buffer}, ::Drawings.Drawing{fill}, element::RectMultiColor)
+    rect = nk_rect(element.rect...)
+    colors = nuklear_rgba.((element.left, element.top, element.right, element.bottom))
+    nk_fill_rect_multi_color(canvas, rect, colors...)
+end
+
 function nuklear_drawing_item(canvas::Ptr{LibNuklear.nk_command_buffer}, ::Drawings.Drawing{stroke}, element::Circle)
     rect = nk_rect(element.rect...)
     color = nuklear_rgba(element.color)

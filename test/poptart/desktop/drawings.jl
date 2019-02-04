@@ -4,7 +4,7 @@ using Jive
 using Test
 using Poptart.Desktop # Application Windows
 using Poptart.Controls # Canvas put! remove!
-using Poptart.Drawings # Line Rect Circle Triangle stroke fill
+using Poptart.Drawings # Line Rect RectMultiColor Circle Triangle stroke fill
 using Nuklear.LibNuklear: NK_WINDOW_TITLE
 using Colors: RGBA
 
@@ -21,6 +21,8 @@ line3 = Line(points=[(70, 80), (110, 120)], thickness=7.5, color=strokeColor)
 
 rect2 = Rect(rect=(160, 70, 50, 50), rounding=0, color=fillColor)
 rect1 = Rect(rect=(160, 150, 50, 50), rounding=0, thickness=7.5, color=strokeColor)
+
+rectmulticolor1 = RectMultiColor(rect=(160, 220, 50, 50), left=RGBA(0,0.7,0.7,1), top=RGBA(0.7,0.7,0,1), right=RGBA(0.7,0,0,1), bottom=RGBA(0,0,0.7,1))
 
 circle2 = Circle(rect=(160+70, 70, 51, 51), color=fillColor)
 circle1 = Circle(rect=(160+70, 150, 51, 51), thickness=7.5, color=strokeColor)
@@ -42,6 +44,7 @@ polygon2 = Polygon(points=[(320, 75+220), (300,116+220), (340,116+220)], color=f
 put!(canvas,
     stroke.((line1, line2, line3))...,
     stroke(rect1), fill(rect2),
+    fill(rectmulticolor1),
     stroke(circle1), fill(circle2),
     stroke(triangle1), fill(triangle2),
     stroke(arc1), fill(arc2),

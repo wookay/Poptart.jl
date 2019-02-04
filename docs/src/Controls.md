@@ -11,10 +11,14 @@ Radio
 ComboBox
 ProgressBar
 ImageView
-StaticRow
-DynamicRow
 ToolTip
 Chart
+```
+
+```@docs
+StaticRow
+DynamicRow
+Spacing
 ```
 
 ```@docs

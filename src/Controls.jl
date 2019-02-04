@@ -44,7 +44,7 @@ include("Controls/imageview.jl")
 export Canvas
 include("Controls/canvas.jl")
 
-export StaticRow, DynamicRow
+export StaticRow, DynamicRow, Spacing
 include("Controls/layout.jl")
 
 export ToolTip

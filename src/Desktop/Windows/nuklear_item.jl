@@ -24,7 +24,7 @@ function nuklear_layout(nk_ctx::Ptr{LibNuklear.nk_context}, item::UIControl)
     end
 end
 
-function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::StaticRow)
+function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::StaticRow; layout=nuklear_no_layout)
     cols = haskey(item.props, :cols) ? item.cols : length(item.widgets)
     nk_layout_row_static(nk_ctx, item.height, item.width, cols)
     block(nk_ctx, item)
@@ -34,9 +34,19 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::StaticRow
     end
 end
 
-function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::DynamicRow)
+function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::DynamicRow; layout=nuklear_no_layout)
     cols = haskey(item.props, :cols) ? item.cols : length(item.widgets)
     nk_layout_row_dynamic(nk_ctx, item.height, cols)
+    block(nk_ctx, item)
+    for widget in item.widgets
+        nuklear_item(nk_ctx, widget; layout=nuklear_no_layout) do nk_ctx, item
+        end
+    end
+end
+
+function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Spacing)
+    cols = haskey(item.props, :cols) ? item.cols : length(item.widgets)
+    nk_spacing(nk_ctx, cols)
     block(nk_ctx, item)
     for widget in item.widgets
         nuklear_item(nk_ctx, widget; layout=nuklear_no_layout) do nk_ctx, item
