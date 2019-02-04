@@ -241,6 +241,23 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::ToolTip; 
     nk_tooltip(nk_ctx, item.text)
 end
 
+function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Popup; layout=nuklear_no_layout)
+    if Bool(item.show)
+        layout(nk_ctx, item)
+        block(nk_ctx, item)
+        rect = nuklear_rect(item.frame)
+        if Bool(nk_popup_begin(nk_ctx, item.popup_type, item.title, item.flags, rect))
+            for widget in item.widgets
+                nuklear_item(nk_ctx, widget) do nk_ctx, item
+                end
+            end
+            nk_popup_end(nk_ctx)
+        else
+            item.show = false
+        end
+    end
+end
+
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Chart; layout=nuklear_layout)
     layout(nk_ctx, item)
     block(nk_ctx, item)

@@ -50,6 +50,9 @@ include("Controls/layout.jl")
 export ToolTip
 include("Controls/tooltip.jl")
 
+export Popup
+include("Controls/popup.jl")
+
 export Chart
 include("Controls/chart.jl")
 

@@ -12,6 +12,7 @@ ComboBox
 ProgressBar
 ImageView
 ToolTip
+Popup
 Chart
 ```
 
