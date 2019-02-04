@@ -1,6 +1,7 @@
 module Drawings # Poptart
 
 import ..Interfaces: properties
+using Colors: RGBA
 
 export Line, Rect, RectMultiColor, Circle, Triangle, Arc, Curve, Polyline, Polygon
 export stroke, fill, draw
@@ -50,63 +51,63 @@ macro DrawingElement(sym::Symbol, props::Expr)
 end
 
 """
-    Line(; points::Vector{<:Tuple}, thickness, color)
+    Line(; points::Vector{<:Tuple}, thickness, color::RGBA)
 """
 Line
 
 @DrawingElement Line (points, thickness, color)
 
 """
-    Rect(; rect, rounding, [thickness], color)
+    Rect(; rect, rounding, [thickness], color::RGBA)
 """
 Rect
 
 @DrawingElement Rect (rect, rounding, thickness, color)
 
 """
-    RectMultiColor(; rect, left, top, right, bottom)
+    RectMultiColor(; rect, left::RGBA, top::RGBA, right::RGBA, bottom::RGBA)
 """
 RectMultiColor
 
 @DrawingElement RectMultiColor (rect, left, top, right, bottom)
 
 """
-    Circle(; rect, [thickness], color)
+    Circle(; rect, [thickness], color::RGBA)
 """
 Circle
 
 @DrawingElement Circle (rect, thickness, color)
 
 """
-    Triangle(; points::Vector{<:Tuple}, [thickness], color)
+    Triangle(; points::Vector{<:Tuple}, [thickness], color::RGBA)
 """
 Triangle
 
 @DrawingElement Triangle (points, thickness, color)
 
 """
-    Arc(; center, radius, angle, [thickness], color)
+    Arc(; center, radius, angle, [thickness], color::RGBA)
 """
 Arc
 
 @DrawingElement Arc (center, radius, angle, thickness, color)
 
 """
-    Curve(; startPoint, control1, control2, endPoint, thickness, color)
+    Curve(; startPoint, control1, control2, endPoint, thickness, color::RGBA)
 """
 Curve
 
 @DrawingElement Curve (startPoint, control1, control2, endPoint, thickness, color)
 
 """
-    Polyline(; points::Vector{<:Tuple}, thickness, color)
+    Polyline(; points::Vector{<:Tuple}, thickness, color::RGBA)
 """
 Polyline
 
 @DrawingElement Polyline (points, thickness, color)
 
 """
-    Polygon(; points::Vector{<:Tuple}, [thickness], color)
+    Polygon(; points::Vector{<:Tuple}, [thickness], color::RGBA)
 """
 Polygon
 
