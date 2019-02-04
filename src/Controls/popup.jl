@@ -1,7 +1,7 @@
 # module Poptart.Controls
 
 """
-    Popup(widgets::Vector{<:UIControl}; show::Bool, popup_type, title::String, flags, frame)
+    Popup(widgets::Vector{<:UIControl}; show::Bool, popup_type, title::String, flags, frame::NamedTuple{(:x,:y,:width,:height)})
 """
 Popup
 

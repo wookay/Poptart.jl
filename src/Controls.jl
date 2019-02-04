@@ -38,6 +38,9 @@ include("Controls/combobox.jl")
 export ProgressBar
 include("Controls/progressbar.jl")
 
+export MenuBar, Menu, MenuItem
+include("Controls/menubar.jl")
+
 export ImageView
 include("Controls/imageview.jl")
 

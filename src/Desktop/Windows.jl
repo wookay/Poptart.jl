@@ -57,6 +57,10 @@ function nuklear_rect(frame::NamedTuple{(:x,:y,:width,:height)})
     nk_rect(values(frame)...)
 end
 
+function nuklear_vec2(frame::NamedTuple{(:width,:height)})
+    nk_vec2(values(frame)...)
+end
+
 function nuklear_rgba(c::RGBA)
     nk_rgba(round.(Int, 0xff .* (c.r,c.g,c.b,c.alpha))...)
 end

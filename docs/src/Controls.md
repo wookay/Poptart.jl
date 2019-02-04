@@ -17,6 +17,12 @@ Chart
 ```
 
 ```@docs
+MenuBar
+Menu
+MenuItem
+```
+
+```@docs
 StaticRow
 DynamicRow
 Spacing

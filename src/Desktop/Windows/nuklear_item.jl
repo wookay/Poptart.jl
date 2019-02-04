@@ -169,6 +169,41 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::ProgressB
     Bool(nk_progress(nk_ctx, item.value, item.max, item.modifyable ? NK_MODIFIABLE : NK_FIXED)) && @async Mouse.click(item)
 end
 
+function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::MenuItem; layout=nuklear_layout)
+    layout(nk_ctx, item)
+    block(nk_ctx, item)
+    Bool(nk_menu_item_label(nk_ctx, item.label, item.align)) && item.callback()
+end
+
+function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Menu; layout=nuklear_no_layout)
+    layout(nk_ctx, item)
+    block(nk_ctx, item)
+    size = nuklear_vec2(item.frame)
+    nk_layout_row_push(nk_ctx, item.row_width)
+    if Bool(nk_menu_begin_label(nk_ctx, item.text, item.align, size))
+        for menu_item in item.menu_items
+            nuklear_item(nk_ctx, menu_item) do nk_ctx, item
+            end
+        end
+        nk_menu_end(nk_ctx)
+    end
+end
+
+function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::MenuBar; layout=nuklear_no_layout)
+    layout(nk_ctx, item)
+    block(nk_ctx, item)
+    if Bool(item.show)
+        nk_menubar_begin(nk_ctx)
+        cols = length(item.menu)
+        nk_layout_row_begin(nk_ctx, NK_STATIC, item.height, cols)
+        for menu in item.menu
+            nuklear_item(nk_ctx, menu) do nk_ctx, item
+            end
+        end
+        nk_menubar_end(nk_ctx)
+    end
+end
+
 function nuklear_item_imageview(item::ImageView, p::Union{Nothing,ProgressMeter.Progress})
     #= =# p !== nothing && ProgressMeter.next!(p)
     data = transpose(Controls.Images.load(item.path))
