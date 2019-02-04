@@ -11,9 +11,9 @@ app = Application(windows=[window1], title="App", frame=(width=630, height=400))
 button = Button(title="Hello", frame=(width=80, height=30))
 put!(window1, button)
 
-using Poptart.Desktop.Themes # DarkTheme color_table set_style!
-set_style!(app, DarkTheme)
+using Poptart.Desktop.Themes # WhiteTheme DarkTheme color_table set_style!
 
+set_style!(app, DarkTheme)
 
 struct Nyan <: DarkTheme
 end
@@ -25,5 +25,7 @@ function Themes.color_table(::Nyan)
 end
 
 set_style!(app, Nyan)
+
+set_style!(app, WhiteTheme)
 
 end # module test_poptart_desktop_themes
