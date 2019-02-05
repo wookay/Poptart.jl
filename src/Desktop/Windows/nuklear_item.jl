@@ -178,7 +178,7 @@ end
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Menu; layout=nuklear_no_layout)
     layout(nk_ctx, item)
     block(nk_ctx, item)
-    size = nuklear_vec2(item.frame)
+    size = nuklear_vec2(item.size)
     nk_layout_row_push(nk_ctx, item.row_width)
     if Bool(nk_menu_begin_label(nk_ctx, item.text, item.align, size))
         for menu_item in item.menu_items
@@ -290,6 +290,31 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Popup; la
         else
             item.show = false
         end
+    end
+end
+
+function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::ContextualItem; layout=nuklear_layout)
+    layout(nk_ctx, item)
+    block(nk_ctx, item)
+    if Bool(nk_contextual_item_label(nk_ctx, item.label, item.align))
+        item.callback()
+    end
+end
+
+function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Contextual; layout=nuklear_layout)
+    layout(nk_ctx, item)
+    block(nk_ctx, item)
+    size = nuklear_vec2(item.size)
+    bounds = nk_widget_bounds(nk_ctx)
+    if haskey(item.props, :trigger_bounds)
+        bounds = nuklear_rect(item.trigger_bounds)
+    end
+    if Bool(nk_contextual_begin(nk_ctx, item.flags, size, bounds))
+        for contextual_item in item.items
+            nuklear_item(nk_ctx, contextual_item) do nk_ctx, item
+            end
+        end
+        nk_contextual_end(nk_ctx)
     end
 end
 

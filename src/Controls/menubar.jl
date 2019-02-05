@@ -1,32 +1,38 @@
 # module Poptart.Controls
 
 """
-    MenuItem(; callback::Function, label::String, align)
+    MenuItem(; callback::Function, label::String, align=NK_TEXT_LEFT)
 """
 MenuItem
 
-@UI MenuItem
+@UI MenuItem quote
+    function MenuItem(; align=NK_TEXT_LEFT, kwargs...)
+        props = Dict{Symbol, Any}(:align => align, kwargs...)
+        observers = Dict{Symbol, Vector}()
+        new(props, observers)
+    end
+end
 
 function properties(control::MenuItem)
     (properties(super(control))..., :callback, :label, :align, )
 end
 
 """
-    Menu(; text::String, align, row_width, frame::NamedTuple{(:width,:height)})
+    Menu(; text::String, align, row_width, size::NamedTuple{(:width,:height)})
 """
 Menu
 
 @UI Menu quote
     menu_items::Vector{MenuItem}
-    function Menu(menu_items::Vector{MenuItem}; kwargs...)
-        props = Dict{Symbol, Any}(kwargs...)
+    function Menu(menu_items::Vector{MenuItem}; align=NK_TEXT_LEFT, kwargs...)
+        props = Dict{Symbol, Any}(:align => align, kwargs...)
         observers = Dict{Symbol, Vector}()
         new(props, observers, menu_items)
     end
 end
 
 function properties(control::Menu)
-    (properties(super(control))..., :text, :align, :row_width, )
+    (properties(super(control))..., :text, :align, :row_width, :size, )
 end
 
 """

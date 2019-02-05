@@ -3,7 +3,7 @@ module Controls # Poptart
 export put!, remove!
 import ..Interfaces: properties, put!, remove!
 using ..Drawings: Drawing
-using Nuklear.LibNuklear: NK_TEXT_LEFT
+using Nuklear.LibNuklear: NK_TEXT_LEFT, NK_POPUP_STATIC, NK_WINDOW_CLOSABLE
 using Colors: RGBA
 
 abstract type UIControl end
@@ -38,14 +38,11 @@ include("Controls/combobox.jl")
 export ProgressBar
 include("Controls/progressbar.jl")
 
-export MenuBar, Menu, MenuItem
-include("Controls/menubar.jl")
+export Chart
+include("Controls/chart.jl")
 
 export ImageView
 include("Controls/imageview.jl")
-
-export Canvas
-include("Controls/canvas.jl")
 
 export StaticRow, DynamicRow, Spacing
 include("Controls/layout.jl")
@@ -56,7 +53,13 @@ include("Controls/tooltip.jl")
 export Popup
 include("Controls/popup.jl")
 
-export Chart
-include("Controls/chart.jl")
+export MenuBar, Menu, MenuItem
+include("Controls/menubar.jl")
+
+export Contextual, ContextualItem
+include("Controls/contextual.jl")
+
+export Canvas
+include("Controls/canvas.jl")
 
 end # module Poptart.Controls

@@ -10,16 +10,8 @@ CheckBox
 Radio
 ComboBox
 ProgressBar
-ImageView
-ToolTip
-Popup
 Chart
-```
-
-```@docs
-MenuBar
-Menu
-MenuItem
+ImageView
 ```
 
 ```@docs
@@ -29,12 +21,22 @@ Spacing
 ```
 
 ```@docs
-didClick(block, control::C) where {C <: UIControl}
-onHover(block, control::C) where {C <: UIControl}
+ToolTip
+Popup
+MenuBar
+Menu
+MenuItem
+Contextual
+ContextualItem
 ```
 
 ```@docs
 Canvas
 Controls.put!(canvas::Canvas, elements::Drawings.Drawing...)
 Controls.remove!(canvas::Canvas, elements::Drawings.Drawing...)
+```
+
+```@docs
+didClick(block, control::C) where {C <: UIControl}
+onHover(block, control::C) where {C <: UIControl}
 ```
