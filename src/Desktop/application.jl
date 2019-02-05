@@ -32,6 +32,16 @@ function setup_glfw(; title::String, frame::NamedTuple{(:width,:height)})
     (glwin, nk_ctx)
 end
 
+function error_handling(err)::Bool
+    stackframes = stacktrace(catch_backtrace())
+    io = stderr
+    printstyled(io, "ERROR: ", sprint(showerror, err), "\n", color=Base.error_color())
+    for stackframe in stackframes
+        println(io, "    ", stackframe)
+    end
+    false
+end
+
 function runloop(glwin::GLFW.Window, app::A) where {A <: UIApplication}
     while !GLFW.WindowShouldClose(glwin)
         yield()
@@ -39,7 +49,12 @@ function runloop(glwin::GLFW.Window, app::A) where {A <: UIApplication}
         GLFW.PollEvents()
         nk_glfw3_new_frame()
 
-        Windows.setup_window.(app.nk_ctx, app.windows)
+        try
+            Windows.setup_window.(app.nk_ctx, app.windows)
+        catch err
+            error_handling(err) && break
+            nk_end(app.nk_ctx)
+        end
 
         # draw
         bg = nk_colorf(0.10, 0.18, 0.24, 1.0)
@@ -70,7 +85,7 @@ end
 
 
 """
-    Application(; title::String="App", frame::NamedTuple{(:width,:height)}=(width=400, height=300), windows=[Windows.Window(title="", frame=(x=0,y=0,frame...))], async=true)
+    Application(; title::String="App", frame::NamedTuple{(:width,:height)}=(width=400, height=300), windows=[Windows.Window(title="", frame=(x=0,y=0,frame...))])
 """
 mutable struct Application <: UIApplication
     props::Dict{Symbol,Any}
@@ -78,7 +93,7 @@ mutable struct Application <: UIApplication
     nk_ctx::Union{Nothing,Ptr{LibNuklear.nk_context}}
     task::Union{Nothing,Task}
 
-    function Application(; title::String="App", frame::NamedTuple{(:width,:height)}=(width=400, height=300), windows=[Windows.Window(title="Title", frame=(x=0,y=0,frame...))], async=true)
+    function Application(; title::String="App", frame::NamedTuple{(:width,:height)}=(width=400, height=300), windows=[Windows.Window(title="Title", frame=(x=0,y=0,frame...))])
         app_windows = isempty(windows) ? UIWindow[] : windows
         glwin = GLFW.GetCurrentContext()
         if glwin.handle !== C_NULL && haskey(env, glwin.handle)
@@ -96,11 +111,7 @@ mutable struct Application <: UIApplication
         app = new(Dict(:title=>title, :frame=>frame), app_windows, nothing, nothing)
         (glwin, nk_ctx) = setup_glfw(; title=app.title, frame=app.frame)
         app.nk_ctx = nk_ctx
-        if async
-            task = @async runloop(glwin, app)
-        else
-            task = nothing; runloop(glwin, app)
-        end
+        task = @async runloop(glwin, app)
         app.task = task
         env[glwin.handle] = app
         app
