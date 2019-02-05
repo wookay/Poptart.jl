@@ -18,4 +18,22 @@ function properties(control::Chart)
     (properties(super(control))..., :chart_type, :min, :max, :color, :highlight, )
 end
 
+"""
+    MixedChart(charts::Vector{Chart}; [frame])
+"""
+MixedChart
+
+@UI MixedChart quote
+    charts::Vector{Chart}
+    function MixedChart(charts::Vector{Chart}; kwargs...)
+        props = Dict{Symbol, Any}(pairs(kwargs)...)
+        observers = Dict{Symbol, Vector}()
+        new(props, observers, charts)
+    end
+end
+
+function properties(control::MixedChart)
+    (properties(super(control))..., )
+end
+
 # module Poptart.Controls

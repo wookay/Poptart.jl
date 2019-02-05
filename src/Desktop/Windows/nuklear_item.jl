@@ -44,13 +44,31 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::DynamicRo
     end
 end
 
-function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Spacing)
+function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Spacing; layout=nuklear_no_layout)
     cols = haskey(item.props, :cols) ? item.cols : length(item.widgets)
     nk_spacing(nk_ctx, cols)
     block(nk_ctx, item)
     for widget in item.widgets
         nuklear_item(nk_ctx, widget; layout=nuklear_no_layout) do nk_ctx, item
         end
+    end
+end
+
+function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Group; layout=nuklear_no_layout)
+    cols = haskey(item.props, :cols) ? item.cols : length(item.widgets)
+    nk_layout_row_static(nk_ctx, item.row_height, item.row_width, cols)
+    block(nk_ctx, item)
+    if isempty(item.title)
+        group_began = nk_group_begin(nk_ctx, item.name, item.flags)
+    else
+        group_began = nk_group_begin_titled(nk_ctx, item.name, item.title, item.flags)
+    end
+    if Bool(group_began)
+        for widget in item.widgets
+            nuklear_item(nk_ctx, widget) do nk_ctx, item
+            end
+        end
+        nk_group_end(nk_ctx)
     end
 end
 
@@ -318,19 +336,55 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Contextua
     end
 end
 
-function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Chart; layout=nuklear_layout)
-    layout(nk_ctx, item)
-    block(nk_ctx, item)
-    if item.color !== nothing && item.highlight !== nothing
-        color = nuklear_rgba(item.color)
-        highlight = nuklear_rgba(item.highlight)
-        chart_begin = nk_chart_begin_colored(nk_ctx, item.chart_type, color, highlight, length(item.chart_items), item.min, item.max)
+function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, chart::Chart; layout=nuklear_layout)
+    layout(nk_ctx, chart)
+    block(nk_ctx, chart)
+    if chart.color !== nothing && chart.highlight !== nothing
+        color = nuklear_rgba(chart.color)
+        highlight = nuklear_rgba(chart.highlight)
+        chart_begin = nk_chart_begin_colored(nk_ctx, chart.chart_type, color, highlight, length(chart.chart_items), chart.min, chart.max)
     else
-        chart_begin = nk_chart_begin(nk_ctx, item.chart_type, length(item.chart_items), item.min, item.max)
+        chart_begin = nk_chart_begin(nk_ctx, chart.chart_type, length(chart.chart_items), chart.min, chart.max)
     end
     if Bool(chart_begin)
-        nk_chart_push.(nk_ctx, item.chart_items)
+        nk_chart_push.(nk_ctx, chart.chart_items)
         nk_chart_end(nk_ctx)
+    end
+end
+
+function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::MixedChart; layout=nuklear_layout)
+    if isempty(item.charts)
+    elseif length(item.charts) == 1
+        nuklear_item(block, nk_ctx, item, layout=layout)
+    else
+        layout(nk_ctx, item)
+        block(nk_ctx, item)
+        chart = first(item.charts)
+        if chart.color !== nothing && chart.highlight !== nothing
+            color = nuklear_rgba(chart.color)
+            highlight = nuklear_rgba(chart.highlight)
+            chart_begin = nk_chart_begin_colored(nk_ctx, chart.chart_type, color, highlight, length(chart.chart_items), chart.min, chart.max)
+        else
+            chart_begin = nk_chart_begin(nk_ctx, chart.chart_type, length(chart.chart_items), chart.min, chart.max)
+        end
+        if Bool(chart_begin)
+            for chart in item.charts[2:end]
+                if chart.color !== nothing && chart.highlight !== nothing
+                    color = nuklear_rgba(chart.color)
+                    highlight = nuklear_rgba(chart.highlight)
+                    nk_chart_add_slot_colored(nk_ctx, chart.chart_type, color, highlight, length(chart.chart_items), chart.min, chart.max)
+                else
+                    nk_chart_add_slot(nk_ctx, chart.chart_type, length(chart.chart_items), chart.min, chart.max)
+                end
+            end
+
+            for idx in 1:length(chart.chart_items)
+                for (chart_idx, chart) in enumerate(item.charts)
+                    nk_chart_push_slot(nk_ctx, chart.chart_items[idx], chart_idx-1)
+                end
+            end
+            nk_chart_end(nk_ctx)
+        end
     end
 end
 

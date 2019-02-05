@@ -18,6 +18,7 @@ Radio
 ComboBox
 ProgressBar
 Chart
+MixedChart
 ImageView
 ```
 
@@ -37,6 +38,7 @@ ContextualItem
 StaticRow
 DynamicRow
 Spacing
+Group
 ```
 
 ### canvas

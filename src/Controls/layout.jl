@@ -58,4 +58,22 @@ function properties(control::Spacing)
     (properties(super(control))..., :cols, )
 end
 
+"""
+    Group(widgets::Vector{<:UIControl}=UIControl[]; name::String, title::String="", flags=NK_WINDOW_BORDER, row_height, row_width, [cols])
+"""
+Group
+
+@UI Group quote
+    widgets::Vector{<:UIControl}
+    function Group(widgets::Vector{<:UIControl}=UIControl[]; name::String, title::String="", flags=NK_WINDOW_BORDER, kwargs...)
+        props = Dict{Symbol, Any}(:name => name, :title => title, :flags => flags, kwargs...)
+        observers = Dict{Symbol, Vector}()
+        new(props, observers, widgets)
+    end
+end
+
+function properties(control::Group)
+    (properties(super(control))..., :name, :title, :flags, :row_height, :row_width, :cols, )
+end
+
 # module Poptart.Controls
