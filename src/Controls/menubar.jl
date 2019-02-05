@@ -18,7 +18,7 @@ function properties(control::MenuItem)
 end
 
 """
-    Menu(; text::String, align, row_width, size::NamedTuple{(:width,:height)})
+    Menu(menu_items::Vector{MenuItem}; text::String, align, row_width, size::NamedTuple{(:width,:height)})
 """
 Menu
 
@@ -36,7 +36,7 @@ function properties(control::Menu)
 end
 
 """
-    MenuBar(menu::Vector{<:UIControl}; show::Bool, row_height)
+    MenuBar(menu::Vector{Menu}; show::Bool, row_height)
 """
 MenuBar
 

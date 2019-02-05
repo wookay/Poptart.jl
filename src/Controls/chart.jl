@@ -1,7 +1,7 @@
 # module Poptart.Controls
 
 """
-    Chart(chart_items::Vector; chart_type, min, max, [color::Union{Nothing,RGBA}=nothing, highlight::Union{Nothing,RGBA}=nothing], kwargs...)
+    Chart(chart_items::Vector; chart_type, min, max, [color::Union{Nothing,RGBA}=nothing, highlight::Union{Nothing,RGBA}=nothing], [frame])
 """
 Chart
 

@@ -1,5 +1,12 @@
 ### Poptart.Controls
 
+### events
+```@docs
+didClick(block, control::C) where {C <: UIControl}
+onHover(block, control::C) where {C <: UIControl}
+```
+
+### widgets
 ```@docs
 Button
 Slider
@@ -14,12 +21,7 @@ Chart
 ImageView
 ```
 
-```@docs
-StaticRow
-DynamicRow
-Spacing
-```
-
+### popups
 ```@docs
 ToolTip
 Popup
@@ -30,13 +32,16 @@ Contextual
 ContextualItem
 ```
 
+### layouts
+```@docs
+StaticRow
+DynamicRow
+Spacing
+```
+
+### canvas
 ```@docs
 Canvas
 Controls.put!(canvas::Canvas, elements::Drawings.Drawing...)
 Controls.remove!(canvas::Canvas, elements::Drawings.Drawing...)
-```
-
-```@docs
-didClick(block, control::C) where {C <: UIControl}
-onHover(block, control::C) where {C <: UIControl}
 ```

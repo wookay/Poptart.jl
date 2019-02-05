@@ -24,7 +24,7 @@ Contextual
 
 @UI Contextual quote
     items::Vector{ContextualItem}
-    function Contextual(items::Vector{ContextualItem}=ContextualItem[]; flags=0, kwargs...)
+    function Contextual(items::Vector{ContextualItem}; flags=0, kwargs...)
         props = Dict{Symbol, Any}(:flags => flags, kwargs...)
         observers = Dict{Symbol, Vector}()
         new(props, observers, items)
