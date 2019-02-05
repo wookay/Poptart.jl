@@ -2,6 +2,8 @@
 
 ```@docs
 Application
+Desktop.put!(app::A, windows::UIWindow...) where {A <: UIApplication}
+Desktop.remove!(app::A, windows::UIWindow...) where {A <: UIApplication}
 ```
 
 ### Poptart.Desktop.Windows

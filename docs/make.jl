@@ -1,6 +1,6 @@
 using Poptart
 using Poptart.Desktop
-using Poptart.Desktop.Windows: UIWindow
+using Poptart.Desktop.Windows: UIWindow, UIApplication
 using Poptart.Controls
 using Poptart.Drawings
 using Poptart.Drawings: DrawingElement

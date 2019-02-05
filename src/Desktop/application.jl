@@ -1,11 +1,11 @@
 # module Poptart.Desktop
 
+import ..Interfaces: put!, remove!
 using GLFW
 using Nuklear
 using Nuklear.LibNuklear
 using Nuklear.GLFWBackend
 using ModernGL # glViewport glClear glClearColor
-
 
 const MAX_VERTEX_BUFFER = 512 * 1024
 const MAX_ELEMENT_BUFFER = 128 * 1024
@@ -132,6 +132,23 @@ function Base.setproperty!(app::Application, prop::Symbol, val)
     else
         throw(KeyError(prop))
     end
+end
+
+"""
+    Desktop.put!(app::A, windows::UIWindow...) where {A <: UIApplication}
+"""
+function put!(app::A, windows::UIWindow...) where {A <: UIApplication}
+    push!(app.windows, windows...)
+    nothing
+end
+
+"""
+    Desktop.remove!(app::A, windows::UIWindow...) where {A <: UIApplication}
+"""
+function remove!(app::A, windows::UIWindow...) where {A <: UIApplication}
+    indices = filter(x -> x !== nothing, indexin(windows, app.windows))
+    deleteat!(app.windows, indices)
+    nothing
 end
 
 # module Poptart.Desktop
