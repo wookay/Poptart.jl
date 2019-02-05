@@ -20,7 +20,7 @@ menu = [Menu([MenuItem(callback=() -> nothing, label="Hide", align=NK_TEXT_LEFT)
               MenuItem(callback=() -> (popup1.show = true), label="About", align=NK_TEXT_LEFT)],
              text="ADVANCED", align=NK_TEXT_LEFT, row_width=100, frame=(width=120,height=200)),
         ]
-menubar1 = MenuBar(menu; show=true, height=25)
+menubar1 = MenuBar(menu; show=true, row_height=25)
 put!(window2, menubar1)
 
 end # module test_poptart_desktop_windows

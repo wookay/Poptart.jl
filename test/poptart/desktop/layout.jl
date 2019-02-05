@@ -13,18 +13,18 @@ Application(windows=[window1, window2, window3], title="App", frame=(width=630, 
 button = Button(title="Hello")
 put!(window1, button)
 
-static_row1 = StaticRow([button], height=50, width=100)
+static_row1 = StaticRow([button], row_height=50, row_width=100)
 put!(window2, static_row1)
 onHover(static_row1) do event
     Windows.show(event.context, ToolTip(text="static_row1"))
 end
 
-put!(window3, DynamicRow([button], height=50))
+put!(window3, DynamicRow([button], row_height=50))
 
 radio1 = Radio(options=(easy=0, normal=1, hard=2, Symbol("very hard")=>3), value=1)
 put!(window1, radio1)
-put!(window2, StaticRow([radio1], height=25, width=80, cols=2))
-put!(window3, DynamicRow([radio1], height=25, cols=2))
+put!(window2, StaticRow([radio1], row_height=25, row_width=80, cols=2))
+put!(window3, DynamicRow([radio1], row_height=25, cols=2))
 
 using Nuklear.LibNuklear: NK_TEXT_ALIGN_BOTTOM, NK_TEXT_ALIGN_CENTERED, NK_TEXT_RIGHT
 using Colors: RGBA

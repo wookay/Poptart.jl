@@ -1,7 +1,7 @@
 # module Poptart.Controls
 
 """
-    StaticRow(widgets::Vector{<:UIControl}; height, width, [cols])
+    StaticRow(widgets::Vector{<:UIControl}; row_height, row_width, [cols])
 """
 StaticRow
 
@@ -17,11 +17,11 @@ StaticRow
 end
 
 function properties(control::StaticRow)
-    (properties(super(control))..., :height, :width, :cols, )
+    (properties(super(control))..., :row_height, :row_width, :cols, )
 end
 
 """
-    DynamicRow(widgets::Vector{<:UIControl}; height, [cols])
+    DynamicRow(widgets::Vector{<:UIControl}; row_height, [cols])
 """
 DynamicRow
 
@@ -35,7 +35,7 @@ DynamicRow
 end
 
 function properties(control::DynamicRow)
-    (properties(super(control))..., :height, :cols, )
+    (properties(super(control))..., :row_height, :cols, )
 end
 
 """

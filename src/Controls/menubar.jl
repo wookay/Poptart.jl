@@ -30,7 +30,7 @@ function properties(control::Menu)
 end
 
 """
-    MenuBar(menu::Vector{<:UIControl}; show::Bool, height)
+    MenuBar(menu::Vector{<:UIControl}; show::Bool, row_height)
 """
 MenuBar
 
@@ -44,7 +44,7 @@ MenuBar
 end
 
 function properties(control::MenuBar)
-    (properties(super(control))..., :show, :height, )
+    (properties(super(control))..., :show, :row_height, )
 end
 
 # module Poptart.Controls

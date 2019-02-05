@@ -26,7 +26,7 @@ end
 
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::StaticRow; layout=nuklear_no_layout)
     cols = haskey(item.props, :cols) ? item.cols : length(item.widgets)
-    nk_layout_row_static(nk_ctx, item.height, item.width, cols)
+    nk_layout_row_static(nk_ctx, item.row_height, item.row_width, cols)
     block(nk_ctx, item)
     for widget in item.widgets
         nuklear_item(nk_ctx, widget; layout=nuklear_no_layout) do nk_ctx, item
@@ -36,7 +36,7 @@ end
 
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::DynamicRow; layout=nuklear_no_layout)
     cols = haskey(item.props, :cols) ? item.cols : length(item.widgets)
-    nk_layout_row_dynamic(nk_ctx, item.height, cols)
+    nk_layout_row_dynamic(nk_ctx, item.row_height, cols)
     block(nk_ctx, item)
     for widget in item.widgets
         nuklear_item(nk_ctx, widget; layout=nuklear_no_layout) do nk_ctx, item
@@ -195,7 +195,7 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::MenuBar; 
     if Bool(item.show)
         nk_menubar_begin(nk_ctx)
         cols = length(item.menu)
-        nk_layout_row_begin(nk_ctx, NK_STATIC, item.height, cols)
+        nk_layout_row_begin(nk_ctx, NK_STATIC, item.row_height, cols)
         for menu in item.menu
             nuklear_item(nk_ctx, menu) do nk_ctx, item
             end
