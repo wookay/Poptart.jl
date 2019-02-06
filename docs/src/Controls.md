@@ -22,7 +22,7 @@ MixedChart
 ImageView
 ```
 
-### popups
+### menus
 ```@docs
 ToolTip
 Popup
@@ -31,6 +31,7 @@ Menu
 MenuItem
 Contextual
 ContextualItem
+TreeItem
 ```
 
 ### layouts
@@ -39,7 +40,6 @@ StaticRow
 DynamicRow
 Spacing
 Group
-Tree
 ```
 
 ### canvas

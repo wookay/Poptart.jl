@@ -76,22 +76,4 @@ function properties(control::Group)
     (properties(super(control))..., :name, :title, :flags, :row_height, :row_width, :cols, )
 end
 
-"""
-    Tree(widgets::Vector{<:UIControl} = UIControl[]; tree_type=NK_TREE_TAB, title;;String, state=NK_MINIMIZED)
-"""
-Tree
-
-@UI Tree quote
-    widgets::Vector{<:UIControl}
-    function Tree(widgets::Vector{<:UIControl} = UIControl[]; tree_type=NK_TREE_TAB, title::String, state=NK_MINIMIZED, kwargs...)
-        props = Dict{Symbol, Any}(:tree_type => tree_type, :title => title, :state => state, kwargs...)
-        observers = Dict{Symbol, Vector}()
-        new(props, observers, widgets)
-    end
-end
-
-function properties(control::Tree)
-    (properties(super(control))..., :tree_type, :title, :state, )
-end
-
 # module Poptart.Controls

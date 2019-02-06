@@ -3,7 +3,7 @@ using Jive
 
 using Test
 using Poptart.Desktop # Application Windows put!
-using Poptart.Controls # Button Radio StaticRow DynamicRow Tree Group onHover
+using Poptart.Controls # Button Radio StaticRow DynamicRow TreeItem Group onHover
 
 window1 = Windows.Window(title="A", frame=(x=10,y=20,width=200,height=300))
 window2 = Windows.Window(title="B", frame=(x=215,y=20,width=200,height=350))
@@ -24,7 +24,7 @@ put!(window3, DynamicRow([button], row_height=50))
 radio1 = Radio(options=(easy=0, normal=1, hard=2, Symbol("very hard")=>3), value=1)
 put!(window1, radio1)
 put!(window2, StaticRow([radio1], row_height=25, row_width=80, cols=2))
-put!(window2, Tree([radio1]; title="Tree"))
+put!(window2, TreeItem([radio1]; title="Tree"))
 put!(window3, DynamicRow([radio1], row_height=25, cols=2),
               Group([radio1], name="Group", row_height=120, row_width=120))
 

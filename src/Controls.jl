@@ -44,7 +44,7 @@ include("Controls/chart.jl")
 export ImageView
 include("Controls/imageview.jl")
 
-export StaticRow, DynamicRow, Spacing, Group, Tree
+export StaticRow, DynamicRow, Spacing, Group
 include("Controls/layout.jl")
 
 export ToolTip
@@ -58,6 +58,9 @@ include("Controls/menubar.jl")
 
 export Contextual, ContextualItem
 include("Controls/contextual.jl")
+
+export TreeItem
+include("Controls/tree.jl")
 
 export Canvas
 include("Controls/canvas.jl")
