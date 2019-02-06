@@ -72,6 +72,18 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Group; la
     end
 end
 
+function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Tree; layout=nuklear_layout)
+    layout(nk_ctx, item)
+    block(nk_ctx, item)
+    if Bool(nk_tree_push(nk_ctx, item.tree_type, item.title, item.state))
+        for widget in item.widgets
+            nuklear_item(nk_ctx, widget) do nk_ctx, item
+            end
+        end
+        nk_tree_pop(nk_ctx)
+    end
+end
+
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Button; layout=nuklear_layout)
     layout(nk_ctx, item)
     block(nk_ctx, item)
