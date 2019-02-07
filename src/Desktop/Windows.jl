@@ -87,7 +87,7 @@ function setup_window(nk_ctx::Ptr{LibNuklear.nk_context}, window::W) where {W <:
             nuklear_item(nk_ctx, item) do nk_ctx, item
                 if haskey(item.observers, :ongoing)
                     for ongoing in item.observers[:ongoing]
-                        Bool(nk_widget_is_hovered(nk_ctx)) && ongoing((action=Mouse.hover, context=nk_ctx))
+                        Bool(nk_widget_is_hovered(nk_ctx)) && Base.invokelatest(ongoing, (action=Mouse.hover, context=nk_ctx))
                     end
                 end
             end
