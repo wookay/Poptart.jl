@@ -7,6 +7,8 @@
 
 GUI programming in Julia based on [Nuklear.jl](https://github.com/Gnimuc/Nuklear.jl)
 
+ * ☕️   You can [make a donation](https://wookay.github.io/donate/) to support this project.
+
 
 ### Poptart.Controls
 
