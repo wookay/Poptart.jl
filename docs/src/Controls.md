@@ -1,12 +1,14 @@
-### Poptart.Controls
+# Poptart.Controls
 
-### events
+Controls
+
+# events
 ```@docs
 didClick(block, control::C) where {C <: UIControl}
 onHover(block, control::C) where {C <: UIControl}
 ```
 
-### widgets
+# widgets
 ```@docs
 Button
 Slider
@@ -22,7 +24,7 @@ MixedChart
 ImageView
 ```
 
-### menus
+# menus
 ```@docs
 ToolTip
 Popup
@@ -34,7 +36,7 @@ ContextualItem
 TreeItem
 ```
 
-### layouts
+# layouts
 ```@docs
 StaticRow
 DynamicRow
@@ -42,10 +44,18 @@ Spacing
 Group
 ```
 
-### canvas
+# canvas
 ```@docs
 Canvas
 Controls.put!(canvas::Canvas, elements::Drawings.Drawing...)
 Controls.remove!(canvas::Canvas, elements::Drawings.Drawing...)
 Base.empty!(canvas::Canvas)
+```
+
+# Mouse
+```@docs
+Mouse.leftClick
+Mouse.rightClick
+Mouse.doubleClick
+Mouse.hover
 ```

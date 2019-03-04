@@ -1,6 +1,8 @@
-### Poptart.Drawings
+# Poptart.Drawings
 
-### shapes
+Drawings
+
+# shapes
 ```@docs
 Line
 Rect
@@ -13,8 +15,9 @@ Polyline
 Polygon
 ```
 
-### paints
+# paints
 ```@docs
 Drawings.stroke(element::E) where {E <: DrawingElement}
 Drawings.fill(element::E) where {E <: DrawingElement}
 ```
+`stroke ∘ fill`

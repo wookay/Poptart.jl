@@ -75,7 +75,7 @@ end
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Button; layout=nuklear_layout)
     layout(nk_ctx, item)
     block(nk_ctx, item)
-    Bool(nk_button_label(nk_ctx, item.title)) && @async Mouse.click(item)
+    Bool(nk_button_label(nk_ctx, item.title)) && @async Mouse.leftClick(item)
 end
 
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Label; layout=nuklear_layout)
@@ -91,7 +91,7 @@ end
 
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::SelectableLabel; layout=nuklear_layout)
     layout(nk_ctx, item)
-    Bool(nk_selectable_label(nk_ctx, item.text, NK_TEXT_LEFT, item.selected)) && @async Mouse.click(item)
+    Bool(nk_selectable_label(nk_ctx, item.text, NK_TEXT_LEFT, item.selected)) && @async Mouse.leftClick(item)
 end
 
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Slider; layout=nuklear_layout)
@@ -109,7 +109,7 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Slider; l
     end
     min = minimum(item.range)
     max = maximum(item.range)
-    Bool(f(nk_ctx, min, item.value, max, step)) && @async Mouse.click(item)
+    Bool(f(nk_ctx, min, item.value, max, step)) && @async Mouse.leftClick(item)
 end
 
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Property; layout=nuklear_layout)
@@ -132,13 +132,13 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Property;
     inc_per_pixel = 1
     old_value = item.value[]
     f(nk_ctx, item.name, min, item.value, max, step, inc_per_pixel)
-    old_value != item.value[] && @async Mouse.click(item)
+    old_value != item.value[] && @async Mouse.leftClick(item)
 end
 
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::CheckBox; layout=nuklear_layout)
     layout(nk_ctx, item)
     block(nk_ctx, item)
-    Bool(nk_checkbox_label(nk_ctx, item.text, item.active)) && @async Mouse.click(item)
+    Bool(nk_checkbox_label(nk_ctx, item.text, item.active)) && @async Mouse.leftClick(item)
 end
 
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Radio; layout=nuklear_layout)
@@ -148,7 +148,7 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Radio; la
         if Bool(nk_option_label(nk_ctx, String(name), item.value == value))
             if item.value != value
                 item.value = value
-                @async Mouse.click(item)
+                @async Mouse.leftClick(item)
             end
         end
     end
@@ -173,7 +173,7 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::ComboBox;
             if Bool(nk_combo_item_label(nk_ctx, String(name), NK_TEXT_LEFT))
                 if item.value != value
                     item.value = value
-                    @async Mouse.click(item)
+                    @async Mouse.leftClick(item)
                 end
             end
         end
@@ -184,7 +184,7 @@ end
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::ProgressBar; layout=nuklear_layout)
     layout(nk_ctx, item)
     block(nk_ctx, item)
-    Bool(nk_progress(nk_ctx, item.value, item.max, item.modifyable ? NK_MODIFIABLE : NK_FIXED)) && @async Mouse.click(item)
+    Bool(nk_progress(nk_ctx, item.value, item.max, item.modifyable ? NK_MODIFIABLE : NK_FIXED)) && @async Mouse.leftClick(item)
 end
 
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::MenuItem; layout=nuklear_layout)
@@ -261,31 +261,17 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::ImageView
     nk_draw_image(canvas, region, item.props[:imageref], nk_rgba(255, 255, 255, 255))
 end
 
-function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Canvas; layout=nuklear_layout)
-    layout(nk_ctx, item)
+function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Canvas; layout=nuklear_no_layout)
+    region = nk_window_get_content_region(nk_ctx)
+    nk_layout_row_dynamic(nk_ctx, region.h, 1) # layout
+    Bool(nk_widget_is_mouse_clicked(nk_ctx, NK_BUTTON_LEFT)) && @async Mouse.leftClick(item)
+    Bool(nk_widget_is_mouse_clicked(nk_ctx, NK_BUTTON_RIGHT)) && @async Mouse.rightClick(item)
     block(nk_ctx, item)
-    canvas = nk_window_get_canvas(nk_ctx)
-    #=
-    https://github.com/vurtun/nuklear/blob/master/example/canvas.c#L358
-
-    /* save style properties which will be overwritten */
-    canvas->panel_padding = ctx->style.window.padding;
-    canvas->item_spacing = ctx->style.window.spacing;
-    canvas->window_background = ctx->style.window.fixed_background;
-
-    /* use the complete window space and set background */
-    ctx->style.window.spacing = nk_vec2(0,0);
-    ctx->style.window.padding = nk_vec2(0,0);
-    ctx->style.window.fixed_background = nk_style_item_color(background_color);
-    =#
+    nk_widget(Ref(region), nk_ctx)
+    painter = nk_window_get_canvas(nk_ctx)
     for drawing in item.container.items
-        nuklear_drawing_item(canvas, drawing, drawing.element)
+        nuklear_drawing_item(painter, drawing, drawing.element)
     end
-    #=
-    ctx->style.window.spacing = canvas->panel_padding;
-    ctx->style.window.padding = canvas->item_spacing;
-    ctx->style.window.fixed_background = canvas->window_background;
-    =#
 end
 
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::ToolTip; layout=nuklear_no_layout)

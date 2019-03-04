@@ -49,12 +49,15 @@ slider.value = 2
 
 empty!(observered)
 
-Mouse.click(button)
+Mouse.leftClick(button)
+Mouse.rightClick(button)
 Mouse.doubleClick(button)
 
-@test observered == [(willSend, (action = Mouse.click,)),
-                     (didSend, (action = Mouse.click,)),
-                     (didClick, (action = Mouse.click,)),
+@test observered == [(willSend, (action = Mouse.leftClick,)),
+                     (didSend, (action = Mouse.leftClick,)),
+                     (didClick, (action = Mouse.leftClick,)),
+                     (willSend, (action = Mouse.rightClick,)),
+                     (didSend, (action = Mouse.rightClick,)),
                      (willSend, (action = Mouse.doubleClick,)),
                      (didSend, (action = Mouse.doubleClick,))]
 
