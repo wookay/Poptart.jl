@@ -152,7 +152,7 @@ function remove!(app::A, windows::UIWindow...) where {A <: UIApplication}
 end
 
 """
-    Base.empty!(app::A) where {A <: UIApplication}
+    empty!(app::A) where {A <: UIApplication}
 """
 function Base.empty!(app::A) where {A <: UIApplication}
     empty!(app.windows)

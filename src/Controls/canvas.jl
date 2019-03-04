@@ -40,7 +40,7 @@ function remove!(canvas::Canvas, elements::Drawing...)
 end
 
 """
-    Base.empty!(canvas::Canvas)
+    empty!(canvas::Canvas)
 """
 function Base.empty!(canvas::Canvas)
     empty!(canvas.container.items)

@@ -128,7 +128,7 @@ function remove!(window::W, controls::UIControl...) where {W <: UIWindow}
 end
 
 """
-    Base.empty!(window::W) where {W <: UIWindow}
+    empty!(window::W) where {W <: UIWindow}
 """
 function Base.empty!(window::W) where {W <: UIWindow}
     remove_nuklear_item.(window.container.items)
