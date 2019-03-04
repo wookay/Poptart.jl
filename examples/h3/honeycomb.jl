@@ -17,10 +17,10 @@ using Nuklear.LibNuklear: NK_WINDOW_TITLE
 using Colors: RGBA
 
 canvas = Canvas()
-window1 = Windows.Window([canvas], title="A", frame=(x=0, y=0, width=500, height=400), flags=NK_WINDOW_TITLE)
-Application(windows=[window1], title="App", frame=(width=500, height=400))
-
+window1 = Windows.Window([canvas], title="H3", frame=(x=0, y=0, width=500, height=400), flags=NK_WINDOW_TITLE)
+app = Application(windows=[window1], title="App", frame=(width=500, height=400))
 strokeColor = RGBA(0,0.7,0,1)
+
 for boundary in h3ToGeoBoundary.(rings)
     points = [(geo.lon, geo.lat) .* 300 .+ 150 for geo in boundary]
     polygon = Polygon(points=points, thickness=7.5, color=strokeColor)

@@ -83,6 +83,11 @@ function nuklear_drawing_item(canvas::Ptr{LibNuklear.nk_command_buffer}, ::Drawi
     nk_fill_polygon(canvas, points, length(element.points), color)
 end
 
+function nuklear_drawing_item(canvas::Ptr{LibNuklear.nk_command_buffer}, ::Drawings.Drawing{Drawings.stroke_and_fill}, element)
+    nuklear_drawing_item(canvas, Drawings.Drawing{stroke}(element), element)
+    nuklear_drawing_item(canvas, Drawings.Drawing{fill}(element), element)
+end
+
 function nuklear_drawing_item(canvas::Ptr{LibNuklear.nk_command_buffer}, drawing::Drawings.Drawing, ::Any)
     @info "not implemented" drawing
 end

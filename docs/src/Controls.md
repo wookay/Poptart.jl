@@ -47,4 +47,5 @@ Group
 Canvas
 Controls.put!(canvas::Canvas, elements::Drawings.Drawing...)
 Controls.remove!(canvas::Canvas, elements::Drawings.Drawing...)
+Base.empty!(canvas::Canvas)
 ```

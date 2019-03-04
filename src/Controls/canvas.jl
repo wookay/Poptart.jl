@@ -39,4 +39,11 @@ function remove!(canvas::Canvas, elements::Drawing...)
     nothing
 end
 
+"""
+    Base.empty!(canvas::Canvas)
+"""
+function Base.empty!(canvas::Canvas)
+    empty!(canvas.container.items)
+end
+
 # module Poptart.Controls
