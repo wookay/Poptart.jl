@@ -19,8 +19,8 @@ didClick(button) do event
     push!(observered, (didClick, button, event))
     @info :didClick event
 end
-Mouse.click(button)
-@test observered == [(didClick, button, (action=Mouse.click,))]
+Mouse.leftClick(button)
+@test observered == [(didClick, button, (action=Mouse.leftClick,))]
 
 slider1 = Slider(range=1:10, value=Ref{Cint}(5))
 slider2 = Slider(range=1:10, value=Ref{Cfloat}(2.0))

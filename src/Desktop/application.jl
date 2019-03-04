@@ -151,4 +151,11 @@ function remove!(app::A, windows::UIWindow...) where {A <: UIApplication}
     nothing
 end
 
+"""
+    empty!(app::A) where {A <: UIApplication}
+"""
+function Base.empty!(app::A) where {A <: UIApplication}
+    empty!(app.windows)
+end
+
 # module Poptart.Desktop

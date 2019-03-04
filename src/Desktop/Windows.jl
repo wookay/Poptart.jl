@@ -87,7 +87,7 @@ function setup_window(nk_ctx::Ptr{LibNuklear.nk_context}, window::W) where {W <:
             nuklear_item(nk_ctx, item) do nk_ctx, item
                 if haskey(item.observers, :ongoing)
                     for ongoing in item.observers[:ongoing]
-                        Bool(nk_widget_is_hovered(nk_ctx)) && Base.invokelatest(ongoing, (action=Mouse.hover, context=nk_ctx))
+                        Bool(nk_widget_is_hovered(nk_ctx)) && Base.invokelatest(ongoing, (action=Mouse.hover,))
                     end
                 end
             end
@@ -125,6 +125,14 @@ function remove!(window::W, controls::UIControl...) where {W <: UIWindow}
     deleteat!(window.container.items, indices)
     remove_nuklear_item.(controls)
     nothing
+end
+
+"""
+    empty!(window::W) where {W <: UIWindow}
+"""
+function Base.empty!(window::W) where {W <: UIWindow}
+    remove_nuklear_item.(window.container.items)
+    empty!(window.container.items)
 end
 
 end # Poptart.Desktop.Windows

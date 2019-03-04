@@ -4,7 +4,7 @@ import ..Interfaces: properties
 using Colors: RGBA
 
 export Line, Rect, RectMultiColor, Circle, Triangle, Arc, Curve, Polyline, Polygon
-export stroke, fill, draw
+export stroke, fill
 
 abstract type DrawingElement end
 
@@ -120,11 +120,16 @@ struct Drawing{paint}
     element::E where {E <: DrawingElement}
 end
 
+function stroke_and_fill(element::E) where {E <: DrawingElement}
+    Drawing{stroke_and_fill}(element)
+end
+
 """
     Drawings.stroke(element::E) where {E <: DrawingElement}
 """
 function stroke(element::E) where {E <: DrawingElement}
     Drawing{stroke}(element)
+
 end
 
 """
@@ -134,8 +139,28 @@ function Base.fill(element::E) where {E <: DrawingElement}
     Drawing{fill}(element)
 end
 
-function draw(element::E) where {E <: DrawingElement}
-    Drawing{draw}(element)
+function stroke(drawing::Drawing{stroke})
+    drawing
+end
+
+function stroke(drawing::Drawing{fill})
+    Drawing{stroke_and_fill}(drawing.element)
+end
+
+function stroke(drawing::Drawing{stroke_and_fill})
+    drawing
+end
+
+function Base.fill(drawing::Drawing{stroke})
+    Drawing{stroke_and_fill}(drawing.element)
+end
+
+function Base.fill(drawing::Drawing{fill})
+    drawing
+end
+
+function Base.fill(drawing::Drawing{stroke_and_fill})
+    drawing
 end
 
 end # module Poptart.Drawings

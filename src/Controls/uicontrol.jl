@@ -43,7 +43,7 @@ end
 """
 function didClick(block, control::C) where {C <: UIControl}
     haskey_push_or_set!(control, :didSend) do event
-        (event.action === Mouse.click) && block(event)
+        (event.action === Mouse.leftClick) && block(event)
     end
 end
 
