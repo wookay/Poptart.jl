@@ -12,13 +12,13 @@ end
 
 using Poptart.Desktop # Application Windows
 using Poptart.Controls # Canvas put! remove!
-using Poptart.Drawings # Line Rect RectMultiColor Circle Triangle stroke fill
+using Poptart.Drawings # Polygon stroke fill
 using Nuklear.LibNuklear: NK_WINDOW_NO_SCROLLBAR
 using Colors: RGBA
 
-canvas = Canvas(frame=(width=500,height=400))
+canvas = Canvas()
 window1 = Windows.Window([canvas], title="H3", frame=(x=0, y=0, width=500, height=400), flags=NK_WINDOW_NO_SCROLLBAR)
-app = Application(windows=[window1], title="H3", frame=(width=500, height=400))
+Application(windows=[window1], title="H3", frame=(width=500, height=400))
 strokeColor = RGBA(0,0.7,0,1)
 
 for boundary in h3ToGeoBoundary.(rings)
@@ -28,6 +28,5 @@ for boundary in h3ToGeoBoundary.(rings)
 end
 
 didClick(canvas) do event
-    ctx = unsafe_load(app.nk_ctx)
-    @info :pos ctx.input.mouse.pos
+    @info :pos event.pos
 end

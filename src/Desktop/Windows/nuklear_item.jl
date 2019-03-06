@@ -261,11 +261,21 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::ImageView
     nk_draw_image(canvas, region, item.props[:imageref], nk_rgba(255, 255, 255, 255))
 end
 
+struct InputContext
+    input::nk_input
+end
+
+function mouse_pos(nk_ctx::Ptr{LibNuklear.nk_context})
+    ptr = Ptr{InputContext}(nk_ctx)
+    ctx = unsafe_load(ptr)
+    ctx.input.mouse.pos
+end
+
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Canvas; layout=nuklear_no_layout)
     region = nk_window_get_content_region(nk_ctx)
     nk_layout_row_dynamic(nk_ctx, region.h, 1) # layout
-    Bool(nk_widget_is_mouse_clicked(nk_ctx, NK_BUTTON_LEFT)) && @async Mouse.leftClick(item)
-    Bool(nk_widget_is_mouse_clicked(nk_ctx, NK_BUTTON_RIGHT)) && @async Mouse.rightClick(item)
+    Bool(nk_widget_is_mouse_clicked(nk_ctx, NK_BUTTON_LEFT)) && @async Mouse.leftClick(item, pos=mouse_pos(nk_ctx))
+    Bool(nk_widget_is_mouse_clicked(nk_ctx, NK_BUTTON_RIGHT)) && @async Mouse.rightClick(item, pos=mouse_pos(nk_ctx))
     block(nk_ctx, item)
     nk_widget(Ref(region), nk_ctx)
     painter = nk_window_get_canvas(nk_ctx)
