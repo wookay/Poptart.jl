@@ -279,7 +279,7 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Canvas; l
     block(nk_ctx, item)
     nk_widget(Ref(region), nk_ctx)
     painter = nk_window_get_canvas(nk_ctx)
-    for drawing in item.container.items
+    for drawing in item.items
         nuklear_drawing_item(painter, drawing, drawing.element)
     end
 end
@@ -350,45 +350,45 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, chart::Chart; l
     if chart.color !== nothing && chart.highlight !== nothing
         color = nuklear_rgba(chart.color)
         highlight = nuklear_rgba(chart.highlight)
-        chart_begin = nk_chart_begin_colored(nk_ctx, chart.chart_type, color, highlight, length(chart.chart_items), chart.min, chart.max)
+        chart_begin = nk_chart_begin_colored(nk_ctx, chart.chart_type, color, highlight, length(chart.items), chart.min, chart.max)
     else
-        chart_begin = nk_chart_begin(nk_ctx, chart.chart_type, length(chart.chart_items), chart.min, chart.max)
+        chart_begin = nk_chart_begin(nk_ctx, chart.chart_type, length(chart.items), chart.min, chart.max)
     end
     if Bool(chart_begin)
-        nk_chart_push.(nk_ctx, chart.chart_items)
+        nk_chart_push.(nk_ctx, chart.items)
         nk_chart_end(nk_ctx)
     end
 end
 
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::MixedChart; layout=nuklear_layout)
-    if isempty(item.charts)
-    elseif length(item.charts) == 1
+    if isempty(item.items)
+    elseif length(item.items) == 1
         nuklear_item(block, nk_ctx, item, layout=layout)
     else
         layout(nk_ctx, item)
         block(nk_ctx, item)
-        chart = first(item.charts)
+        chart = first(item.items)
         if chart.color !== nothing && chart.highlight !== nothing
             color = nuklear_rgba(chart.color)
             highlight = nuklear_rgba(chart.highlight)
-            chart_begin = nk_chart_begin_colored(nk_ctx, chart.chart_type, color, highlight, length(chart.chart_items), chart.min, chart.max)
+            chart_begin = nk_chart_begin_colored(nk_ctx, chart.chart_type, color, highlight, length(chart.items), chart.min, chart.max)
         else
-            chart_begin = nk_chart_begin(nk_ctx, chart.chart_type, length(chart.chart_items), chart.min, chart.max)
+            chart_begin = nk_chart_begin(nk_ctx, chart.chart_type, length(chart.items), chart.min, chart.max)
         end
         if Bool(chart_begin)
-            for chart in item.charts[2:end]
+            for chart in item.items[2:end]
                 if chart.color !== nothing && chart.highlight !== nothing
                     color = nuklear_rgba(chart.color)
                     highlight = nuklear_rgba(chart.highlight)
-                    nk_chart_add_slot_colored(nk_ctx, chart.chart_type, color, highlight, length(chart.chart_items), chart.min, chart.max)
+                    nk_chart_add_slot_colored(nk_ctx, chart.chart_type, color, highlight, length(chart.items), chart.min, chart.max)
                 else
-                    nk_chart_add_slot(nk_ctx, chart.chart_type, length(chart.chart_items), chart.min, chart.max)
+                    nk_chart_add_slot(nk_ctx, chart.chart_type, length(chart.items), chart.min, chart.max)
                 end
             end
 
-            for idx in 1:length(chart.chart_items)
-                for (chart_idx, chart) in enumerate(item.charts)
-                    nk_chart_push_slot(nk_ctx, chart.chart_items[idx], chart_idx-1)
+            for idx in 1:length(chart.items)
+                for (chart_idx, chart) in enumerate(item.items)
+                    nk_chart_push_slot(nk_ctx, chart.items[idx], chart_idx-1)
                 end
             end
             nk_chart_end(nk_ctx)

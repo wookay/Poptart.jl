@@ -18,13 +18,13 @@ function properties(control::ContextualItem)
 end
 
 """
-    Contextual(items::Vector{ContextualItem}; flags=0, size::NamedTuple{(:width,:height)}, [trigger_bounds::NamedTuple{(:x,:y,:width,:height)}])
+    Contextual(; items::Vector{ContextualItem}, flags=0, size::NamedTuple{(:width,:height)}, [trigger_bounds::NamedTuple{(:x,:y,:width,:height)}])
 """
 Contextual
 
 @UI Contextual quote
     items::Vector{ContextualItem}
-    function Contextual(items::Vector{ContextualItem}; flags=0, kwargs...)
+    function Contextual(; items::Vector{ContextualItem}, flags=0, kwargs...)
         props = Dict{Symbol, Any}(:flags => flags, kwargs...)
         observers = Dict{Symbol, Vector}()
         new(props, observers, items)

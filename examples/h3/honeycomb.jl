@@ -3,12 +3,6 @@ using H3.API # GeoCoord geoToH3 kRing h3ToGeoBoundary
 base = geoToH3(GeoCoord(0, 0), 1)
 rings = kRing(base, 3)
 
-x = Vector{Float64}()
-y = Vector{Float64}()
-for boundary in h3ToGeoBoundary.(rings), geo in boundary
-    push!(x, geo.lon) # 經度
-    push!(y, geo.lat) # 緯度
-end
 
 using Poptart.Desktop # Application Windows
 using Poptart.Controls # Canvas put! remove!
@@ -17,7 +11,7 @@ using Nuklear.LibNuklear: NK_WINDOW_NO_SCROLLBAR
 using Colors: RGBA
 
 canvas = Canvas()
-window1 = Windows.Window([canvas], title="H3", frame=(x=0, y=0, width=500, height=400), flags=NK_WINDOW_NO_SCROLLBAR)
+window1 = Windows.Window(items=[canvas], title="H3", frame=(x=0, y=0, width=500, height=400), flags=NK_WINDOW_NO_SCROLLBAR)
 Application(windows=[window1], title="H3", frame=(width=500, height=400))
 strokeColor = RGBA(0,0.7,0,1)
 

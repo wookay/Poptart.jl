@@ -15,16 +15,15 @@ using Colors # RGBA
 using ProgressMeter
 
 """
-    Window(items::Vector{<:UIControl} = UIControl[]; title::String, frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
+    Window(; items::Vector{<:UIControl} = UIControl[], title::String, frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
 """
 struct Window <: UIWindow
-    container::Controls.Container
+    items::Vector{<:UIControl}
     props::Dict{Symbol,Any}
 
-    function Window(items::Vector{<:UIControl} = UIControl[]; title::String, frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
-        container = Controls.Container(items)
+    function Window(; items::Vector{<:UIControl} = UIControl[], title::String, frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
         props = Dict{Symbol,Any}(:title => title, :frame => frame, :name => name, :flags => flags)
-        window = new(container, props)
+        window = new(items, props)
     end
 end
 
@@ -83,7 +82,7 @@ function setup_window(nk_ctx::Ptr{LibNuklear.nk_context}, window::W) where {W <:
         can_be_filled_up_with_widgets = nk_begin_titled(nk_ctx, window.name, window.title, rect, window.flags)
     end
     if Bool(can_be_filled_up_with_widgets)
-        for item in window.container.items
+        for item in window.items
             nuklear_item(nk_ctx, item) do nk_ctx, item
                 if haskey(item.observers, :ongoing)
                     for ongoing in item.observers[:ongoing]
@@ -94,6 +93,7 @@ function setup_window(nk_ctx::Ptr{LibNuklear.nk_context}, window::W) where {W <:
         end
     end
     nk_end(nk_ctx)
+    mouse_pos(nk_ctx) # cache
 end
 
 
@@ -113,7 +113,7 @@ end
     Windows.put!(window::W, controls::UIControl...) where {W <: UIWindow}
 """
 function put!(window::W, controls::UIControl...) where {W <: UIWindow}
-    push!(window.container.items, controls...)
+    push!(window.items, controls...)
     nothing
 end
 
@@ -121,8 +121,8 @@ end
     Windows.remove!(window::W, controls::UIControl...) where {W <: UIWindow}
 """
 function remove!(window::W, controls::UIControl...) where {W <: UIWindow}
-    indices = filter(x -> x !== nothing, indexin(controls, window.container.items))
-    deleteat!(window.container.items, indices)
+    indices = filter(x -> x !== nothing, indexin(controls, window.items))
+    deleteat!(window.items, indices)
     remove_nuklear_item.(controls)
     nothing
 end
@@ -131,8 +131,8 @@ end
     empty!(window::W) where {W <: UIWindow}
 """
 function Base.empty!(window::W) where {W <: UIWindow}
-    remove_nuklear_item.(window.container.items)
-    empty!(window.container.items)
+    remove_nuklear_item.(window.items)
+    empty!(window.items)
 end
 
 end # Poptart.Desktop.Windows

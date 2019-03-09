@@ -43,7 +43,7 @@ using Nuklear.LibNuklear: NK_WINDOW_TITLE
 using Colors: RGBA
 
 canvas = Canvas()
-window1 = Windows.Window([canvas], title="A", frame=(x=0, y=0, width=500, height=400), flags=NK_WINDOW_TITLE)
+window1 = Windows.Window(items=[canvas], title="A", frame=(x=0, y=0, width=500, height=400), flags=NK_WINDOW_TITLE)
 Application(windows=[window1], title="App", frame=(width=500, height=400))
 
 strokeColor = RGBA(0,0.7,0,1)

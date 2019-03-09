@@ -13,17 +13,17 @@ Application(windows=[window1, window2, window3], title="App", frame=(width=630, 
 using Nuklear.LibNuklear: NK_CHART_LINES, NK_CHART_COLUMN
 using Colors: RGBA
 
-lines_chart1 = Chart(rand(10), chart_type=NK_CHART_LINES, min=0, max=1, frame=(height=100,))
-column_chart1 = Chart(rand(10), chart_type=NK_CHART_COLUMN, min=0, max=1, frame=(height=100,))
+lines_chart1 = Chart(items=rand(10), chart_type=NK_CHART_LINES, min=0, max=1, frame=(height=100,))
+column_chart1 = Chart(items=rand(10), chart_type=NK_CHART_COLUMN, min=0, max=1, frame=(height=100,))
 put!(window1, lines_chart1, column_chart1)
 
 normalColor    = RGBA(0.8,0.8,0.8,1)
 highlightColor = RGBA(0.1, 0.7,0.8,1)
-lines_chart2 = Chart(rand(10), chart_type=NK_CHART_LINES, min=0, max=1, frame=(height=100,), color=normalColor, highlight=highlightColor)
-column_chart2 = Chart(rand(10), chart_type=NK_CHART_COLUMN, min=0, max=1, frame=(height=100,), color=normalColor, highlight=highlightColor)
+lines_chart2 = Chart(items=rand(10), chart_type=NK_CHART_LINES, min=0, max=1, frame=(height=100,), color=normalColor, highlight=highlightColor)
+column_chart2 = Chart(items=rand(10), chart_type=NK_CHART_COLUMN, min=0, max=1, frame=(height=100,), color=normalColor, highlight=highlightColor)
 put!(window2, lines_chart2, column_chart2)
 
-mixed = MixedChart([lines_chart1, lines_chart2], frame=(height=100,))
+mixed = MixedChart(items=[lines_chart1, lines_chart2], frame=(height=100,))
 put!(window3, mixed)
 
 end # module test_poptart_desktop_chart

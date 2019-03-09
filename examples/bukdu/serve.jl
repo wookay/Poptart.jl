@@ -30,6 +30,6 @@ routes() do
     end
 end
 
-Mouse.click(button)
+Mouse.leftClick(button)
 
 Base.JLOptions().isinteractive==0 && wait()

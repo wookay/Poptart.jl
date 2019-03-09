@@ -18,16 +18,16 @@ function properties(control::MenuItem)
 end
 
 """
-    Menu(menu_items::Vector{MenuItem}; text::String, align, row_width, size::NamedTuple{(:width,:height)})
+    Menu(; items::Vector{MenuItem}, text::String, align, row_width, size::NamedTuple{(:width,:height)})
 """
 Menu
 
 @UI Menu quote
-    menu_items::Vector{MenuItem}
-    function Menu(menu_items::Vector{MenuItem}; align=NK_TEXT_LEFT, kwargs...)
+    items::Vector{MenuItem}
+    function Menu(; items::Vector{MenuItem}, align=NK_TEXT_LEFT, kwargs...)
         props = Dict{Symbol, Any}(:align => align, kwargs...)
         observers = Dict{Symbol, Vector}()
-        new(props, observers, menu_items)
+        new(props, observers, items)
     end
 end
 
@@ -36,16 +36,16 @@ function properties(control::Menu)
 end
 
 """
-    MenuBar(menu::Vector{Menu}; show::Bool, row_height)
+    MenuBar(; items::Vector{Menu}, show::Bool, row_height)
 """
 MenuBar
 
 @UI MenuBar quote
-    menu::Vector{Menu}
-    function MenuBar(menu::Vector{Menu}; kwargs...)
+    items::Vector{Menu}
+    function MenuBar(; items::Vector{Menu}, kwargs...)
         props = Dict{Symbol, Any}(kwargs...)
         observers = Dict{Symbol, Vector}()
-        new(props, observers, menu)
+        new(props, observers, items)
     end
 end
 

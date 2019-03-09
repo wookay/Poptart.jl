@@ -7,10 +7,6 @@ function super(::C) where {C <: UIControl}
     Super{C}
 end
 
-struct Container
-    items::Vector
-end
-
 
 function haskey_push_or_set!(block, control::C, sym::Symbol) where {C <: UIControl}
     if haskey(control.observers, sym)
