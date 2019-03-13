@@ -13,6 +13,7 @@ Arc
 Curve
 Polyline
 Polygon
+TextBox
 ```
 
 # paints

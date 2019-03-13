@@ -2,7 +2,7 @@ module Controls # Poptart
 
 export put!, remove!
 import ..Interfaces: properties, put!, remove!
-using ..Drawings: Drawing
+using ..Drawings: Drawing, TextBox
 using Nuklear.LibNuklear: NK_TEXT_LEFT, NK_POPUP_STATIC, NK_WINDOW_CLOSABLE, NK_WINDOW_BORDER, NK_TREE_TAB, NK_MINIMIZED
 using Colors: RGBA
 
@@ -62,7 +62,7 @@ include("Controls/contextual.jl")
 export TreeItem
 include("Controls/tree.jl")
 
-export Canvas
+export Canvas, TextBox
 include("Controls/canvas.jl")
 
 end # module Poptart.Controls

@@ -4,6 +4,7 @@ import ..Interfaces: properties
 using Colors: RGBA
 
 export Line, Rect, RectMultiColor, Circle, Triangle, Arc, Curve, Polyline, Polygon
+export ImageBox, TextBox
 export stroke, fill
 
 abstract type DrawingElement end
@@ -54,67 +55,63 @@ end
     Line(; points::Vector{<:Tuple}, thickness, color::RGBA)
 """
 Line
-
 @DrawingElement Line (points, thickness, color)
 
 """
     Rect(; rect, rounding, [thickness], color::RGBA)
 """
 Rect
-
 @DrawingElement Rect (rect, rounding, thickness, color)
 
 """
     RectMultiColor(; rect, left::RGBA, top::RGBA, right::RGBA, bottom::RGBA)
 """
 RectMultiColor
-
 @DrawingElement RectMultiColor (rect, left, top, right, bottom)
 
 """
     Circle(; rect, [thickness], color::RGBA)
 """
 Circle
-
 @DrawingElement Circle (rect, thickness, color)
 
 """
     Triangle(; points::Vector{<:Tuple}, [thickness], color::RGBA)
 """
 Triangle
-
 @DrawingElement Triangle (points, thickness, color)
 
 """
     Arc(; center, radius, angle, [thickness], color::RGBA)
 """
 Arc
-
 @DrawingElement Arc (center, radius, angle, thickness, color)
 
 """
     Curve(; startPoint, control1, control2, endPoint, thickness, color::RGBA)
 """
 Curve
-
 @DrawingElement Curve (startPoint, control1, control2, endPoint, thickness, color)
 
 """
     Polyline(; points::Vector{<:Tuple}, thickness, color::RGBA)
 """
 Polyline
-
 @DrawingElement Polyline (points, thickness, color)
 
 """
     Polygon(; points::Vector{<:Tuple}, [thickness], color::RGBA)
 """
 Polygon
-
 @DrawingElement Polygon (points, thickness, color)
 
-@DrawingElement Image ()
-@DrawingElement Text ()
+"""
+    TextBox(; text::String, font::Union{String, Font}, rect, color::RGBA)
+"""
+TextBox
+@DrawingElement TextBox (text, font, rect, color)
+
+@DrawingElement ImageBox ()
 
 struct Drawing{paint}
     element::E where {E <: DrawingElement}
@@ -129,7 +126,6 @@ end
 """
 function stroke(element::E) where {E <: DrawingElement}
     Drawing{stroke}(element)
-
 end
 
 """
@@ -161,6 +157,14 @@ end
 
 function Base.fill(drawing::Drawing{stroke_and_fill})
     drawing
+end
+
+function draw(element::E) where {E <: DrawingElement}
+    Drawing{draw}(element)
+end
+
+function Base.convert(::Type{Drawing}, element::TextBox)
+    Drawing{draw}(element)
 end
 
 end # module Poptart.Drawings

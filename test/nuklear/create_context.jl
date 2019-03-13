@@ -1,4 +1,4 @@
-module test_nuklear_libnuklear
+module test_nuklear_create_context
 
 using Test
 using Nuklear.LibNuklear
@@ -9,4 +9,4 @@ GC.@preserve ctx begin
     nk_free(ctx)
 end
 
-end # module test_nuklear_libnuklear
+end # module test_nuklear_create_context

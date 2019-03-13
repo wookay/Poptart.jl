@@ -26,8 +26,11 @@ function setup_glfw(; title::String, frame::NamedTuple{(:width,:height)})
 
     # init context
     nk_ctx = nk_glfw3_init(glwin, NK_GLFW3_INSTALL_CALLBACKS, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER)
+
     nk_glfw3_font_stash_begin()
+    FontAtlas.setup_font_atlas()
     nk_glfw3_font_stash_end()
+    FontAtlas.setup_default_font(nk_ctx)
 
     (glwin, nk_ctx)
 end

@@ -22,18 +22,20 @@ function properties(control::Canvas)
 end
 
 """
-    Controls.put!(canvas::Canvas, elements::Drawings.Drawing...)
+    Controls.put!(canvas::Canvas, elements::Union{Drawing, TextBox}...)
 """
-function put!(canvas::Canvas, elements::Drawing...)
-    push!(canvas.items, elements...)
+function put!(canvas::Canvas, elements::Union{Drawing, TextBox}...)
+    drawing_elements = convert.(Drawing, elements)
+    push!(canvas.items, drawing_elements...)
     nothing
 end
 
 """
-    Controls.remove!(canvas::Canvas, elements::Drawings.Drawing...)
+    Controls.remove!(canvas::Canvas, elements::Union{Drawing, TextBox}...)
 """
-function remove!(canvas::Canvas, elements::Drawing...)
-    indices = filter(x -> x !== nothing, indexin(elements, canvas.items))
+function remove!(canvas::Canvas, elements::Union{Drawing, TextBox}...)
+    drawing_elements = convert.(Drawing, elements)
+    indices = filter(x -> x !== nothing, indexin(drawing_elements, canvas.items))
     deleteat!(canvas.items, indices)
     nothing
 end

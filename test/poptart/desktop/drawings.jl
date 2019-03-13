@@ -2,15 +2,19 @@ using Jive
 @useinside module test_poptart_desktop_drawings
 
 using Test
-using Poptart.Desktop # Application Windows
+using Poptart.Desktop # Application Windows FontAtalas Font
 using Poptart.Controls # Canvas put! remove!
 using Poptart.Drawings # Line Rect RectMultiColor Circle Triangle stroke fill
-using Nuklear.LibNuklear: NK_WINDOW_TITLE
+using Nuklear # pathof(Nuklear)
+using Nuklear.LibNuklear: NK_WINDOW_NO_SCROLLBAR
 using Colors: RGBA
 
+font_path = normpath(pathof(Nuklear), "..", "..", "demo", "extra_font", "Roboto-Light.ttf")
+push!(FontAtlas.fonts, Font(name="Roboto-Light", path=font_path, height=50))
+
 canvas = Canvas()
-window1 = Windows.Window(items=[canvas], title="A", frame=(x=0, y=0, width=500, height=400), flags=NK_WINDOW_TITLE)
-Application(windows=[window1], title="App", frame=(width=500, height=400))
+window1 = Windows.Window(items=[canvas], frame=(x=0, y=0, width=500, height=400), flags=NK_WINDOW_NO_SCROLLBAR)
+Application(windows=[window1], title="Drawings", frame=(width=500, height=400))
 
 strokeColor = RGBA(0,0.7,0,1)
 fillColor   = RGBA(0.1, 0.7,0.8,0.9)
@@ -56,5 +60,8 @@ rect3 = Rect(rect=(80, 270, 50, 50), rounding=0, thickness=7.5, color=strokeColo
 stroke1 = stroke(rect3)
 put!(canvas, stroke1)
 remove!(canvas, stroke1)
+
+textbox = TextBox(text="Greetings", rect=(30, 300, 200, 30), font="Roboto-Light", color=strokeColor)
+put!(canvas, textbox)
 
 end # module test_poptart_desktop_drawings

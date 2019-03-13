@@ -199,8 +199,8 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Menu; lay
     size = nuklear_vec2(item.size)
     nk_layout_row_push(nk_ctx, item.row_width)
     if Bool(nk_menu_begin_label(nk_ctx, item.text, item.align, size))
-        for menu_item in item.menu_items
-            nuklear_item(nk_ctx, menu_item) do nk_ctx, item
+        for menu_item in item.items
+            nuklear_item(nk_ctx, menu_item) do nk_ctx, menu_item
             end
         end
         nk_menu_end(nk_ctx)
@@ -212,10 +212,10 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::MenuBar; 
     block(nk_ctx, item)
     if Bool(item.show)
         nk_menubar_begin(nk_ctx)
-        cols = length(item.menu)
+        cols = length(item.items)
         nk_layout_row_begin(nk_ctx, NK_STATIC, item.row_height, cols)
-        for menu in item.menu
-            nuklear_item(nk_ctx, menu) do nk_ctx, item
+        for menu in item.items
+            nuklear_item(nk_ctx, menu) do nk_ctx, menu
             end
         end
         nk_menubar_end(nk_ctx)
@@ -280,7 +280,7 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Canvas; l
     nk_widget(Ref(region), nk_ctx)
     painter = nk_window_get_canvas(nk_ctx)
     for drawing in item.items
-        nuklear_drawing_item(painter, drawing, drawing.element)
+        nuklear_drawing_item(nk_ctx, painter, drawing, drawing.element)
     end
 end
 

@@ -1,8 +1,9 @@
 module Windows # Poptart.Desktop
 
 export put!, remove!
+
 import ...Interfaces: properties, put!, remove!
-using ..Desktop: UIApplication, UIWindow
+using ..Desktop: UIApplication, UIWindow, Font, FontAtlas
 using ...Controls
 using ...Drawings # Line Rect Circle Arc Curve Polyline Polygon stroke fill
 
@@ -21,7 +22,7 @@ struct Window <: UIWindow
     items::Vector{<:UIControl}
     props::Dict{Symbol,Any}
 
-    function Window(; items::Vector{<:UIControl} = UIControl[], title::String, frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
+    function Window(; items::Vector{<:UIControl} = UIControl[], title::String="Window", frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
         props = Dict{Symbol,Any}(:title => title, :frame => frame, :name => name, :flags => flags)
         window = new(items, props)
     end
