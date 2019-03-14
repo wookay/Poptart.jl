@@ -73,11 +73,11 @@ const DEFAULT_FONT = "POPTART_DEFAULT_FONT"
 function setup_font_atlas()
     fontstore[DEFAULT_FONT] = nk_font_atlas_add_default(glfw.atlas, 15, C_NULL)
     for font in fonts
-        cfg = FontConfig(0)
+        height = font.height
+        cfg = FontConfig(height)
         cfg.oversample_h = 1
         cfg.oversample_v = 1
         cfg.range = font.glyph_ranges
-        height = font.height
         fontptr = nk_font_atlas_add_from_file(glfw.atlas, font.path, height, Ref(nk_font_config(cfg)))
         fontstore[font.name] = fontptr
     end

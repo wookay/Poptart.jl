@@ -16,13 +16,13 @@ using Colors # RGBA
 using ProgressMeter
 
 """
-    Window(; items::Vector{<:UIControl} = UIControl[], title::String, frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
+    Window(; items::Vector{<:UIControl} = UIControl[], title::String="Title", frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE | NK_WINDOW_NO_SCROLLBAR)
 """
 struct Window <: UIWindow
     items::Vector{<:UIControl}
     props::Dict{Symbol,Any}
 
-    function Window(; items::Vector{<:UIControl} = UIControl[], title::String="Window", frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)
+    function Window(; items::Vector{<:UIControl} = UIControl[], title::String="Title", frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE | NK_WINDOW_NO_SCROLLBAR)
         props = Dict{Symbol,Any}(:title => title, :frame => frame, :name => name, :flags => flags)
         window = new(items, props)
     end
@@ -53,16 +53,33 @@ function properties(::W) where {W <: UIWindow}
 end
 
 # nuklear convert
-function nuklear_rect(frame::NamedTuple{(:x,:y,:width,:height)})
+
+function nuklear_rect(frame::NamedTuple{(:width,:height)})::nk_rect
+    nk_rect(0, 0, values(frame)...)
+end
+
+function nuklear_rect(frame::NamedTuple{(:x,:y,:width,:height)})::nk_rect
     nk_rect(values(frame)...)
 end
 
-function nuklear_vec2(frame::NamedTuple{(:width,:height)})
+function nuklear_rect(pos::nk_vec2, rect::nk_rect)::nk_rect
+    nk_rect(pos.x + rect.x, pos.y + rect.y, rect.w, rect.h)
+end
+
+function nuklear_rect(pos::nk_vec2, rect::NTuple{4,Real})::nk_rect
+    nk_rect(pos.x + rect[1], pos.y + rect[2], rect[3], rect[4])
+end
+
+function nuklear_vec2(frame::NamedTuple{(:width,:height)})::nk_vec2
     nk_vec2(values(frame)...)
 end
 
 function nuklear_rgba(c::RGBA)
-    nk_rgba(round.(Int, 0xff .* (c.r,c.g,c.b,c.alpha))...)
+    nk_rgba(round.(Int, 0xff .* (c.r, c.g, c.b, c.alpha))...)
+end
+
+function Base.vec(v::nk_vec2)
+    [v.x, v.y]
 end
 
 include("Windows/nuklear_item.jl")

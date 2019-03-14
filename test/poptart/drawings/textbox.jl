@@ -12,9 +12,9 @@ font = Font(name="Roboto-Light", path=font_path, height=30, glyph_ranges=nk_font
 push!(FontAtlas.fonts, font)
 
 canvas = Canvas()
-textbox = TextBox(text="fdasfds", font=Font(name="Roboto-Light"))
+textbox = TextBox(text="Hello", font="Roboto-Light")
 put!(canvas, textbox)
 
-FontAtlas.clear()
+# FontAtlas.clear()
 
 end # module test_poptart_drawings_textbox

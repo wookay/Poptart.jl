@@ -1,7 +1,7 @@
 # module Poptart.Desktop.Windows
 
 env = Dict{Symbol, Any}(
-    :default_layout_height => 21,
+    :default_layout_height => 25,
 )
 
 # layout
@@ -222,45 +222,6 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::MenuBar; 
     end
 end
 
-function nuklear_item_imageview(item::ImageView, p::Union{Nothing,ProgressMeter.Progress})
-    #= =# p !== nothing && ProgressMeter.next!(p)
-    data = transpose(Controls.Images.load(item.path))
-    (img_width, img_height) = Base.size(data)
-    #= =# p !== nothing && ProgressMeter.next!(p)
-    texture_index = nk_glfw3_create_texture(img_width, img_height, format=GL_RGBA, type=GL_FLOAT)
-    #= =# p !== nothing && ProgressMeter.next!(p)
-    chanview = Controls.Images.channelview(data)
-    #= =# p !== nothing && ProgressMeter.next!(p)
-    img = Array{Float32}(chanview)
-    #= =# p !== nothing && ProgressMeter.next!(p)
-    nk_glfw3_update_texture(texture_index, img, img_width, img_height, format=GL_RGBA, type=GL_FLOAT)
-    #= =# p !== nothing && ProgressMeter.next!(p)
-    return texture_index
-end
-
-function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::ImageView; layout=nuklear_layout)
-    layout(nk_ctx, item)
-    block(nk_ctx, item)
-    canvas = nk_window_get_canvas(nk_ctx)
-    region = nk_window_get_content_region(nk_ctx)
-    if !haskey(item.props, :imageref)
-        #= =# p = nothing
-        if !isdefined(Controls, :Images)
-            #= =# p = ProgressMeter.Progress(11, desc=string("Loading ", basename(item.path), " "), color=:normal)
-            #= =# ProgressMeter.update!(p, 0)
-            Base.eval(Controls, :(using Images))
-            #= =# ProgressMeter.update!(p, 3)
-        end
-        texture_index = Base.invokelatest(nuklear_item_imageview, item, p)
-        item.props[:texture_index] = texture_index
-        #= =# p !== nothing && ProgressMeter.next!(p)
-        item.props[:imageref] = Ref(create_nk_image(texture_index))
-        #= =# p !== nothing && ProgressMeter.finish!(p)
-        #= =# p !== nothing && ProgressMeter.move_cursor_up_while_clearing_lines(p.output, p.numprintedvalues+1)
-    end
-    nk_draw_image(canvas, region, item.props[:imageref], nk_rgba(255, 255, 255, 255))
-end
-
 struct InputContext
     input::nk_input
 end
@@ -272,15 +233,17 @@ function mouse_pos(nk_ctx::Ptr{LibNuklear.nk_context})
 end
 
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Canvas; layout=nuklear_no_layout)
-    region = nk_window_get_content_region(nk_ctx)
-    nk_layout_row_dynamic(nk_ctx, region.h, 1) # layout
+    painter = nk_window_get_canvas(nk_ctx)
+    total_space = nk_window_get_content_region(nk_ctx)
+    nk_layout_row_dynamic(nk_ctx, total_space.h, 1)
+
     Bool(nk_widget_is_mouse_clicked(nk_ctx, NK_BUTTON_LEFT)) && @async Mouse.leftClick(item, pos=mouse_pos(nk_ctx))
     Bool(nk_widget_is_mouse_clicked(nk_ctx, NK_BUTTON_RIGHT)) && @async Mouse.rightClick(item, pos=mouse_pos(nk_ctx))
     block(nk_ctx, item)
-    nk_widget(Ref(region), nk_ctx)
-    painter = nk_window_get_canvas(nk_ctx)
+
+    window_pos = nk_window_get_position(nk_ctx)
     for drawing in item.items
-        nuklear_drawing_item(nk_ctx, painter, drawing, drawing.element)
+        nuklear_drawing_item(nk_ctx, painter, window_pos, drawing, drawing.element)
     end
 end
 
@@ -400,16 +363,6 @@ using Jive
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Any; layout=nuklear_layout)
     @onlyonce begin
         @info "not implemented" item
-    end
-end
-
-function remove_nuklear_item(item::ImageView)
-    if haskey(item.props, :imageref)
-        texture_index = item.props[:texture_index]
-        imageref = item.props[:imageref]
-        delete!(item.props, :texture_index)
-        delete!(item.props, :imageref)
-        nk_glfw3_delete_texture(texture_index)
     end
 end
 

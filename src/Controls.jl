@@ -2,7 +2,7 @@ module Controls # Poptart
 
 export put!, remove!
 import ..Interfaces: properties, put!, remove!
-using ..Drawings: Drawing, TextBox
+using ..Drawings: Drawing, TextBox, ImageBox
 using Nuklear.LibNuklear: NK_TEXT_LEFT, NK_POPUP_STATIC, NK_WINDOW_CLOSABLE, NK_WINDOW_BORDER, NK_TREE_TAB, NK_MINIMIZED
 using Colors: RGBA
 
@@ -40,9 +40,6 @@ include("Controls/progressbar.jl")
 
 export Chart, MixedChart
 include("Controls/chart.jl")
-
-export ImageView
-include("Controls/imageview.jl")
 
 export StaticRow, DynamicRow, Spacing, Group
 include("Controls/layout.jl")

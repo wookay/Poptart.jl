@@ -21,7 +21,6 @@ ComboBox
 ProgressBar
 Chart
 MixedChart
-ImageView
 ```
 
 # menus

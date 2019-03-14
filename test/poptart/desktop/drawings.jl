@@ -6,15 +6,14 @@ using Poptart.Desktop # Application Windows FontAtalas Font
 using Poptart.Controls # Canvas put! remove!
 using Poptart.Drawings # Line Rect RectMultiColor Circle Triangle stroke fill
 using Nuklear # pathof(Nuklear)
-using Nuklear.LibNuklear: NK_WINDOW_NO_SCROLLBAR
 using Colors: RGBA
 
 font_path = normpath(pathof(Nuklear), "..", "..", "demo", "extra_font", "Roboto-Light.ttf")
 push!(FontAtlas.fonts, Font(name="Roboto-Light", path=font_path, height=50))
 
 canvas = Canvas()
-window1 = Windows.Window(items=[canvas], frame=(x=0, y=0, width=500, height=400), flags=NK_WINDOW_NO_SCROLLBAR)
-Application(windows=[window1], title="Drawings", frame=(width=500, height=400))
+window1 = Windows.Window(items=[canvas], title="Drawings", frame=(x=10, y=10, width=480, height=380))
+Application(windows=[window1], title="App", frame=(width=500, height=400))
 
 strokeColor = RGBA(0,0.7,0,1)
 fillColor   = RGBA(0.1, 0.7,0.8,0.9)
