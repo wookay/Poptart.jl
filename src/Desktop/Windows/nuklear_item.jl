@@ -190,7 +190,7 @@ end
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::MenuItem; layout=nuklear_layout)
     layout(nk_ctx, item)
     block(nk_ctx, item)
-    Bool(nk_menu_item_label(nk_ctx, item.label, item.align)) && item.callback()
+    Bool(nk_menu_item_label(nk_ctx, item.label, item.align)) && Base.invokelatest(item.callback)
 end
 
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Menu; layout=nuklear_no_layout)
@@ -273,9 +273,7 @@ end
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::ContextualItem; layout=nuklear_layout)
     layout(nk_ctx, item)
     block(nk_ctx, item)
-    if Bool(nk_contextual_item_label(nk_ctx, item.label, item.align))
-        item.callback()
-    end
+    Bool(nk_contextual_item_label(nk_ctx, item.label, item.align)) && Base.invokelatest(item.callback)
 end
 
 function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Contextual; layout=nuklear_layout)
