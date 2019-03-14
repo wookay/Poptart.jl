@@ -9,7 +9,8 @@ window_title = "Repo"
 window1 = Windows.Window(title=window_title, frame=(x=10,y=20,width=200,height=200))
 windows = [window1]
 app_title = "Octo"
-Application(windows=windows, title=app_title, frame=(width=430, height=300))
+closed = Condition()
+Application(windows=windows, title=app_title, frame=(width=430, height=300), closed=closed)
 
 Repo.connect(
     adapter = Octo.Adapters.PostgreSQL,
@@ -45,4 +46,4 @@ didClick(button) do event
     println()
 end
 
-Base.JLOptions().isinteractive==0 && wait()
+Base.JLOptions().isinteractive==0 && wait(closed)

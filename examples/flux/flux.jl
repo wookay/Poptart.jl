@@ -6,7 +6,8 @@ using Flux, Test, Random, Statistics, Random
 
 title = "Flux"
 window1 = Windows.Window(title=title, frame=(x=10,y=20,width=250,height=200))
-Application(windows=[window1], title=title, frame=(width=430, height=300))
+closed = Condition()
+Application(windows=[window1], title=title, frame=(width=430, height=300), closed=closed)
 
 button = Button(title="""test Flux""", frame=(width=220, height=30))
 put!(window1, button)
@@ -20,4 +21,4 @@ didClick(button) do event
     @info "ok."
 end
 
-Base.JLOptions().isinteractive==0 && wait()
+Base.JLOptions().isinteractive==0 && wait(closed)

@@ -45,7 +45,7 @@ function error_handling(err)::Bool
     false
 end
 
-function runloop(glwin::GLFW.Window, app::A) where {A <: UIApplication}
+function runloop(glwin::GLFW.Window, app::A, closed::Condition) where {A <: UIApplication}
     while !GLFW.WindowShouldClose(glwin)
         yield()
 
@@ -69,6 +69,7 @@ function runloop(glwin::GLFW.Window, app::A) where {A <: UIApplication}
     nk_glfw3_shutdown()
     GLFW.DestroyWindow(glwin)
     app.nk_ctx = nothing
+    notify(closed)
     empty!(env)
 end
 
@@ -96,7 +97,7 @@ mutable struct Application <: UIApplication
     nk_ctx::Union{Nothing,Ptr{LibNuklear.nk_context}}
     task::Union{Nothing,Task}
 
-    function Application(; title::String="App", frame::NamedTuple{(:width,:height)}=(width=400, height=300), windows=[Windows.Window(title="Title", frame=(x=0,y=0,frame...))])
+    function Application(; title::String="App", frame::NamedTuple{(:width,:height)}=(width=400, height=300), windows=[Windows.Window(title="Title", frame=(x=0,y=0,frame...))], closed=Condition())
         app_windows = isempty(windows) ? UIWindow[] : windows
         glwin = GLFW.GetCurrentContext()
         if glwin.handle !== C_NULL && haskey(env, glwin.handle)
@@ -114,7 +115,7 @@ mutable struct Application <: UIApplication
         app = new(Dict(:title=>title, :frame=>frame), app_windows, nothing, nothing)
         (glwin, nk_ctx) = setup_glfw(; title=app.title, frame=app.frame)
         app.nk_ctx = nk_ctx
-        task = @async runloop(glwin, app)
+        task = @async runloop(glwin, app, closed)
         app.task = task
         env[glwin.handle] = app
         app
