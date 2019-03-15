@@ -1,6 +1,6 @@
 # module Poptart.Desktop.Windows
 
-env = Dict{Symbol, Any}(
+config = Dict{Symbol, Any}(
     :default_layout_height => 25,
 )
 
@@ -17,10 +17,10 @@ function nuklear_layout(nk_ctx::Ptr{LibNuklear.nk_context}, item::UIControl)
                 nk_layout_row_dynamic(nk_ctx, frame.height, 1)
             end
         else
-            nk_layout_row_dynamic(nk_ctx, env[:default_layout_height], 1)
+            nk_layout_row_dynamic(nk_ctx, config[:default_layout_height], 1)
         end
     else
-        nk_layout_row_dynamic(nk_ctx, env[:default_layout_height], 1)
+        nk_layout_row_dynamic(nk_ctx, config[:default_layout_height], 1)
     end
 end
 
@@ -158,7 +158,7 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::ComboBox;
     layout(nk_ctx, item)
     block(nk_ctx, item)
     selected = String(findfirst(isequal(item.value), item.options))
-    (width, height) = (nk_widget_width(nk_ctx), env[:default_layout_height] * (length(item.options) + 1))
+    (width, height) = (nk_widget_width(nk_ctx), config[:default_layout_height] * (length(item.options) + 1))
     if haskey(item.props, :frame)
         if haskey(item.frame, :width)
             width = item.frame.width
@@ -168,7 +168,7 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::ComboBox;
         end
     end
     if Bool(nk_combo_begin_label(nk_ctx, selected, nk_vec2(width, height)))
-        nk_layout_row_dynamic(nk_ctx, env[:default_layout_height], 1);
+        nk_layout_row_dynamic(nk_ctx, config[:default_layout_height], 1);
         for (name, value) in pairs(item.options)
             if Bool(nk_combo_item_label(nk_ctx, String(name), NK_TEXT_LEFT))
                 if item.value != value

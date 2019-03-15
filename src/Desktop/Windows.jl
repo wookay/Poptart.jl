@@ -117,14 +117,15 @@ end
 
 # window states
 
-get_window_name(window::W) where {W <: UIWindow} = window.name === nothing ? window.title : window.name
+Base.nameof(window::W) where {W <: UIWindow} = something(window.name, window.title)
 
 function is_collapsed(app::A, window::W) where {A <: UIApplication, W <: UIWindow}
-    nk_window_is_collapsed(app.nk_ctx, get_window_name(window)) != 0
+    nk_window_is_collapsed(app.nk_ctx, nameof(window)) != 0
 end
 
 function set_bounds(app::A, window::W, frame::NamedTuple{(:x,:y,:width,:height)}) where {A <: UIApplication, W <: UIWindow}
-    nk_window_set_bounds(app.nk_ctx, get_window_name(window), nuklear_rect(frame))
+    rect = nuklear_rect(frame)
+    nk_window_set_bounds(app.nk_ctx, nameof(window), rect)
 end
 
 """
