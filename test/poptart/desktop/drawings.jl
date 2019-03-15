@@ -13,10 +13,10 @@ push!(FontAtlas.fonts, Font(name="Roboto-Light", path=font_path, height=50))
 
 canvas = Canvas()
 window1 = Windows.Window(items=[canvas], title="Drawings", frame=(x=10, y=10, width=480, height=380))
-Application(windows=[window1], title="App", frame=(width=500, height=400))
+app = Application(windows=[window1], title="App", frame=(width=500, height=400))
 
-strokeColor = RGBA(0,0.7,0,1)
-fillColor   = RGBA(0.1, 0.7,0.8,0.9)
+strokeColor = RGBA(0, 0.7, 0, 1)
+fillColor   = RGBA(0.1, 0.7, 0.8, 0.9)
 
 line1 = Line(points=[(50, 100), (90, 140)], thickness=7.5, color=strokeColor)
 line2 = Line(points=[(60, 90), (100, 130)], thickness=7.5, color=strokeColor)

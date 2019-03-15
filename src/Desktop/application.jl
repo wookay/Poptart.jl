@@ -6,6 +6,7 @@ using Nuklear
 using Nuklear.LibNuklear
 using Nuklear.GLFWBackend
 using ModernGL # glViewport glClear glClearColor
+using Colors: RGBA
 
 const MAX_VERTEX_BUFFER = 512 * 1024
 const MAX_ELEMENT_BUFFER = 128 * 1024
@@ -60,9 +61,9 @@ function runloop(glwin::GLFW.Window, app::A, closed::Condition) where {A <: UIAp
         end
 
         # draw
-        bg = nk_colorf(0.10, 0.18, 0.24, 1.0)
+        bg = app.bgcolor
         glClear(GL_COLOR_BUFFER_BIT)
-        glClearColor(bg.r, bg.g, bg.b, bg.a)
+        glClearColor(bg.r, bg.g, bg.b, bg.alpha)
         nk_glfw3_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER)
         GLFW.SwapBuffers(glwin)
     end
@@ -73,23 +74,12 @@ function runloop(glwin::GLFW.Window, app::A, closed::Condition) where {A <: UIAp
     empty!(env)
 end
 
-function Base.getproperty(app::A, prop::Symbol) where {A <: UIApplication}
-    if prop in fieldnames(A)
-        getfield(app, prop)
-    elseif prop in properties(app)
-        app.props[prop]
-    else
-        throw(KeyError(prop))
-    end
-end
-
-function properties(::A) where {A <: UIApplication}
-    (:title, :frame)
-end
-
-
 """
-    Application(; title::String="App", frame::NamedTuple{(:width,:height)}=(width=400, height=300), windows=[Windows.Window(title="", frame=(x=0,y=0,frame...))])
+    Application(; title::String="App",
+                  frame::NamedTuple{(:width,:height)}=(width=400, height=300),
+                  windows=[Windows.Window(title="Title", frame=(x=0,y=0,frame...))],
+                  bgcolor=RGBA(0.10, 0.18, 0.24, 1),
+                  closed=Condition())
 """
 mutable struct Application <: UIApplication
     props::Dict{Symbol,Any}
@@ -97,7 +87,11 @@ mutable struct Application <: UIApplication
     nk_ctx::Union{Nothing,Ptr{LibNuklear.nk_context}}
     task::Union{Nothing,Task}
 
-    function Application(; title::String="App", frame::NamedTuple{(:width,:height)}=(width=400, height=300), windows=[Windows.Window(title="Title", frame=(x=0,y=0,frame...))], closed=Condition())
+    function Application(; title::String="App",
+                           frame::NamedTuple{(:width,:height)}=(width=400, height=300),
+                           windows=[Windows.Window(title="Title", frame=(x=0,y=0,frame...))],
+                           bgcolor=RGBA(0.10, 0.18, 0.24, 1),
+                           closed=Condition())
         app_windows = isempty(windows) ? UIWindow[] : windows
         glwin = GLFW.GetCurrentContext()
         if glwin.handle !== C_NULL && haskey(env, glwin.handle)
@@ -112,13 +106,27 @@ mutable struct Application <: UIApplication
             env[glwin.handle] = app
             return app
         end
-        app = new(Dict(:title=>title, :frame=>frame), app_windows, nothing, nothing)
+        app = new(Dict(:title=>title, :frame=>frame, :bgcolor=>bgcolor), app_windows, nothing, nothing)
         (glwin, nk_ctx) = setup_glfw(; title=app.title, frame=app.frame)
         app.nk_ctx = nk_ctx
         task = @async runloop(glwin, app, closed)
         app.task = task
         env[glwin.handle] = app
         app
+    end
+end
+
+function properties(::A) where {A <: UIApplication}
+    (:title, :frame, :bgcolor)
+end
+
+function Base.getproperty(app::A, prop::Symbol) where {A <: UIApplication}
+    if prop in fieldnames(A)
+        getfield(app, prop)
+    elseif prop in properties(app)
+        app.props[prop]
+    else
+        throw(KeyError(prop))
     end
 end
 

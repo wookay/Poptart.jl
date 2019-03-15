@@ -74,8 +74,8 @@ function nuklear_vec2(frame::NamedTuple{(:width,:height)})::nk_vec2
     nk_vec2(values(frame)...)
 end
 
-function nuklear_rgba(c::RGBA)
-    nk_rgba(round.(Int, 0xff .* (c.r, c.g, c.b, c.alpha))...)
+function nuklear_color(c::RGBA)::nk_color
+    nk_color(round.(Int, 0xff .* (c.r, c.g, c.b, c.alpha))...)
 end
 
 function Base.vec(v::nk_vec2)

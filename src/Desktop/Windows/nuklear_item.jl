@@ -84,7 +84,7 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::Label; la
     if item.color === nothing
         nk_label(nk_ctx, item.text, item.alignment)
     else
-        color = nuklear_rgba(item.color)
+        color = nuklear_color(item.color)
         nk_label_colored(nk_ctx, item.text, item.alignment, color)
     end
 end
@@ -309,8 +309,8 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, chart::Chart; l
     layout(nk_ctx, chart)
     block(nk_ctx, chart)
     if chart.color !== nothing && chart.highlight !== nothing
-        color = nuklear_rgba(chart.color)
-        highlight = nuklear_rgba(chart.highlight)
+        color = nuklear_color(chart.color)
+        highlight = nuklear_color(chart.highlight)
         chart_begin = nk_chart_begin_colored(nk_ctx, chart.chart_type, color, highlight, length(chart.items), chart.min, chart.max)
     else
         chart_begin = nk_chart_begin(nk_ctx, chart.chart_type, length(chart.items), chart.min, chart.max)
@@ -330,8 +330,8 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::MixedChar
         block(nk_ctx, item)
         chart = first(item.items)
         if chart.color !== nothing && chart.highlight !== nothing
-            color = nuklear_rgba(chart.color)
-            highlight = nuklear_rgba(chart.highlight)
+            color = nuklear_color(chart.color)
+            highlight = nuklear_color(chart.highlight)
             chart_begin = nk_chart_begin_colored(nk_ctx, chart.chart_type, color, highlight, length(chart.items), chart.min, chart.max)
         else
             chart_begin = nk_chart_begin(nk_ctx, chart.chart_type, length(chart.items), chart.min, chart.max)
@@ -339,8 +339,8 @@ function nuklear_item(block, nk_ctx::Ptr{LibNuklear.nk_context}, item::MixedChar
         if Bool(chart_begin)
             for chart in item.items[2:end]
                 if chart.color !== nothing && chart.highlight !== nothing
-                    color = nuklear_rgba(chart.color)
-                    highlight = nuklear_rgba(chart.highlight)
+                    color = nuklear_color(chart.color)
+                    highlight = nuklear_color(chart.highlight)
                     nk_chart_add_slot_colored(nk_ctx, chart.chart_type, color, highlight, length(chart.items), chart.min, chart.max)
                 else
                     nk_chart_add_slot(nk_ctx, chart.chart_type, length(chart.items), chart.min, chart.max)

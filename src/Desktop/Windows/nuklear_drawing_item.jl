@@ -2,71 +2,71 @@
 
 function nuklear_drawing_item(::Ptr{LibNuklear.nk_context}, painter::Ptr{LibNuklear.nk_command_buffer}, window_pos::nk_vec2, ::Drawings.Drawing{stroke}, element::Line)
     point1, point2 = element.points
-    color = nuklear_rgba(element.color)
+    color = nuklear_color(element.color)
     offset = vec(window_pos)
     nk_stroke_line(painter, (offset .+ point1)..., (offset .+ point2)..., element.thickness, color)
 end
 
 function nuklear_drawing_item(::Ptr{LibNuklear.nk_context}, painter::Ptr{LibNuklear.nk_command_buffer}, window_pos::nk_vec2, ::Drawings.Drawing{stroke}, element::Rect)
     rect = nuklear_rect(window_pos, element.rect)
-    color = nuklear_rgba(element.color)
+    color = nuklear_color(element.color)
     nk_stroke_rect(painter, rect, element.rounding, element.thickness, color)
 end
 
 function nuklear_drawing_item(::Ptr{LibNuklear.nk_context}, painter::Ptr{LibNuklear.nk_command_buffer}, window_pos::nk_vec2, ::Drawings.Drawing{fill}, element::Rect)
     rect = nuklear_rect(window_pos, element.rect)
-    color = nuklear_rgba(element.color)
+    color = nuklear_color(element.color)
     nk_fill_rect(painter, rect, element.rounding, color)
 end
 
 function nuklear_drawing_item(::Ptr{LibNuklear.nk_context}, painter::Ptr{LibNuklear.nk_command_buffer}, window_pos::nk_vec2, ::Drawings.Drawing{fill}, element::RectMultiColor)
     rect = nuklear_rect(window_pos, element.rect)
-    colors = nuklear_rgba.((element.left, element.top, element.right, element.bottom))
+    colors = nuklear_color.((element.left, element.top, element.right, element.bottom))
     nk_fill_rect_multi_color(painter, rect, colors...)
 end
 
 function nuklear_drawing_item(::Ptr{LibNuklear.nk_context}, painter::Ptr{LibNuklear.nk_command_buffer}, window_pos::nk_vec2, ::Drawings.Drawing{stroke}, element::Circle)
     rect = nuklear_rect(window_pos, element.rect)
-    color = nuklear_rgba(element.color)
+    color = nuklear_color(element.color)
     nk_stroke_circle(painter, rect, element.thickness, color)
 end
 
 function nuklear_drawing_item(::Ptr{LibNuklear.nk_context}, painter::Ptr{LibNuklear.nk_command_buffer}, window_pos::nk_vec2, ::Drawings.Drawing{fill}, element::Circle)
     rect = nuklear_rect(window_pos, element.rect)
-    color = nuklear_rgba(element.color)
+    color = nuklear_color(element.color)
     nk_fill_circle(painter, rect, color)
 end
 
 function nuklear_drawing_item(::Ptr{LibNuklear.nk_context}, painter::Ptr{LibNuklear.nk_command_buffer}, window_pos::nk_vec2, ::Drawings.Drawing{stroke}, element::Triangle)
     point1, point2, point3 = element.points
-    color = nuklear_rgba(element.color)
+    color = nuklear_color(element.color)
     offset = vec(window_pos)
     nk_stroke_triangle(painter, (offset .+ point1)..., (offset .+ point2)..., (offset .+ point3)..., element.thickness, color)
 end
 
 function nuklear_drawing_item(::Ptr{LibNuklear.nk_context}, painter::Ptr{LibNuklear.nk_command_buffer}, window_pos::nk_vec2, ::Drawings.Drawing{fill}, element::Triangle)
     point1, point2, point3 = element.points
-    color = nuklear_rgba(element.color)
+    color = nuklear_color(element.color)
     offset = vec(window_pos)
     nk_fill_triangle(painter, (offset .+ point1)..., (offset .+ point2)..., (offset .+ point3)..., color)
 end
 
 function nuklear_drawing_item(::Ptr{LibNuklear.nk_context}, painter::Ptr{LibNuklear.nk_command_buffer}, window_pos::nk_vec2, ::Drawings.Drawing{stroke}, element::Arc)
     angle = element.angle
-    color = nuklear_rgba(element.color)
+    color = nuklear_color(element.color)
     offset = vec(window_pos)
     nk_stroke_arc(painter, (offset .+ element.center)..., element.radius, angle.min, angle.max, element.thickness, color)
 end
 
 function nuklear_drawing_item(::Ptr{LibNuklear.nk_context}, painter::Ptr{LibNuklear.nk_command_buffer}, window_pos::nk_vec2, ::Drawings.Drawing{fill}, element::Arc)
     angle = element.angle
-    color = nuklear_rgba(element.color)
+    color = nuklear_color(element.color)
     offset = vec(window_pos)
     nk_fill_arc(painter, (offset .+ element.center)..., element.radius, angle.min, angle.max, color)
 end
 
 function nuklear_drawing_item(::Ptr{LibNuklear.nk_context}, painter::Ptr{LibNuklear.nk_command_buffer}, window_pos::nk_vec2, ::Drawings.Drawing{stroke}, element::Curve)
-    color = nuklear_rgba(element.color)
+    color = nuklear_color(element.color)
     offset = vec(window_pos)
     nk_stroke_curve(painter, (offset .+ element.startPoint)..., (offset .+ element.control1)..., (offset .+ element.control2)..., (offset .+ element.endPoint)..., element.thickness, color)
 end
@@ -74,21 +74,21 @@ end
 function nuklear_drawing_item(::Ptr{LibNuklear.nk_context}, painter::Ptr{LibNuklear.nk_command_buffer}, window_pos::nk_vec2, ::Drawings.Drawing{stroke}, element::Polyline)
     offset = vec(window_pos)
     points = Cfloat.(vcat(map(v -> v .+ offset, element.points)...))
-    color = nuklear_rgba(element.color)
+    color = nuklear_color(element.color)
     nk_stroke_polyline(painter, points, length(element.points), element.thickness, color)
 end
 
 function nuklear_drawing_item(::Ptr{LibNuklear.nk_context}, painter::Ptr{LibNuklear.nk_command_buffer}, window_pos::nk_vec2, ::Drawings.Drawing{stroke}, element::Polygon)
     offset = vec(window_pos)
     points = Cfloat.(vcat(map(v -> v .+ offset, element.points)...))
-    color = nuklear_rgba(element.color)
+    color = nuklear_color(element.color)
     nk_stroke_polygon(painter, points, length(element.points), element.thickness, color)
 end
 
 function nuklear_drawing_item(::Ptr{LibNuklear.nk_context}, painter::Ptr{LibNuklear.nk_command_buffer}, window_pos::nk_vec2, ::Drawings.Drawing{fill}, element::Polygon)
     offset = vec(window_pos)
     points = Cfloat.(vcat(map(v -> v .+ offset, element.points)...))
-    color = nuklear_rgba(element.color)
+    color = nuklear_color(element.color)
     nk_fill_polygon(painter, points, length(element.points), color)
 end
 
@@ -104,7 +104,7 @@ function nuklear_drawing_item(nk_ctx::Ptr{LibNuklear.nk_context}, painter::Ptr{L
         len = sizeof(element.text)
         rect = nuklear_rect(window_pos, element.rect)
         bg = nk_rgba(0, 0, 0, 0)
-        fg = nuklear_rgba(element.color)
+        fg = nuklear_color(element.color)
         nk_style_push_font(nk_ctx, font_handle)
         nk_draw_text(painter, rect, str, len, font_handle, bg, fg)
         nk_style_pop_font(nk_ctx)
