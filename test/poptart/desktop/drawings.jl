@@ -4,7 +4,7 @@ using Jive
 using Test
 using Poptart.Desktop # Application Windows FontAtalas Font
 using Poptart.Controls # Canvas put! remove!
-using Poptart.Drawings # Line Rect RectMultiColor Circle Triangle stroke fill
+using Poptart.Drawings # Line Rect RectMultiColor Circle Triangle TextBox stroke fill
 using Nuklear # pathof(Nuklear)
 using Colors: RGBA
 

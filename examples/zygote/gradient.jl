@@ -3,8 +3,8 @@ using Poptart.Desktop # Application Windows put!
 using Poptart.Controls # Chart MixedChart
 
 window1 = Windows.Window(title="gradient", frame=(x=10,y=20,width=300,height=300))
-closed = Condition()
-Application(windows=[window1], title="Zygote", frame=(width=350, height=400), closed=closed)
+closenotify = Condition()
+Application(windows=[window1], title="Zygote", frame=(width=350, height=400), closenotify=closenotify)
 
 using Nuklear.LibNuklear: NK_CHART_LINES, NK_CHART_COLUMN
 using Colors: RGBA
@@ -34,4 +34,4 @@ lines_chart2   = Chart(items=y_values, chart_type=NK_CHART_LINES, min=minimum(y_
 mixed = MixedChart(items=[lines_chart1, lines_chart2], frame=(height=100,))
 put!(window1, mixed)
 
-Base.JLOptions().isinteractive==0 && wait(closed)
+Base.JLOptions().isinteractive==0 && wait(closenotify)

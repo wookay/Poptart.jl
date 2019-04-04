@@ -59,7 +59,7 @@ include("Controls/contextual.jl")
 export TreeItem
 include("Controls/tree.jl")
 
-export Canvas, TextBox
+export Canvas
 include("Controls/canvas.jl")
 
 end # module Poptart.Controls

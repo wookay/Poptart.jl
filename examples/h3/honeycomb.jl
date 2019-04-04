@@ -9,8 +9,8 @@ rings = kRing(base, 3)
 
 canvas = Canvas()
 window1 = Windows.Window(items=[canvas], title="H3", frame=(x=0, y=0, width=500, height=400))
-closed = Condition()
-app = Application(windows=[window1], title="H3", frame=(width=500, height=400), closed=closed)
+closenotify = Condition()
+app = Application(windows=[window1], title="H3", frame=(width=500, height=400), closenotify=closenotify)
 
 strokeColor = RGBA(0,0.7,0,1)
 for boundary in h3ToGeoBoundary.(rings)
@@ -23,4 +23,4 @@ didClick(canvas) do event
     @info :pos event.pos
 end
 
-Base.JLOptions().isinteractive==0 && wait(closed)
+Base.JLOptions().isinteractive==0 && wait(closenotify)

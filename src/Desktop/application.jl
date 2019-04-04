@@ -46,7 +46,7 @@ function error_handling(err)::Bool
     false
 end
 
-function runloop(glwin::GLFW.Window, app::A, closed::Condition) where {A <: UIApplication}
+function runloop(glwin::GLFW.Window, app::A, closenotify::Condition) where {A <: UIApplication}
     while !GLFW.WindowShouldClose(glwin)
         yield()
 
@@ -70,7 +70,7 @@ function runloop(glwin::GLFW.Window, app::A, closed::Condition) where {A <: UIAp
     nk_glfw3_shutdown()
     GLFW.DestroyWindow(glwin)
     app.nk_ctx = nothing
-    notify(closed)
+    notify(closenotify)
     empty!(env)
 end
 
@@ -79,7 +79,7 @@ end
                   frame::NamedTuple{(:width,:height)}=(width=400, height=300),
                   windows=[Windows.Window(title="Title", frame=(x=0,y=0,frame...))],
                   bgcolor=RGBA(0.10, 0.18, 0.24, 1),
-                  closed=Condition())
+                  closenotify=Condition())
 """
 mutable struct Application <: UIApplication
     props::Dict{Symbol,Any}
@@ -91,7 +91,7 @@ mutable struct Application <: UIApplication
                            frame::NamedTuple{(:width,:height)}=(width=400, height=300),
                            windows=[Windows.Window(title="Title", frame=(x=0,y=0,frame...))],
                            bgcolor=RGBA(0.10, 0.18, 0.24, 1),
-                           closed=Condition())
+                           closenotify=Condition())
         app_windows = isempty(windows) ? UIWindow[] : windows
         glwin = GLFW.GetCurrentContext()
         if glwin.handle !== C_NULL && haskey(env, glwin.handle)
@@ -109,7 +109,7 @@ mutable struct Application <: UIApplication
         app = new(Dict(:title=>title, :frame=>frame, :bgcolor=>bgcolor), app_windows, nothing, nothing)
         (glwin, nk_ctx) = setup_glfw(; title=app.title, frame=app.frame)
         app.nk_ctx = nk_ctx
-        task = @async runloop(glwin, app, closed)
+        task = @async runloop(glwin, app, closenotify)
         app.task = task
         env[glwin.handle] = app
         app
