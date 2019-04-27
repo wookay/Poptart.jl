@@ -98,7 +98,7 @@ function nuklear_drawing_item(nk_ctx::Ptr{LibNuklear.nk_context}, painter::Ptr{L
 end
 
 function nuklear_drawing_item(nk_ctx::Ptr{LibNuklear.nk_context}, painter::Ptr{LibNuklear.nk_command_buffer}, window_pos::nk_vec2, ::Drawings.Drawing{Drawings.draw}, element::TextBox)
-    font_handle = FontAtlas.get_font_handle(element.font)
+    font_handle = FontAtlas.get_font_handle(haskey(element.props, :font) ? element.font : FontAtlas.DEFAULT_FONT)
     if C_NULL != font_handle
         str = element.text
         len = sizeof(element.text)
