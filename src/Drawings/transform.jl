@@ -13,7 +13,7 @@ function translate(element::DrawingElement, x::Real)
 end
 
 function translate(element::DrawingElement, (x, y))
-    transform(element, +, (x, x))
+    transform(element, +, (x, y))
 end
 
 function transform(element::Line, f, (x, y))::Line
