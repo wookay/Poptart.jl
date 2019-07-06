@@ -44,7 +44,9 @@ function ShowDemoWindow(heartbeat, p_open::Ref{Bool})
     CImGui.Text("dear imgui says hello. $(CImGui.IMGUI_VERSION)")
     CImGui.End() # demo
     heartbeat() do
-        print()
+        println("closing...")
+        glwin = GLFW.GetCurrentContext()
+        glwin.handle !== C_NULL && GLFW.SetWindowShouldClose(glwin, true)
     end
 end
 
@@ -94,7 +96,7 @@ function runloop(glwin::GLFW.Window, imctx::Ptr, closenotify::Condition; bgcolor
     ImGui_ImplGlfw_InitForOpenGL(glwin, true)
     ImGui_ImplOpenGL3_Init(glsl_version)
 
-    heartbeat = throttle(60) do block # 1 minute
+    heartbeat = throttle(0.1) do block # 1 minute
         block()
     end
     while !GLFW.WindowShouldClose(glwin)
@@ -129,8 +131,11 @@ function runloop(glwin::GLFW.Window, imctx::Ptr, closenotify::Condition; bgcolor
     notify(closenotify)
 end
 
-closenotify = Condition()
-(glwin, imctx) = setup_glfw(; title="Demo", frame=(width=1280, height=720))
-task = @async runloop(glwin, imctx, closenotify)
+glwin = GLFW.GetCurrentContext()
+if glwin.handle === C_NULL
+    closenotify = Condition()
+    (glwin, imctx) = setup_glfw(; title="Demo", frame=(width=1280, height=720))
+    runloop(glwin, imctx, closenotify)
+end
 
 end # module test_cimgui_glfw
