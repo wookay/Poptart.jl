@@ -32,19 +32,19 @@ function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec
 end
 
 function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{stroke}, element::Circle)
-    centre = imgui_offset_vec2(window_pos, element.centre)
+    center = imgui_offset_vec2(window_pos, element.center)
     radius = element.radius
     color = imgui_color(element.color)
     num_segments = haskey(element.props, :num_segments) ? element.num_segments : 32
-    CImGui.AddCircle(draw_list, centre, radius, color, num_segments, element.thickness)
+    CImGui.AddCircle(draw_list, center, radius, color, num_segments, element.thickness)
 end
 
 function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{fill}, element::Circle)
-    centre = imgui_offset_vec2(window_pos, element.centre)
+    center = imgui_offset_vec2(window_pos, element.center)
     radius = element.radius
     color = imgui_color(element.color)
     num_segments = haskey(element.props, :num_segments) ? element.num_segments : 32
-    CImGui.AddCircleFilled(draw_list, centre, radius, color, num_segments)
+    CImGui.AddCircleFilled(draw_list, center, radius, color, num_segments)
 end
 
 function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{stroke}, element::Triangle)
@@ -75,11 +75,53 @@ function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec
     CImGui.AddBezierCurve(draw_list, pos0, cp0, cp1, pos1, color, element.thickness, num_segments)
 end
 
-# Arc
+function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{stroke}, element::Arc)
+    center = imgui_offset_vec2(window_pos, element.center)
+    radius = element.radius
+    a_min = element.angle.min
+    a_max = element.angle.max
+    num_segments = haskey(element.props, :num_segments) ? element.num_segments : 32
+    CImGui.PathLineTo(draw_list, center)
+    CImGui.PathArcTo(draw_list, center, radius, a_min, a_max, num_segments)
+    color = imgui_color(element.color)
+    closed = true
+    CImGui.PathStroke(draw_list, color, closed, element.thickness)
+end
 
-# Polyline
+function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{fill}, element::Arc)
+    center = imgui_offset_vec2(window_pos, element.center)
+    radius = element.radius
+    a_min = element.angle.min
+    a_max = element.angle.max
+    num_segments = haskey(element.props, :num_segments) ? element.num_segments : 32
+    CImGui.PathLineTo(draw_list, center)
+    CImGui.PathArcTo(draw_list, center, radius, a_min, a_max, num_segments)
+    color = imgui_color(element.color)
+    CImGui.PathFillConvex(draw_list, color)
+end
 
-# Polygon
+function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{stroke}, element::Polyline)
+    points = map(point -> imgui_offset_vec2(window_pos, point), element.points)
+    num_points = length(element.points)
+    color = imgui_color(element.color)
+    closed = false
+    CImGui.AddPolyline(draw_list, points, num_points, color, closed, element.thickness)
+end
+
+function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{stroke}, element::Polygon)
+    points = map(point -> imgui_offset_vec2(window_pos, point), element.points)
+    num_points = length(element.points)
+    color = imgui_color(element.color)
+    closed = true
+    CImGui.AddPolyline(draw_list, points, num_points, color, closed, element.thickness)
+end
+
+function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{fill}, element::Polygon)
+    points = map(point -> imgui_offset_vec2(window_pos, point), element.points)
+    num_points = length(element.points)
+    color = imgui_color(element.color)
+    CImGui.AddConvexPolyFilled(draw_list, points, num_points, color)
+end
 
 function imgui_drawing_item(::Any, ::Any, ::Any, drawing::Drawings.Drawing, ::Any)
     @onlyonce begin

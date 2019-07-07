@@ -23,10 +23,10 @@ rect1 = Rect(rect=(160, 150, 50, 50), rounding=0, thickness=7.5, color=strokeCol
 
 rectmulticolor1 = RectMultiColor(rect=(160, 220, 50, 50), color_upper_left=RGBA(0,0.7,0.7,1), color_upper_right=RGBA(0.7,0.7,0,1), color_bottom_left=RGBA(0.7,0,0,1), color_bottom_right=RGBA(0,0,0.7,1))
 
-centre = (255, 95)
+center = (255, 95)
 radius = 25
-circle1 = Circle(centre=centre .+ (0, 80), radius=radius, thickness=7.5, color=strokeColor)
-circle2 = Circle(centre=centre, radius=radius, color=fillColor)
+circle1 = Circle(center=center .+ (0, 80), radius=radius, thickness=7.5, color=strokeColor)
+circle2 = Circle(center=center, radius=radius, color=fillColor)
 
 triangle2 = Triangle(points=[(320, 75), (300,116), (340,116)], color=fillColor)
 triangle1 = Triangle(points=[(320, 75+80), (300,116+80), (340,116+80)], thickness=7.5, color=strokeColor)
@@ -34,11 +34,13 @@ triangle1 = Triangle(points=[(320, 75+80), (300,116+80), (340,116+80)], thicknes
 m(x, y) = (x, y) .+ (-340, -20)
 curve1 = Curve(startPoint=m(380,200), control1=m(405,270), control2=m(455,120), endPoint=m(480,200), thickness=7.5, color=strokeColor)
 
-# arc1 = Arc(center=(380, 80+80), radius=37, angle=(min=0, max=deg2rad(120)), thickness=7.5, color=strokeColor)
-# arc2 = Arc(center=(380, 80), radius=37, angle=(min=0, max=deg2rad(120)), color=fillColor)
-# polyline1 = Polyline(points=[(320-60, 75+150), (300-60,116+150), (340-60,116+150)], thickness=7.5, color=strokeColor)
-# polygon1 = Polygon(points=[(320, 75+150), (300,116+150), (340,116+150)], thickness=7.5, color=strokeColor)
-# polygon2 = Polygon(points=[(320, 75+220), (300,116+220), (340,116+220)], color=fillColor)
+arc1 = Arc(center=(380, 80+80), radius=37, angle=(min=0, max=deg2rad(120)), thickness=7.5, color=strokeColor)
+arc2 = Arc(center=(380, 80), radius=37, angle=(min=0, max=deg2rad(120)), color=fillColor)
+
+polyline1 = Polyline(points=[(320-60, 75+150), (300-60,116+150), (340-60,116+150)], thickness=7.5, color=strokeColor)
+
+polygon1 = Polygon(points=[(320, 75+150), (300,116+150), (340,116+150)], thickness=7.5, color=strokeColor)
+polygon2 = Polygon(points=[(320, 75+220), (300,116+220), (340,116+220)], color=fillColor)
 
 put!(canvas,
     stroke.((line1, line2, line3))...,
@@ -46,7 +48,11 @@ put!(canvas,
     fill(rectmulticolor1),
     stroke(circle1), fill(circle2),
     stroke(triangle1), fill(triangle2),
-    stroke(curve1))
+    stroke(curve1),
+    stroke(arc1), fill(arc2),
+    stroke(polyline1),
+    stroke(polygon1), fill(polygon2)
+    )
 
 rect3 = Rect(rect=(80, 270, 50, 50), rounding=0, thickness=7.5, color=strokeColor)
 stroke1 = stroke(rect3)

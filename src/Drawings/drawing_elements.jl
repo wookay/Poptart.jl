@@ -62,10 +62,10 @@ RectMultiColor
 @DrawingElement RectMultiColor (rect, color_upper_left, color_upper_right, color_bottom_left, color_bottom_right)
 
 """
-    Circle(; centre, radius, color::RGBA, [num_segments], [thickness])
+    Circle(; center, radius, color::RGBA, [num_segments], [thickness])
 """
 Circle
-@DrawingElement Circle (centre, radius, color, num_segments, thickness)
+@DrawingElement Circle (center, radius, color, num_segments, thickness)
 
 """
     Triangle(; points::Vector{<:Tuple}, [thickness], color::RGBA)
@@ -74,10 +74,10 @@ Triangle
 @DrawingElement Triangle (points, thickness, color)
 
 """
-    Arc(; centre, radius, angle, [thickness], color::RGBA)
+    Arc(; center, radius, angle, [num_segments], [thickness], color::RGBA)
 """
 Arc
-@DrawingElement Arc (centre, radius, angle, thickness, color)
+@DrawingElement Arc (center, radius, angle, num_segments, thickness, color)
 
 """
     Curve(; startPoint, control1, control2, endPoint, thickness, color::RGBA)
