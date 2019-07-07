@@ -70,7 +70,7 @@ function throttle(f, timeout; leading=true, trailing=false)
   end
 end
 
-function runloop(glwin::GLFW.Window, app::A, closenotify::Condition) where {A <: UIApplication}
+function runloop(glwin::GLFW.Window, app::A) where {A <: UIApplication}
     glsl_version = 150
     ImGui_ImplGlfw_InitForOpenGL(glwin, true)
     ImGui_ImplOpenGL3_Init(glsl_version)
@@ -79,8 +79,10 @@ function runloop(glwin::GLFW.Window, app::A, closenotify::Condition) where {A <:
         block()
     end
 
+    app.pre_callback !== nothing && Base.invokelatest(app.pre_callback)
+
     bgcolor = app.bgcolor
-    while !GLFW.WindowShouldClose(glwin)
+    while app.isrunning && !GLFW.WindowShouldClose(glwin)
         yield()
 
         GLFW.PollEvents()
@@ -103,13 +105,15 @@ function runloop(glwin::GLFW.Window, app::A, closenotify::Condition) where {A <:
         GLFW.SwapBuffers(glwin)
     end
 
+    app.post_callback !== nothing && Base.invokelatest(app.post_callback)
+
     # cleanup
     ImGui_ImplOpenGL3_Shutdown()
     ImGui_ImplGlfw_Shutdown()
     CImGui.DestroyContext(app.imctx)
     GLFW.DestroyWindow(glwin)
 
-    notify(closenotify)
+    notify(app.closenotify)
 end
 
 """
@@ -124,6 +128,8 @@ mutable struct Application <: UIApplication
     windows::Vector{W} where {W <: UIWindow}
     imctx::Union{Nothing,Ptr}
     task::Union{Nothing,Task}
+    closenotify::Condition
+    isrunning::Bool
 
     function Application(; title::String="App",
                            frame::NamedTuple{(:width,:height)}=(width=400, height=300),
@@ -144,22 +150,42 @@ mutable struct Application <: UIApplication
             env[glwin.handle] = app
             return app
         end
-        app = new(Dict(:title=>title, :frame=>frame, :bgcolor=>bgcolor), app_windows, nothing, nothing)
-        (glwin, imctx) = setup_glfw(; title=app.title, frame=app.frame)
-        app.imctx = imctx
-        if false
-            runloop(glwin, app, closenotify)
-        else
-            task = @async runloop(glwin, app, closenotify)
-            app.task = task
-        end
-        env[glwin.handle] = app
+        props = Dict(:title=>title, :frame=>frame, :bgcolor=>bgcolor, :pre_callback => nothing, :post_callback => nothing)
+        app = new(props, app_windows, nothing, nothing, closenotify, true)
+        do_resume(app)
         app
     end
 end
 
+function pause(app::A) where {A <: UIApplication}
+    if app.isrunning
+        app.isrunning = false
+        wait(app.closenotify)
+    end
+end
+
+function resume(app::A) where {A <: UIApplication}
+    if !app.isrunning
+        app.isrunning = true
+        do_resume(app)
+    end
+end
+
+function do_resume(app::A) where {A <: UIApplication}
+    (glwin, imctx) = setup_glfw(; title=app.title, frame=app.frame)
+    app.imctx = imctx
+    if false
+        runloop(glwin, app)
+    else
+        task = @async runloop(glwin, app)
+        app.task = task
+    end
+    env[glwin.handle] = app
+    nothing
+end
+
 function properties(::A) where {A <: UIApplication}
-    (:title, :frame, :bgcolor)
+    (:title, :frame, :bgcolor, :pre_callback, :post_callback)
 end
 
 function Base.getproperty(app::A, prop::Symbol) where {A <: UIApplication}

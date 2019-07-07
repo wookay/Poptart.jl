@@ -3,8 +3,8 @@ module test_cimgui_context
 using Test
 using CImGui
 
-ctx = CImGui.CreateContext()
-@test ctx isa Ptr
+imctx = CImGui.CreateContext()
+@test imctx isa Ptr
 
 io = CImGui.GetIO()
 @test io isa Ptr{CImGui.ImGuiIO}
@@ -13,6 +13,6 @@ io = CImGui.GetIO()
 time = CImGui.GetTime()
 @test time == 0
 
-CImGui.DestroyContext(ctx)
+CImGui.DestroyContext(imctx)
 
 end # module test_cimgui_context

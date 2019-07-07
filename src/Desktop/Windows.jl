@@ -52,7 +52,9 @@ function properties(::W) where {W <: UIWindow}
 end
 
 function setup_window(imctx::Ptr, window::W, heartbeat) where {W <: UIWindow}
+    (x, y) = (window.frame.x, window.frame.y)
     (width, height) = (window.frame.width, window.frame.height)
+    CImGui.SetNextWindowPos((x, y), CImGui.ImGuiCond_FirstUseEver)
     CImGui.SetNextWindowSize((width, height), CImGui.ImGuiCond_FirstUseEver)
     if window.name === nothing
         name = window.title

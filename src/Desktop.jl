@@ -7,7 +7,10 @@ export Windows, Window, put!, remove!
 include("Desktop/Windows.jl")
 using .Windows: Window
 
-export Application
+export Application, pause, resume
 include("Desktop/application.jl")
+
+export FontAtlas
+include("Desktop/FontAtlas.jl")
 
 end # module Poptart.Desktop
