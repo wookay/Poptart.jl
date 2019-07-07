@@ -129,6 +129,7 @@ function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec
     CImGui.AddText(draw_list, pos, color, element.text)
 end
 
+using Jive # @onlyonce
 function imgui_drawing_item(::Any, ::Any, ::Any, drawing::Drawings.Drawing, ::Any)
     @onlyonce begin
         @info "not implemented" drawing

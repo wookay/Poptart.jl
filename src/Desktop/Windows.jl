@@ -22,7 +22,7 @@ struct Window <: UIWindow
     props::Dict{Symbol,Any}
 
     function Window(; items::Vector{<:UIControl} = UIControl[], title::String="Title", frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=CImGui.ImGuiWindowFlags(0))
-        props = Dict{Symbol,Any}(:title => title, :frame => frame, :name => nothing, :flags => flags)
+        props = Dict{Symbol,Any}(:title => title, :frame => frame, :name => nothing, :flags => flags, :pre_callback => nothing, :post_callback => nothing)
         window = new(items, props)
     end
 end
@@ -48,7 +48,7 @@ function Base.getproperty(window::W, prop::Symbol) where {W <: UIWindow}
 end
 
 function properties(::W) where {W <: UIWindow}
-    (:title, :frame, :name, :flags, )
+    (:title, :frame, :name, :flags, :pre_callback, :post_callback)
 end
 
 function setup_window(imctx::Ptr, window::W, heartbeat) where {W <: UIWindow}
@@ -61,10 +61,12 @@ function setup_window(imctx::Ptr, window::W, heartbeat) where {W <: UIWindow}
     end
     p_open = Ref(true)
     CImGui.Begin(name, p_open, window.flags) || (CImGui.End(); return)
+    window.pre_callback !== nothing && Base.invokelatest(window.pre_callback)
     for item in window.items
         imgui_item(imctx, item) do imctx, item
         end
     end
+    window.post_callback !== nothing && Base.invokelatest(window.post_callback)
     CImGui.End()
     heartbeat() do
         nothing
@@ -85,6 +87,7 @@ end
 function remove!(window::W, controls::UIControl...) where {W <: UIWindow}
     indices = filter(x -> x !== nothing, indexin(controls, window.items))
     deleteat!(window.items, indices)
+    remove_imgui_item.(controls)
     nothing
 end
 
@@ -92,6 +95,7 @@ end
     empty!(window::W) where {W <: UIWindow}
 """
 function Base.empty!(window::W) where {W <: UIWindow}
+    remove_imgui_item.(window.items)
     empty!(window.items)
 end
 

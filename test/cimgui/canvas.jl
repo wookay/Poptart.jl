@@ -12,35 +12,9 @@ using .CImGui.CSyntax.CStatic: @cstatic
 using .CImGui.CSyntax.CFor: @cfor
 using .CImGui: ImVec2, ImVec4, IM_COL32, ImU32
 using Colors: RGBA
+using Poptart.Desktop: setup_glfw, error_handling, throttle
 
-function setup_glfw(; title::String, frame::NamedTuple{(:width,:height)})
-    VERSION_MAJOR = 3
-    VERSION_MINOR = 3
-    GLFW.WindowHint(GLFW.CONTEXT_VERSION_MAJOR, VERSION_MAJOR)
-    GLFW.WindowHint(GLFW.CONTEXT_VERSION_MINOR, VERSION_MINOR)
-    GLFW.WindowHint(GLFW.OPENGL_PROFILE, GLFW.OPENGL_CORE_PROFILE)
-    GLFW.WindowHint(GLFW.OPENGL_FORWARD_COMPAT, GL_TRUE)
-
-    glwin = GLFW.CreateWindow(frame.width, frame.height, title)
-    GLFW.MakeContextCurrent(glwin)
-    GLFW.SwapInterval(1)  # enable vsync
-    glViewport(0, 0, frame.width, frame.height)
-
-    imctx = CImGui.CreateContext()
-    (glwin, imctx)
-end
-
-
-function error_handling(err)::Bool
-    stackframes = stacktrace(catch_backtrace())
-    io = stderr
-    printstyled(io, "ERROR: ", sprint(showerror, err), "\n", color=Base.error_color())
-    for stackframe in stackframes
-        println(io, "    ", stackframe)
-    end
-    false
-end
-
+# code from https://github.com/Gnimuc/CImGui.jl/blob/master/examples/app_custom_rendering.jl
 function ShowExampleAppCustomRendering(heartbeat, p_open::Ref{Bool})
     CImGui.SetNextWindowSize((350, 560), CImGui.ImGuiCond_FirstUseEver)
     CImGui.Begin("Example: Custom rendering", p_open) || (CImGui.End(); return)
@@ -139,43 +113,12 @@ function ShowExampleAppCustomRendering(heartbeat, p_open::Ref{Bool})
     end
     CImGui.End()
     heartbeat() do
-        println("closing...")
-        glwin = GLFW.GetCurrentContext()
-        glwin.handle !== C_NULL && GLFW.SetWindowShouldClose(glwin, true)
-    end
-end
-
-# code from https://github.com/FluxML/Flux.jl/blob/master/src/utils.jl#L103
-function throttle(f, timeout; leading=true, trailing=false)
-  cooldown = true
-  later = nothing
-  result = nothing
-
-  function throttled(args...; kwargs...)
-    yield()
-
-    if cooldown
-      if leading
-        result = f(args...; kwargs...)
-      else
-        later = () -> f(args...; kwargs...)
-      end
-
-      cooldown = false
-      @async try
-        while (sleep(timeout); later != nothing)
-          later()
-          later = nothing
+        if get(ENV, "POPTART_AUTO_CLOSE", nothing) !== nothing
+            println("    closing $(basename(@__FILE__))")
+            glwin = GLFW.GetCurrentContext()
+            glwin.handle !== C_NULL && GLFW.SetWindowShouldClose(glwin, true)
         end
-      finally
-        cooldown = true
-      end
-    elseif trailing
-      later = () -> (result = f(args...; kwargs...))
     end
-
-    return result
-  end
 end
 
 function show_app(heartbeat)
@@ -191,7 +134,7 @@ function runloop(glwin::GLFW.Window, imctx::Ptr, closenotify::Condition; bgcolor
     ImGui_ImplGlfw_InitForOpenGL(glwin, true)
     ImGui_ImplOpenGL3_Init(glsl_version)
 
-    heartbeat = throttle(0.1) do block # 1 minute
+    heartbeat = throttle(0.1) do block
         block()
     end
     while !GLFW.WindowShouldClose(glwin)

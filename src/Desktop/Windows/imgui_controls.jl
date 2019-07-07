@@ -1,6 +1,5 @@
 # module Poptart.Desktop.Windows
 
-using Jive
 
 function imgui_item(block, imctx::Ptr, item::Button)
     CImGui.Button(item.title) && @async Mouse.leftClick(item)
@@ -31,6 +30,7 @@ function imgui_item(block, imctx::Ptr, item::Canvas)
     end
 end
 
+using Jive # @onlyonce
 function imgui_item(block, imctx::Ptr, item::Any)
     @onlyonce begin
         @info "not implemented" item
