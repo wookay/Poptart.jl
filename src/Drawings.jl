@@ -11,6 +11,6 @@ export scale, translate
 abstract type DrawingElement end
 
 include("Drawings/drawing_elements.jl")
-# include("Drawings/transform.jl")
+include("Drawings/transform.jl")
 
 end # module Poptart.Drawings

@@ -123,6 +123,12 @@ function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec
     CImGui.AddConvexPolyFilled(draw_list, points, num_points, color)
 end
 
+function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{Drawings.draw}, element::TextBox)
+    pos = imgui_offset_vec2(window_pos, element.rect[1:2])
+    color = imgui_color(element.color)
+    CImGui.AddText(draw_list, pos, color, element.text)
+end
+
 function imgui_drawing_item(::Any, ::Any, ::Any, drawing::Drawings.Drawing, ::Any)
     @onlyonce begin
         @info "not implemented" drawing

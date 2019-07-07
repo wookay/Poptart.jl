@@ -98,10 +98,10 @@ Polygon
 @DrawingElement Polygon (points, thickness, color)
 
 """
-    TextBox(; text::String, font::Union{String, Font}, rect, color::RGBA)
+    TextBox(; text::String, rect, color::RGBA)
 """
 TextBox
-@DrawingElement TextBox (text, font, rect, color)
+@DrawingElement TextBox (text, rect, color)
 
 """
     ImageBox(; rect, path::String)
