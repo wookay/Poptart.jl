@@ -1,11 +1,11 @@
 module Desktop # Poptart
 
 using ..Controls
-
 include("Desktop/types.jl")
 
-export Windows, put!, remove!
+export Windows, Window, put!, remove!
 include("Desktop/Windows.jl")
+using .Windows: Window
 
 export Application
 include("Desktop/application.jl")

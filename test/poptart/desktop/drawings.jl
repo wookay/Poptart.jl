@@ -2,13 +2,13 @@ using Jive
 @useinside module test_poptart_desktop_drawings
 
 using Test
-using Poptart.Desktop # Application Windows
+using Poptart.Desktop # Application Window
 using Poptart.Controls # Canvas put! remove!
 using Poptart.Drawings # Line Rect RectMultiColor Circle Triangle TextBox stroke fill
 using Colors: RGBA
 
 canvas = Canvas()
-window1 = Windows.Window(items=[canvas], title="Drawings", frame=(x=10, y=10, width=480, height=380))
+window1 = Window(items=[canvas], title="Drawings", frame=(x=10, y=10, width=480, height=380))
 app = Application(windows=[window1], title="App", frame=(width=500, height=400))
 
 strokeColor = RGBA(0, 0.7, 0, 1)

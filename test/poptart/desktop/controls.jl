@@ -2,11 +2,11 @@ using Jive
 @useinside module test_poptart_desktop_controls
 
 using Test
-using Poptart.Desktop # Application Windows put!
+using Poptart.Desktop # Application Window put!
 using Poptart.Controls # Mouse Button Slider didClick
 using Colors: RGBA
 
-window1 = Windows.Window(title="A", frame=(x=10,y=20,width=200,height=200))
+window1 = Window(title="A", frame=(x=10,y=20,width=200,height=200))
 app = Application(windows=[window1], title="App", frame=(width=630, height=400))
 @test app isa Application
 
