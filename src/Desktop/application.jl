@@ -11,12 +11,25 @@ using Colors: RGBA
 env = Dict{Ptr{Cvoid}, A where {A <: UIApplication}}()
 
 function setup_glfw(; title::String, frame::NamedTuple{(:width,:height)})
-    VERSION_MAJOR = 3
-    VERSION_MINOR = 3
-    GLFW.WindowHint(GLFW.CONTEXT_VERSION_MAJOR, VERSION_MAJOR)
-    GLFW.WindowHint(GLFW.CONTEXT_VERSION_MINOR, VERSION_MINOR)
-    GLFW.WindowHint(GLFW.OPENGL_PROFILE, GLFW.OPENGL_CORE_PROFILE)
-    GLFW.WindowHint(GLFW.OPENGL_FORWARD_COMPAT, GL_TRUE)
+    @static if Sys.isapple()
+        # OpenGL 3.2 + GLSL 150
+        glsl_version = 150
+        GLFW.WindowHint(GLFW.CONTEXT_VERSION_MAJOR, 3)
+        GLFW.WindowHint(GLFW.CONTEXT_VERSION_MINOR, 2)
+        GLFW.WindowHint(GLFW.OPENGL_PROFILE, GLFW.OPENGL_CORE_PROFILE) # 3.2+ only
+        GLFW.WindowHint(GLFW.OPENGL_FORWARD_COMPAT, GL_TRUE) # required on Mac
+    else
+        # OpenGL 3.0 + GLSL 130
+        glsl_version = 130
+        GLFW.WindowHint(GLFW.CONTEXT_VERSION_MAJOR, 3)
+        GLFW.WindowHint(GLFW.CONTEXT_VERSION_MINOR, 0)
+        # GLFW.WindowHint(GLFW.OPENGL_PROFILE, GLFW.OPENGL_CORE_PROFILE) # 3.2+ only
+        # GLFW.WindowHint(GLFW.OPENGL_FORWARD_COMPAT, GL_TRUE) # 3.0+ only
+    end
+
+    # setup GLFW error callback
+    error_callback(err::GLFW.GLFWError) = @error "GLFW ERROR: code $(err.code) msg: $(err.description)"
+    GLFW.SetErrorCallback(error_callback)
 
     glwin = GLFW.CreateWindow(frame.width, frame.height, title)
     GLFW.MakeContextCurrent(glwin)
@@ -24,7 +37,7 @@ function setup_glfw(; title::String, frame::NamedTuple{(:width,:height)})
     glViewport(0, 0, frame.width, frame.height)
 
     imctx = CImGui.CreateContext()
-    (glwin, imctx)
+    (glsl_version, glwin, imctx)
 end
 
 function error_handling(err)::Bool
@@ -70,8 +83,7 @@ function throttle(f, timeout; leading=true, trailing=false)
   end
 end
 
-function runloop(glwin::GLFW.Window, app::A) where {A <: UIApplication}
-    glsl_version = 150
+function runloop(glsl_version, glwin::GLFW.Window, app::A) where {A <: UIApplication}
     ImGui_ImplGlfw_InitForOpenGL(glwin, true)
     ImGui_ImplOpenGL3_Init(glsl_version)
 
@@ -181,12 +193,12 @@ function resume(app::A) where {A <: UIApplication}
 end
 
 function do_resume(app::A) where {A <: UIApplication}
-    (glwin, imctx) = setup_glfw(; title=app.title, frame=app.frame)
+    (glsl_version, glwin, imctx) = setup_glfw(; title=app.title, frame=app.frame)
     app.imctx = imctx
     if false
-        runloop(glwin, app)
+        runloop(glsl_version, glwin, app)
     else
-        task = @async runloop(glwin, app)
+        task = @async runloop(glsl_version, glwin, app)
         app.task = task
     end
     env[glwin.handle] = app

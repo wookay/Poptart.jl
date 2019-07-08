@@ -51,8 +51,7 @@ function show_app(heartbeat)
     @c ShowExampleAnimate(heartbeat)
 end
 
-function runloop(glwin::GLFW.Window, imctx::Ptr, closenotify::Condition; bgcolor=RGBA(0.10, 0.18, 0.24, 1))
-    glsl_version = 150
+function runloop(glsl_version, glwin::GLFW.Window, imctx::Ptr, closenotify::Condition; bgcolor=RGBA(0.10, 0.18, 0.24, 1))
     ImGui_ImplGlfw_InitForOpenGL(glwin, true)
     ImGui_ImplOpenGL3_Init(glsl_version)
 
@@ -94,8 +93,8 @@ end
 glwin = GLFW.GetCurrentContext()
 if glwin.handle === C_NULL
     closenotify = Condition()
-    (glwin, imctx) = setup_glfw(; title="Demo", frame=(width=1280, height=720))
-    runloop(glwin, imctx, closenotify)
+    (glsl_version, glwin, imctx) = setup_glfw(; title="Demo", frame=(width=1280, height=720))
+    runloop(glsl_version, glwin, imctx, closenotify)
 end
 
 end # module test_cimgui_animate

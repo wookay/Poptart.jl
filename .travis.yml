@@ -4,9 +4,9 @@ language: julia
 julia:
   - 1.1
 
-cache:
-  directories:
-  - "$HOME/.julia"
+os:
+  - linux
+  - osx
 
 matrix:
   fast_finish: true
