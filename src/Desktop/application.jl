@@ -157,13 +157,22 @@ mutable struct Application <: UIApplication
     end
 end
 
+"""
+    pause(app::A) where {A <: UIApplication}
+"""
 function pause(app::A) where {A <: UIApplication}
     if app.isrunning
-        app.isrunning = false
-        wait(app.closenotify)
+        glwin = GLFW.GetCurrentContext()
+        if glwin.handle !== C_NULL
+            app.isrunning = false
+            wait(app.closenotify)
+        end
     end
 end
 
+"""
+    resume(app::A) where {A <: UIApplication}
+"""
 function resume(app::A) where {A <: UIApplication}
     if !app.isrunning
         app.isrunning = true

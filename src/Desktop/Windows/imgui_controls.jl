@@ -22,6 +22,10 @@ function imgui_item(block, imctx::Ptr, item::Slider)
     f(label, item.value, min, max) && @async Mouse.leftClick(item)
 end
 
+function imgui_item(block, imctx::Ptr, item::Label)
+    CImGui.LabelText("", item.text)
+end
+
 function imgui_item(block, imctx::Ptr, item::Canvas)
     draw_list = CImGui.GetWindowDrawList()
     window_pos = CImGui.GetCursorScreenPos()

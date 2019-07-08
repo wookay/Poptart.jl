@@ -22,18 +22,18 @@ function properties(control::Canvas)
 end
 
 """
-    Controls.put!(canvas::Canvas, elements::Union{Drawing, TextBox, ImageBox}...)
+    Controls.put!(canvas::Canvas, elements::Union{Drawing, TextBox}...)
 """
-function put!(canvas::Canvas, elements::Union{Drawing, TextBox, ImageBox}...)
+function put!(canvas::Canvas, elements::Union{Drawing, TextBox}...)
     drawing_elements = convert.(Drawing, elements)
     push!(canvas.items, drawing_elements...)
     nothing
 end
 
 """
-    Controls.remove!(canvas::Canvas, elements::Union{Drawing, TextBox, ImageBox}...)
+    Controls.remove!(canvas::Canvas, elements::Union{Drawing, TextBox}...)
 """
-function remove!(canvas::Canvas, elements::Union{Drawing, TextBox, ImageBox}...)
+function remove!(canvas::Canvas, elements::Union{Drawing, TextBox}...)
     drawing_elements = convert.(Drawing, elements)
     indices = filter(x -> x !== nothing, indexin(drawing_elements, canvas.items))
     deleteat!(canvas.items, indices)
@@ -45,12 +45,8 @@ end
     empty!(canvas::Canvas)
 """
 function Base.empty!(canvas::Canvas)
+    remove_imgui_drawing_item.(canvas.items)
     empty!(canvas.items)
-end
-
-function remove_imgui_drawing_item(element::ImageBox)
-    if haskey(element.props, :imageref)
-    end
 end
 
 function remove_imgui_drawing_item(::Any)

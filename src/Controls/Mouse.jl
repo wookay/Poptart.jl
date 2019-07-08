@@ -15,27 +15,13 @@ function leftClick(control::C; kwargs...) where {C <: UIControl}
     haskey_and_broadcast_event(control, event)
 end
 
-"""
-    rightClick(control::C; kwargs...) where {C <: UIControl}
-"""
 function rightClick(control::C; kwargs...) where {C <: UIControl}
     event = (action=rightClick, kwargs...)
     haskey_and_broadcast_event(control, event)
 end
 
-"""
-    doubleClick(control::C; kwargs...) where {C <: UIControl}
-"""
 function doubleClick(control::C; kwargs...) where {C <: UIControl}
     event = (action=doubleClick, kwargs...)
-    haskey_and_broadcast_event(control, event)
-end
-
-"""
-    hover(control::C; kwargs...) where {C <: UIControl}
-"""
-function hover(control::C; kwargs...) where {C <: UIControl}
-    event = (action=hover, kwargs...)
     haskey_and_broadcast_event(control, event)
 end
 

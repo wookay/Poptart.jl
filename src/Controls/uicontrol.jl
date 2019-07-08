@@ -43,15 +43,6 @@ function didClick(block, control::C) where {C <: UIControl}
     end
 end
 
-"""
-    onHover(block, control::C) where {C <: UIControl}
-"""
-function onHover(block, control::C) where {C <: UIControl}
-    haskey_push_or_set!(control, :ongoing) do event
-        (event.action === Mouse.hover) && block(event)
-    end
-end
-
 # @UI
 function build_ui(sym::Symbol, constructor::Expr)
     quot = quote

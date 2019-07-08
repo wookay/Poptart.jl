@@ -103,12 +103,6 @@ Polygon
 TextBox
 @DrawingElement TextBox (text, rect, color)
 
-"""
-    ImageBox(; rect, path::String)
-"""
-ImageBox
-@DrawingElement ImageBox (rect, path)
-
 
 struct Drawing{paint}
     element::E where {E <: DrawingElement}
@@ -157,10 +151,6 @@ function Base.fill(drawing::Drawing{stroke_and_fill})
 end
 
 function draw(element::E) where {E <: DrawingElement}
-    Drawing{draw}(element)
-end
-
-function Base.convert(::Type{Drawing}, element::Union{TextBox, ImageBox})
     Drawing{draw}(element)
 end
 

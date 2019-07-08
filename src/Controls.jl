@@ -2,7 +2,7 @@ module Controls # Poptart
 
 export put!, remove!
 import ..Interfaces: properties, put!, remove!
-using ..Drawings: Drawing, TextBox, ImageBox
+using ..Drawings: Drawing, TextBox
 using Colors: RGBA
 
 abstract type UIControl end
@@ -18,6 +18,9 @@ include("Controls/button.jl")
 
 export Slider
 include("Controls/slider.jl")
+
+export Label
+include("Controls/label.jl")
 
 export Canvas
 include("Controls/canvas.jl")

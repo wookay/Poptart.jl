@@ -70,17 +70,7 @@ end
 function transform(element::TextBox, f, (x, y))::TextBox
     from = broadcast(f, element.rect[1:2], (x, y))
     to   = broadcast(f, element.rect[3:4], (x, y))
-    if haskey(element.props, :font) 
-        TextBox(text=element.text, font=element.font, rect=(from..., to...), color=element.color)
-    else
-        TextBox(text=element.text, rect=(from..., to...), color=element.color)
-    end
-end
-
-function transform(element::ImageBox, f, (x, y))::ImageBox
-    from = broadcast(f, element.rect[1:2], (x, y))
-    to   = broadcast(f, element.rect[3:4], (x, y))
-    ImageBox(rect=(from..., to...), path=element.path)
+    TextBox(text=element.text, rect=(from..., to...), color=element.color)
 end
 
 # module Poptart.Drawings

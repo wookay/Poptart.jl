@@ -19,9 +19,10 @@ end
 Mouse.leftClick(button)
 @test observered == [(didClick, button, (action=Mouse.leftClick,))]
 
+label1 = Label(text="Range:")
 slider1 = Slider(label="Int", range=1:10, value=Ref{Cint}(5))
 slider2 = Slider(label="Float", range=1:10, value=Ref{Cfloat}(2.0))
-put!(window1, slider1, slider2)
+put!(window1, label1, slider1, slider2)
 didClick(slider1) do event
     @info :didClick (event, slider1.value[])
 end
