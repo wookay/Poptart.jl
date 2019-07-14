@@ -1,5 +1,4 @@
-using Jive
-@useinside module test_cimgui_glfw
+module test_cimgui_glfw
 
 using Test
 using CImGui

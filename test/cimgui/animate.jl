@@ -1,5 +1,4 @@
-using Jive
-@useinside module test_cimgui_animate
+module test_cimgui_animate
 
 using Test
 using CImGui

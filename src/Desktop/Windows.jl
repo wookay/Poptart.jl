@@ -21,8 +21,8 @@ struct Window <: UIWindow
     items::Vector{<:UIControl}
     props::Dict{Symbol,Any}
 
-    function Window(; items::Vector{<:UIControl} = UIControl[], title::String="Title", frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=CImGui.ImGuiWindowFlags(0))
-        props = Dict{Symbol,Any}(:title => title, :frame => frame, :name => nothing, :flags => flags, :pre_callback => nothing, :post_callback => nothing)
+    function Window(; items::Vector{<:UIControl} = UIControl[], title::String="Title", frame::Union{NamedTuple{(:width,:height)}, NamedTuple{(:x,:y,:width,:height)}}, name::Union{Nothing,String}=nothing, flags=CImGui.ImGuiWindowFlags(0))
+        props = Dict{Symbol,Any}(:title => title, :frame => merge((x=0, y=0), frame), :name => nothing, :flags => flags, :pre_callback => nothing, :post_callback => nothing)
         window = new(items, props)
     end
 end

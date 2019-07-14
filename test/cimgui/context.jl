@@ -8,10 +8,10 @@ imctx = CImGui.CreateContext()
 
 io = CImGui.GetIO()
 @test io isa Ptr{CImGui.ImGuiIO}
-@test io.DeltaTime == Float32(1/60)
+@test io.DeltaTime isa Float32
 
 time = CImGui.GetTime()
-@test time == 0
+@test time isa Float64
 
 CImGui.DestroyContext(imctx)
 

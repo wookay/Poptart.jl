@@ -1,5 +1,4 @@
-using Jive
-@useinside module test_cimgui_canvas
+module test_cimgui_canvas
 
 using Test
 using CImGui

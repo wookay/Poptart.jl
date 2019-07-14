@@ -1,5 +1,4 @@
-using Jive
-@useinside module test_poptart_desktop_controls
+module test_poptart_desktop_controls
 
 using Test
 using Poptart.Desktop # Application Window put!
