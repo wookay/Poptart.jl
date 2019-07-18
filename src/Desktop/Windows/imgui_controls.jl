@@ -7,21 +7,28 @@ function imgui_item(block, imctx::Ptr, item::Button)
     CImGui.Button(item.title) && @async Mouse.leftClick(item)
 end
 
+struct UnsupportedError <: Exception
+    msg
+end
+
 function imgui_item(block, imctx::Ptr, item::Slider)
-    if item.range isa UnitRange{Int}
-        step = 1
-    else
-        step = item.range.step
-    end
-    if item.value isa Ref{Cint}
+    typ = typeof(item.value)
+    if typ isa Type{<:Integer}
         f = CImGui.SliderInt
-    elseif item.value isa Ref{Cfloat}
+        refvalue = Ref{Cint}(item.value)
+    elseif typ isa Type{<:AbstractFloat}
         f = CImGui.SliderFloat
+        refvalue = Ref{Cfloat}(item.value)
+    else
+        throw(UnsupportedError("got unsupported type $typ"))
     end
     label = item.label
     min = minimum(item.range)
     max = maximum(item.range)
-    f(label, item.value, min, max) && @async Mouse.leftClick(item)
+    if f(label, refvalue, min, max)
+        item.value = typ(refvalue[])
+        @async Mouse.leftClick(item)
+    end
 end
 
 function imgui_item(block, imctx::Ptr, item::Label)

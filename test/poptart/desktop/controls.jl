@@ -19,14 +19,8 @@ Mouse.leftClick(button)
 @test observered == [(didClick, button, (action=Mouse.leftClick,))]
 
 label1 = Label(text="Range:")
-slider1 = Slider(label="Int", range=1:10, value=Ref{Cint}(5))
-slider2 = Slider(label="Float", range=1:10, value=Ref{Cfloat}(2.0))
+slider1 = Slider(label="Int", range=1:10, value=5)
+slider2 = Slider(label="Float", range=1:10, value=2.0)
 put!(window1, label1, slider1, slider2)
-didClick(slider1) do event
-    @info :didClick (event, slider1.value[])
-end
-didClick(slider2) do event
-    @info :didClick (event, slider2.value[])
-end
 
 end # module test_poptart_desktop_controls

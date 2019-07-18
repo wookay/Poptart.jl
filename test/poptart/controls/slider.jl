@@ -3,7 +3,7 @@ module test_poptart_controls_slider
 using Test
 using Poptart.Controls # Slider willSet didSet
 
-slider = Slider(range=1:10)
+slider = Slider(range=1:10, value=1)
 
 observered = []
 
