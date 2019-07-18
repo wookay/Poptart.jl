@@ -14,7 +14,6 @@ Curve
 Polyline
 Polygon
 TextBox
-ImageBox
 ```
 
 # paints

@@ -4,7 +4,6 @@ using Poptart.Desktop.Windows: UIWindow, UIApplication
 using Poptart.Controls
 using Poptart.Drawings
 using Poptart.Drawings: DrawingElement
-using Nuklear: nk_size
 using Documenter
 
 makedocs(

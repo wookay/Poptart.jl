@@ -1,15 +1,12 @@
 # Documentation: http://docs.travis-ci.com/user/languages/julia/
 language: julia
-os:
-  - linux
-  - osx
 
 julia:
   - 1.1
 
-cache:
-  directories:
-  - "$HOME/.julia"
+os:
+  - linux
+  - osx
 
 matrix:
   fast_finish: true
@@ -22,8 +19,8 @@ addons:
     packages:
     - xorg-dev
 
-before_script:
-  - if [[ "$TRAVIS_OS_NAME" == linux ]] ; then export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start ; fi
+services:
+  - xvfb
 
 after_success:
   - if [[ "$TRAVIS_OS_NAME" == linux && "$TRAVIS_JULIA_VERSION" == "1.1" ]] ; then julia --project=. -e 'using Pkg;

@@ -56,16 +56,16 @@ Rect
 @DrawingElement Rect (rect, rounding, thickness, color)
 
 """
-    RectMultiColor(; rect, left::RGBA, top::RGBA, right::RGBA, bottom::RGBA)
+    RectMultiColor(; rect, color_upper_left::RGBA, color_upper_right::RGBA, color_bottom_left::RGBA, color_bottom_right::RGBA)
 """
 RectMultiColor
-@DrawingElement RectMultiColor (rect, left, top, right, bottom)
+@DrawingElement RectMultiColor (rect, color_upper_left, color_upper_right, color_bottom_left, color_bottom_right)
 
 """
-    Circle(; rect, [thickness], color::RGBA)
+    Circle(; center, radius, color::RGBA, [num_segments], [thickness])
 """
 Circle
-@DrawingElement Circle (rect, thickness, color)
+@DrawingElement Circle (center, radius, color, num_segments, thickness)
 
 """
     Triangle(; points::Vector{<:Tuple}, [thickness], color::RGBA)
@@ -74,10 +74,10 @@ Triangle
 @DrawingElement Triangle (points, thickness, color)
 
 """
-    Arc(; center, radius, angle, [thickness], color::RGBA)
+    Arc(; center, radius, angle, [num_segments], [thickness], color::RGBA)
 """
 Arc
-@DrawingElement Arc (center, radius, angle, thickness, color)
+@DrawingElement Arc (center, radius, angle, num_segments, thickness, color)
 
 """
     Curve(; startPoint, control1, control2, endPoint, thickness, color::RGBA)
@@ -98,16 +98,10 @@ Polygon
 @DrawingElement Polygon (points, thickness, color)
 
 """
-    TextBox(; text::String, font::Union{String, Font}, rect, color::RGBA)
+    TextBox(; text::String, rect, color::RGBA)
 """
 TextBox
-@DrawingElement TextBox (text, font, rect, color)
-
-"""
-    ImageBox(; rect, path::String)
-"""
-ImageBox
-@DrawingElement ImageBox (rect, path)
+@DrawingElement TextBox (text, rect, color)
 
 
 struct Drawing{paint}
@@ -157,10 +151,6 @@ function Base.fill(drawing::Drawing{stroke_and_fill})
 end
 
 function draw(element::E) where {E <: DrawingElement}
-    Drawing{draw}(element)
-end
-
-function Base.convert(::Type{Drawing}, element::Union{TextBox, ImageBox})
     Drawing{draw}(element)
 end
 

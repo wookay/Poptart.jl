@@ -5,10 +5,9 @@
 |  [![][docs-latest-img]][docs-latest-url]  |  [![][travis-img]][travis-url]  [![][appveyor-img]][appveyor-url]  [![][codecov-img]][codecov-url] |
 
 
-GUI programming in Julia based on [Nuklear.jl](https://github.com/Gnimuc/Nuklear.jl)
+GUI programming in Julia based on [CImGui.jl](https://github.com/Gnimuc/CImGui.jl)
 
  * ☕️   You can [make a donation](https://wookay.github.io/donate/) to support this project.
-
 
 ### Poptart.Controls
 
@@ -24,8 +23,8 @@ button = Button(title="Hello", frame=(width=80, height=30))
 put!(window1, button)
 
 label = Label(text="Range:")
-slider1 = Slider(range=1:10, value=Ref{Cint}(5))
-slider2 = Slider(range=1.0:10.0, value=Ref{Cfloat}(2.0))
+slider1 = Slider(label="slider1", range=1:10, value=5)
+slider2 = Slider(label="slider2", range=1.0:10.0, value=2.0)
 put!(window2, label, slider1, slider2)
 
 didClick(button) do event
@@ -33,12 +32,15 @@ didClick(button) do event
 end
 
 didClick(slider1) do event
-    @info :didClick (event, slider1.value[])
+    @info :didClick (event, slider1.value)
+end
+
+didClick(slider2) do event
+    @info :didClick (event, slider2.value)
 end
 ```
 
-<img src="https://wookay.github.io/docs/Poptart.jl/assets/poptart/app.png" width="500" alt="app.png" />
-
+![app.png](https://wookay.github.io/docs/Poptart.jl/cimgui/assets/cimgui/app.png)
 
 ### Poptart.Drawings
 
@@ -59,17 +61,19 @@ line1 = Line(points=[(50, 100), (90, 140)], thickness=7.5, color=strokeColor)
 line2 = Line(points=[(60, 90), (100, 130)], thickness=7.5, color=strokeColor)
 line3 = Line(points=[(70, 80), (110, 120)], thickness=7.5, color=strokeColor)
 
-rect2 = Rect(rect=(160, 70, 50, 50), rounding=0, color=fillColor)
 rect1 = Rect(rect=(160, 150, 50, 50), rounding=0, thickness=7.5, color=strokeColor)
+rect2 = Rect(rect=(160, 70, 50, 50), rounding=0, color=fillColor)
 
-circle2 = Circle(rect=(160+70, 70, 51, 51), color=fillColor)
-circle1 = Circle(rect=(160+70, 150, 51, 51), thickness=7.5, color=strokeColor)
+center = (255, 95)
+radius = 25
+circle1 = Circle(center=center .+ (0, 80), radius=radius, thickness=7.5, color=strokeColor)
+circle2 = Circle(center=center, radius=radius, color=fillColor)
 
-triangle2 = Triangle(points=[(320, 75), (300,116), (340,116)], color=fillColor)
 triangle1 = Triangle(points=[(320, 75+80), (300,116+80), (340,116+80)], thickness=7.5, color=strokeColor)
+triangle2 = Triangle(points=[(320, 75), (300,116), (340,116)], color=fillColor)
 
-arc2 = Arc(center=(380, 80), radius=37, angle=(min=0, max=deg2rad(120)), color=fillColor)
 arc1 = Arc(center=(380, 80+80), radius=37, angle=(min=0, max=deg2rad(120)), thickness=7.5, color=strokeColor)
+arc2 = Arc(center=(380, 80), radius=37, angle=(min=0, max=deg2rad(120)), color=fillColor)
 
 m(x, y) = (x, y) .+ (-340, -20)
 curve1 = Curve(startPoint=m(380,200), control1=m(405,270), control2=m(455,120), endPoint=m(480,200), thickness=7.5, color=strokeColor)
@@ -90,20 +94,11 @@ put!(canvas,
     stroke(polygon1), fill(polygon2))
 ```
 
-<img src="https://wookay.github.io/docs/Poptart.jl/assets/poptart/drawings.png" width="500" alt="drawings.png" />
-
-
-### Requirements
-
-`julia>` type `]` key
-
-```julia
-(v1.0) pkg> add https://github.com/wookay/Poptart.jl
-```
+![drawings.png](https://wookay.github.io/docs/Poptart.jl/cimgui/assets/cimgui/drawings.png)
 
 
 [docs-latest-img]: https://img.shields.io/badge/docs-latest-blue.svg
-[docs-latest-url]: https://wookay.github.io/docs/Poptart.jl/
+[docs-latest-url]: https://wookay.github.io/docs/Poptart.jl/cimgui/
 
 [travis-img]: https://api.travis-ci.org/wookay/Poptart.jl.svg?branch=master
 [travis-url]: https://travis-ci.org/wookay/Poptart.jl

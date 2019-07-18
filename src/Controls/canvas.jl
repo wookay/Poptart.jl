@@ -22,22 +22,22 @@ function properties(control::Canvas)
 end
 
 """
-    Controls.put!(canvas::Canvas, elements::Union{Drawing, TextBox, ImageBox}...)
+    Controls.put!(canvas::Canvas, elements::Union{Drawing, TextBox}...)
 """
-function put!(canvas::Canvas, elements::Union{Drawing, TextBox, ImageBox}...)
+function put!(canvas::Canvas, elements::Union{Drawing, TextBox}...)
     drawing_elements = convert.(Drawing, elements)
     push!(canvas.items, drawing_elements...)
     nothing
 end
 
 """
-    Controls.remove!(canvas::Canvas, elements::Union{Drawing, TextBox, ImageBox}...)
+    Controls.remove!(canvas::Canvas, elements::Union{Drawing, TextBox}...)
 """
-function remove!(canvas::Canvas, elements::Union{Drawing, TextBox, ImageBox}...)
+function remove!(canvas::Canvas, elements::Union{Drawing, TextBox}...)
     drawing_elements = convert.(Drawing, elements)
     indices = filter(x -> x !== nothing, indexin(drawing_elements, canvas.items))
     deleteat!(canvas.items, indices)
-    remove_nuklear_drawing_item.(elements)
+    remove_imgui_drawing_item.(elements)
     nothing
 end
 
@@ -45,20 +45,11 @@ end
     empty!(canvas::Canvas)
 """
 function Base.empty!(canvas::Canvas)
+    remove_imgui_drawing_item.(canvas.items)
     empty!(canvas.items)
 end
 
-function remove_nuklear_drawing_item(element::ImageBox)
-    if haskey(element.props, :imageref)
-        texture_index = element.props[:texture_index]
-        imageref = element.props[:imageref]
-        delete!(element.props, :texture_index)
-        delete!(element.props, :imageref)
-        nk_glfw3_delete_texture(texture_index)
-    end
-end
-
-function remove_nuklear_drawing_item(::Any)
+function remove_imgui_drawing_item(::Any)
 end
 
 # module Poptart.Controls

@@ -1,19 +1,16 @@
 module Desktop # Poptart
 
 using ..Controls
-
 include("Desktop/types.jl")
 
-export Font, FontAtlas
-include("Desktop/FontAtlas.jl")
-using .FontAtlas: Font
-
-export Windows, put!, remove!
+export Windows, Window, put!, remove!
 include("Desktop/Windows.jl")
+using .Windows: Window
 
-export Application
+export Application, pause, resume
 include("Desktop/application.jl")
 
-include("Desktop/Themes.jl")
+export FontAtlas
+include("Desktop/FontAtlas.jl")
 
 end # module Poptart.Desktop
