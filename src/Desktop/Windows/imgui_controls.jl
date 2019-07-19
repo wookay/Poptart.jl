@@ -3,34 +3,41 @@
 using UnicodePlots: extend_limits
 using Printf: @sprintf
 
+
+# CImGui.Button
 function imgui_item(block, imctx::Ptr, item::Button)
     CImGui.Button(item.title) && @async Mouse.leftClick(item)
 end
 
-struct UnsupportedError <: Exception
-    msg
-end
-
-function imgui_item(block, imctx::Ptr, item::Slider)
-    typ = typeof(item.value)
-    if typ isa Type{<:Integer}
-        f = CImGui.SliderInt
-        refvalue = Ref{Cint}(item.value)
-    elseif typ isa Type{<:AbstractFloat}
-        f = CImGui.SliderFloat
-        refvalue = Ref{Cfloat}(item.value)
-    else
-        throw(UnsupportedError("got unsupported type $typ"))
-    end
+# CImGui.SliderInt, CImGui.SliderFloat
+function _imgui_slider_item(item::Slider, value, f, refvalue::Ref)
     label = item.label
     min = minimum(item.range)
     max = maximum(item.range)
     if f(label, refvalue, min, max)
+        typ = typeof(value)
         item.value = typ(refvalue[])
         @async Mouse.leftClick(item)
     end
 end
 
+function _imgui_slider_item(item::Slider, value::Integer)
+    f = CImGui.SliderInt
+    refvalue = Ref{Cint}(value)
+    _imgui_slider_item(item, value, f, refvalue)
+end
+
+function _imgui_slider_item(item::Slider, value::AbstractFloat)
+    f = CImGui.SliderFloat
+    refvalue = Ref{Cfloat}(value)
+    _imgui_slider_item(item, value, f, refvalue)
+end
+
+function imgui_item(block, imctx::Ptr, item::Slider)
+    _imgui_slider_item(item, item.value)
+end
+
+# CImGui.LabelText
 function imgui_item(block, imctx::Ptr, item::Label)
     CImGui.LabelText(item.label, item.text)
 end
@@ -69,7 +76,7 @@ function rect_contains_pos(rect::ImVec4, p::ImVec2)
     p.x >= ImVec2(rect, min).x && p.y >= ImVec2(rect, min).y && p.x < ImVec2(rect, max).x && p.y < ImVec2(rect, max).y
 end
 
-function RenderFrame(draw_list, p_min::ImVec2, p_max::ImVec2, fill_col::ImU32, border::Bool, rounding::Cfloat)
+function renderframe(draw_list, p_min::ImVec2, p_max::ImVec2, fill_col::ImU32, border::Bool, rounding::Cfloat)
     CImGui.AddRectFilled(draw_list, p_min, p_max, fill_col, rounding)
     border_size = 0
     if border_size > 0
@@ -93,7 +100,7 @@ function imgui_item(block, imctx::Ptr, item::ScatterPlot)
     frame_rounding = Cfloat(1)
     frame_padding = (x=7, y=7)
     frame_bb = CImGui.ImVec4(window_pos, window_pos + ImVec2(graph_size.x, graph_size.y))
-    RenderFrame(draw_list, ImVec2(frame_bb, min), ImVec2(frame_bb, max), CImGui.GetColorU32(CImGui.ImGuiCol_FrameBg), true, frame_rounding)
+    renderframe(draw_list, ImVec2(frame_bb, min), ImVec2(frame_bb, max), CImGui.GetColorU32(CImGui.ImGuiCol_FrameBg), true, frame_rounding)
     radius = 3
     color_normal = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLines)
     color_hovered = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLinesHovered)
@@ -124,6 +131,7 @@ function imgui_item(block, imctx::Ptr, item::ScatterPlot)
     CImGui.SetCursorScreenPos(window_pos + ImVec2(0, graph_size.y + margin.y))
 end
 
+# CImGui.PlotLines
 function imgui_item(block, imctx::Ptr, item::LinePlot)
     label = _get_item_property(item, :label, "")
     values = Cfloat.(item.values)
@@ -133,6 +141,7 @@ function imgui_item(block, imctx::Ptr, item::LinePlot)
     CImGui.PlotLines(label, values, length(values), Cint(0), overlay_text, scale.min, scale.max, graph_size)
 end
 
+# CImGui.PlotHistogram
 function imgui_item(block, imctx::Ptr, item::Histogram)
     label = _get_item_property(item, :label, "")
     values = Cfloat.(item.values)
