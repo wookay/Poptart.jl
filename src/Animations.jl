@@ -6,6 +6,7 @@ include("Animations/timing-functions.jl")
 export Second
 include("Animations/periods.jl")
 
+export Animator
 include("Animations/chronicle.jl")
 
 export animate, lerp

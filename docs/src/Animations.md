@@ -1,8 +1,10 @@
 # Poptart.Animations
 
 ```@docs
+Animator
 animate
 lerp
+repeat
 ```
 
 ```@docs

@@ -1,4 +1,5 @@
-module test_poptart_desktop_animate
+using Jive
+@useinside module test_poptart_desktop_animate
 
 using Test
 using Poptart.Desktop # Application Window put!
@@ -35,5 +36,11 @@ didClick(button1) do event
         end
     end
 end
+
+a1 = animate(timing=Ease, duration=0.5) do Δt
+    x = lerp(100, 300, Δt)
+    line1.points = [(100, 100), (x, 100)]
+end
+repeat(a1, 3)
 
 end # module test_poptart_desktop_controls

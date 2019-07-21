@@ -3,7 +3,7 @@
 """
     animate(f; timing::CubicBezier=Linear, duration::Union{<:Real,<:Period}=Second(1))
 """
-function animate(f; timing::CubicBezier=Linear, duration::Union{<:Real,<:Period}=Second(1))
+function animate(f; timing::CubicBezier=Linear, duration::Union{<:Real,<:Period}=Second(1))::Animator
     # http://graphics.cs.ucdavis.edu/education/CAGDNotes/Matrix-Cubic-Bezier-Curve.pdf
     M = [ 1  0  0  0;
          -3  3  0  0;
@@ -12,9 +12,9 @@ function animate(f; timing::CubicBezier=Linear, duration::Union{<:Real,<:Period}
     P = [timing.p1; timing.p2; timing.p3; timing.p4]
     MP = M * P
     Q(t) = first([1 t t^2 t^3] * MP)
+    d = Float64(duration)
     task = function (f_time, chronicle_time)
         elapsed = chronicle_time - f_time
-        d = Float64(duration)
         if elapsed > d
             Δt = 1
             state = nothing
@@ -25,8 +25,9 @@ function animate(f; timing::CubicBezier=Linear, duration::Union{<:Real,<:Period}
         f(Δt)
         state
     end
-    f_time = time()
-    chronicle.tasks[f_time] = task
+    key = time()
+    chronicle.tasks[key] = (key, task)
+    Animator(key, task)
 end
 
 """
@@ -34,6 +35,21 @@ end
 """
 function lerp(a, b, dt)
     a + dt * (b - a)
+end
+
+"""
+    repeat(animator::Animator, r::Real)
+"""
+function Base.repeat(animator::Animator, r::Real)
+    if r > 0
+        chronicle.repeatable[animator.key] = r - 1
+        if !haskey(chronicle.tasks, animator.key)
+            chronicle.tasks[animator.key] = (time(), animator.task)
+        end
+    elseif haskey(chronicle.repeatable, animator.key)
+        delete!(chronicle.repeatable, animator.key)
+    end
+    nothing
 end
 
 # module Poptart.Animations
