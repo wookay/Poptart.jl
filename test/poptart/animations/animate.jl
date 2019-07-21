@@ -10,7 +10,7 @@ a1 = animate() do dt
 end
 repeat(a1, 5)
 
-@test haskey(Animations.chronicle.tasks, a1.key)
-@test Animations.chronicle.repeatable[a1.key] == 4
+@test haskey(Animations.chronicle.tasks, a1.id)
+@test Animations.chronicle.repeatable[a1.id] == 4
 
 end # module test_poptart_animations_animate

@@ -26,9 +26,9 @@ function animate(f; timing::CubicBezier=Linear, duration::Union{<:Real,<:Period}
         state
     end
     f_time = time()
-    key = hash(f_time)
-    chronicle.tasks[key] = (f_time, task)
-    Animator(key, task)
+    id = hash(f_time)
+    chronicle.tasks[id] = (f_time, task)
+    Animator(id, task)
 end
 
 """
@@ -43,12 +43,12 @@ end
 """
 function Base.repeat(animator::Animator, r::Real)
     if r > 0
-        chronicle.repeatable[animator.key] = r - 1
-        if !haskey(chronicle.tasks, animator.key)
-            chronicle.tasks[animator.key] = (time(), animator.task)
+        chronicle.repeatable[animator.id] = r - 1
+        if !haskey(chronicle.tasks, animator.id)
+            chronicle.tasks[animator.id] = (time(), animator.task)
         end
-    elseif haskey(chronicle.repeatable, animator.key)
-        delete!(chronicle.repeatable, animator.key)
+    elseif haskey(chronicle.repeatable, animator.id)
+        delete!(chronicle.repeatable, animator.id)
     end
     nothing
 end

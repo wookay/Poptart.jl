@@ -4,12 +4,12 @@ const ChronicleTasks = Dict{UInt64,Tuple{Float64,Function}}
 
 """
     struct Animator
-        key::UInt64
+        id::UInt64
         task::Function
     end
 """
 struct Animator
-    key::UInt64
+    id::UInt64
     task::Function
 end
 
@@ -22,25 +22,25 @@ end
 
 function chronicle_loader(chronicle_time::Float64)
     isempty(chronicle.tasks) && return
-    for (key, (f_time, task)) in chronicle.tasks
+    for (id, (f_time, task)) in chronicle.tasks
         f_state = Base.invokelatest(task, f_time, chronicle_time)
         if f_state === nothing
-            if haskey(chronicle.repeatable, key)
-                n = chronicle.repeatable[key]
+            if haskey(chronicle.repeatable, id)
+                n = chronicle.repeatable[id]
                 if isinf(n)
-                    chronicle.tasks[key] = (time(), task)
+                    chronicle.tasks[id] = (time(), task)
                 else
                     n -= 1
                     if n < 0
-                        delete!(chronicle.repeatable, key)
-                        delete!(chronicle.tasks, key)
+                        delete!(chronicle.repeatable, id)
+                        delete!(chronicle.tasks, id)
                     else
-                        chronicle.repeatable[key] = n
-                        chronicle.tasks[key] = (time(), task)
+                        chronicle.repeatable[id] = n
+                        chronicle.tasks[id] = (time(), task)
                     end
                 end
             else
-                delete!(chronicle.tasks, key)
+                delete!(chronicle.tasks, id)
             end
         end
     end
