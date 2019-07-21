@@ -12,18 +12,18 @@ using Colors: RGBA
 
 include("Windows/imgui_convert.jl")
 include("Windows/imgui_controls.jl")
-include("Windows/imgui_drawing_item.jl")
+include("Windows/imgui_drawings.jl")
 
 """
-    Window(; items::Vector{<:UIControl} = UIControl[], title::String="Title", frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=CImGui.ImGuiWindowFlags(0))
+    Window(; items::Vector{UIControl} = UIControl[], title::String="Title", frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=CImGui.ImGuiWindowFlags(0))
 """
 struct Window <: UIWindow
-    items::Vector{<:UIControl}
+    items::Vector{UIControl}
     props::Dict{Symbol,Any}
 
     function Window(; items::Vector{<:UIControl} = UIControl[], title::String="Title", frame::Union{NamedTuple{(:width,:height)}, NamedTuple{(:x,:y,:width,:height)}}, name::Union{Nothing,String}=nothing, flags=CImGui.ImGuiWindowFlags(0))
         props = Dict{Symbol,Any}(:title => title, :frame => merge((x=0, y=0), frame), :name => nothing, :flags => flags, :pre_callback => nothing, :post_callback => nothing)
-        window = new(items, props)
+        window = new(Vector{UIControl}(items), props)
     end
 end
 
@@ -65,7 +65,7 @@ function setup_window(imctx::Ptr, window::W, heartbeat) where {W <: UIWindow}
     CImGui.Begin(name, p_open, window.flags) || (CImGui.End(); return)
     window.pre_callback !== nothing && Base.invokelatest(window.pre_callback)
     for item in window.items
-        imgui_item(imctx, item) do imctx, item
+        imgui_control_item(imctx, item) do imctx, item
         end
     end
     window.post_callback !== nothing && Base.invokelatest(window.post_callback)
@@ -89,7 +89,7 @@ end
 function remove!(window::W, controls::UIControl...) where {W <: UIWindow}
     indices = filter(x -> x !== nothing, indexin(controls, window.items))
     deleteat!(window.items, indices)
-    remove_imgui_item.(controls)
+    remove_imgui_control_item.(controls)
     nothing
 end
 
@@ -97,7 +97,7 @@ end
     empty!(window::W) where {W <: UIWindow}
 """
 function Base.empty!(window::W) where {W <: UIWindow}
-    remove_imgui_item.(window.items)
+    remove_imgui_control_item.(window.items)
     empty!(window.items)
 end
 

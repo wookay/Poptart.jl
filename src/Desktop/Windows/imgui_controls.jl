@@ -5,7 +5,7 @@ using Printf: @sprintf
 
 
 # CImGui.Button
-function imgui_item(block, imctx::Ptr, item::Button)
+function imgui_control_item(block, imctx::Ptr, item::Button)
     CImGui.Button(item.title) && @async Mouse.leftClick(item)
 end
 
@@ -33,16 +33,16 @@ function _imgui_slider_item(item::Slider, value::AbstractFloat)
     _imgui_slider_item(item, value, f, refvalue)
 end
 
-function imgui_item(block, imctx::Ptr, item::Slider)
+function imgui_control_item(block, imctx::Ptr, item::Slider)
     _imgui_slider_item(item, item.value)
 end
 
 # CImGui.LabelText
-function imgui_item(block, imctx::Ptr, item::Label)
+function imgui_control_item(block, imctx::Ptr, item::Label)
     CImGui.LabelText(item.label, item.text)
 end
 
-function imgui_item(block, imctx::Ptr, item::Canvas)
+function imgui_control_item(block, imctx::Ptr, item::Canvas)
     draw_list = CImGui.GetWindowDrawList()
     window_pos = CImGui.GetCursorScreenPos()
     for drawing in item.items
@@ -85,7 +85,7 @@ function renderframe(draw_list, p_min::ImVec2, p_max::ImVec2, fill_col::ImU32, b
     end
 end
 
-function imgui_item(block, imctx::Ptr, item::ScatterPlot)
+function imgui_control_item(block, imctx::Ptr, item::ScatterPlot)
     draw_list = CImGui.GetWindowDrawList()
     window_pos = CImGui.GetCursorScreenPos()
     mouse_pos = CImGui.GetIO().MousePos
@@ -101,7 +101,7 @@ function imgui_item(block, imctx::Ptr, item::ScatterPlot)
     frame_padding = (x=7, y=7)
     frame_bb = CImGui.ImVec4(window_pos, window_pos + ImVec2(graph_size.x, graph_size.y))
     renderframe(draw_list, ImVec2(frame_bb, min), ImVec2(frame_bb, max), CImGui.GetColorU32(CImGui.ImGuiCol_FrameBg), true, frame_rounding)
-    radius = 3
+    radius = 3.5
     color_normal = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLines)
     color_hovered = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLinesHovered)
     num_segments = 8
@@ -132,7 +132,7 @@ function imgui_item(block, imctx::Ptr, item::ScatterPlot)
 end
 
 # CImGui.PlotLines
-function imgui_item(block, imctx::Ptr, item::LinePlot)
+function imgui_control_item(block, imctx::Ptr, item::LinePlot)
     label = _get_item_property(item, :label, "")
     values = Cfloat.(item.values)
     overlay_text = _get_item_property(item, :overlay_text, C_NULL)
@@ -142,7 +142,7 @@ function imgui_item(block, imctx::Ptr, item::LinePlot)
 end
 
 # CImGui.PlotHistogram
-function imgui_item(block, imctx::Ptr, item::Histogram)
+function imgui_control_item(block, imctx::Ptr, item::Histogram)
     label = _get_item_property(item, :label, "")
     values = Cfloat.(item.values)
     overlay_text = _get_item_property(item, :overlay_text, C_NULL)
@@ -152,13 +152,13 @@ function imgui_item(block, imctx::Ptr, item::Histogram)
 end
 
 using Jive # @onlyonce
-function imgui_item(block, imctx::Ptr, item::Any)
+function imgui_control_item(block, imctx::Ptr, item::Any)
     @onlyonce begin
         @info "not implemented" item
     end
 end
 
-function remove_imgui_item(item::Any)
+function remove_imgui_control_item(item::Any)
 end
 
 # module Poptart.Desktop.Windows

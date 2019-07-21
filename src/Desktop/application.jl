@@ -1,6 +1,7 @@
 # module Poptart.Desktop
 
 import ..Interfaces: put!, remove!
+using ..Animations: Animations
 using CImGui
 using .CImGui.GLFWBackend # ImGui_ImplGlfw_InitForOpenGL
 using .CImGui.OpenGLBackend # ImGui_ImplOpenGL3_NewFrame ImGui_ImplOpenGL3_Shutdown
@@ -94,6 +95,7 @@ function runloop(glsl_version, glwin::GLFW.Window, app::A) where {A <: UIApplica
     app.pre_callback !== nothing && Base.invokelatest(app.pre_callback)
 
     bgcolor = app.bgcolor
+    Animations.chronicle.isrunning = true
     while app.isrunning && !GLFW.WindowShouldClose(glwin)
         yield()
 
@@ -103,6 +105,7 @@ function runloop(glsl_version, glwin::GLFW.Window, app::A) where {A <: UIApplica
         CImGui.NewFrame()
 
         try
+            Animations.chronicle.loader(time())
             Windows.setup_window.(app.imctx, app.windows, heartbeat)
         catch err
             error_handling(err) && break

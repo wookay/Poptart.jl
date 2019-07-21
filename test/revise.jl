@@ -4,8 +4,9 @@ using GLFW
 
 close_window_before_revise = true
 
-block = function(path)
-    @info :changed path
+trigger = function(path)
+    printstyled("changed ", color=:cyan)
+    println(path)
     if close_window_before_revise
         glwin = GLFW.GetCurrentContext()
         glwin.handle !== C_NULL && GLFW.SetWindowShouldClose(glwin, true)
@@ -14,8 +15,10 @@ block = function(path)
     runtests(@__DIR__, targets=ARGS, skip=["revise.jl"])
 end
 
-watch(block, @__DIR__, sources=[pathof(Poptart)])
-block(:run)
+watch(trigger, @__DIR__, sources=[pathof(Poptart)])
+trigger("")
 
 glwin = GLFW.GetCurrentContext()
 GLFW.SetWindowPos(glwin, 0, 0)
+
+Base.JLOptions().isinteractive==0 && wait()

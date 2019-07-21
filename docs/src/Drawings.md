@@ -10,6 +10,7 @@ RectMultiColor
 Circle
 Triangle
 Arc
+Pie
 Curve
 Polyline
 Polygon
@@ -21,4 +22,5 @@ TextBox
 Drawings.stroke(element::E) where {E <: DrawingElement}
 Drawings.fill(element::E) where {E <: DrawingElement}
 ```
+
 `stroke ∘ fill`

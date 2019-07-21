@@ -1,19 +1,19 @@
 # module Poptart.Controls
 
 """
-    Canvas(; items::Vector{<:Drawing} = Drawing[])
+    Canvas(; items::Vector{Drawing} = Drawing[])
 """
 Canvas
 
 @UI Canvas quote
     # props::Dict{Symbol, Any}
     # observers::Dict{Symbol, Vector}
-    items::Vector{<:Drawing}
+    items::Vector{Drawing}
 
-    function Canvas(; items::Vector{<:Drawing} = Drawing[], kwargs...)
+    function Canvas(; items::Vector{Drawing} = Drawing[], kwargs...)
         props = Dict{Symbol, Any}(kwargs...)
         observers = Dict{Symbol, Vector}()
-        new(props, observers, items)
+        new(props, observers, Vector{Drawing}(items))
     end
 end
 

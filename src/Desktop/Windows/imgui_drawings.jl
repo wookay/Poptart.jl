@@ -81,6 +81,29 @@ function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec
     a_min = element.angle.min
     a_max = element.angle.max
     num_segments = haskey(element.props, :num_segments) ? element.num_segments : 32
+    CImGui.PathArcTo(draw_list, center, radius, a_min, a_max, num_segments)
+    color = imgui_color(element.color)
+    closed = false
+    CImGui.PathStroke(draw_list, color, closed, element.thickness)
+end
+
+function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{fill}, element::Arc)
+    center = imgui_offset_vec2(window_pos, element.center)
+    radius = element.radius
+    a_min = element.angle.min
+    a_max = element.angle.max
+    num_segments = haskey(element.props, :num_segments) ? element.num_segments : 32
+    CImGui.PathArcTo(draw_list, center, radius, a_min, a_max, num_segments)
+    color = imgui_color(element.color)
+    CImGui.PathFillConvex(draw_list, color)
+end
+
+function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{stroke}, element::Pie)
+    center = imgui_offset_vec2(window_pos, element.center)
+    radius = element.radius
+    a_min = element.angle.min
+    a_max = element.angle.max
+    num_segments = haskey(element.props, :num_segments) ? element.num_segments : 32
     CImGui.PathLineTo(draw_list, center)
     CImGui.PathArcTo(draw_list, center, radius, a_min, a_max, num_segments)
     color = imgui_color(element.color)
@@ -88,7 +111,7 @@ function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec
     CImGui.PathStroke(draw_list, color, closed, element.thickness)
 end
 
-function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{fill}, element::Arc)
+function imgui_drawing_item(::Any, draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{fill}, element::Pie)
     center = imgui_offset_vec2(window_pos, element.center)
     radius = element.radius
     a_min = element.angle.min

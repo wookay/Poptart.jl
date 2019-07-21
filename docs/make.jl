@@ -4,6 +4,7 @@ using Poptart.Desktop.Windows: UIWindow, UIApplication
 using Poptart.Controls
 using Poptart.Drawings
 using Poptart.Drawings: DrawingElement
+using Poptart.Animations
 using Documenter
 
 makedocs(
@@ -18,5 +19,6 @@ makedocs(
         "Desktop" => "Desktop.md",
         "Controls" => "Controls.md",
         "Drawings" => "Drawings.md",
+        "Animations" => "Animations.md",
     ],
 )

@@ -80,6 +80,12 @@ Arc
 @DrawingElement Arc (center, radius, angle, num_segments, thickness, color)
 
 """
+    Pie(; center, radius, angle, [num_segments], [thickness], color::RGBA)
+"""
+Pie
+@DrawingElement Pie (center, radius, angle, num_segments, thickness, color)
+
+"""
     Curve(; startPoint, control1, control2, endPoint, thickness, color::RGBA)
 """
 Curve
