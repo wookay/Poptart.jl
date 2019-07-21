@@ -1,7 +1,7 @@
 # module Poptart.Animations
 
 """
-    animate(f; timing::CubicBezier=Linear, duration::Union{<:Real,<:Period}=Second(1))
+    animate(f; timing::CubicBezier=Linear, duration::Union{<:Real,<:Period}=Second(1))::Animator
 """
 function animate(f; timing::CubicBezier=Linear, duration::Union{<:Real,<:Period}=Second(1))::Animator
     # http://graphics.cs.ucdavis.edu/education/CAGDNotes/Matrix-Cubic-Bezier-Curve.pdf
