@@ -42,12 +42,12 @@ end
 ```julia
 using Poptart.Desktop # Application Windows put!
 using Poptart.Controls # Canvas
-using Poptart.Drawings # Line Rect Circle Triangle Arc Curve Polyline Polygon stroke fill
+using Poptart.Drawings # Line Rect Circle Triangle Arc Pie Curve Polyline Polygon stroke fill
 using Colors: RGBA
 
 canvas = Canvas()
-window1 = Windows.Window(items=[canvas], title="Drawings", frame=(x=0, y=0, width=500, height=400))
-Application(windows=[window1], title="App", frame=(width=500, height=400))
+window1 = Windows.Window(items=[canvas], title="Drawings", frame=(x=0, y=0, width=550, height=400))
+Application(windows=[window1], title="App", frame=(width=550, height=400))
 
 strokeColor = RGBA(0,0.7,0,1)
 fillColor   = RGBA(0.1, 0.7,0.8,0.9)
@@ -68,7 +68,9 @@ triangle1 = Triangle(points=[(320, 75+80), (300,116+80), (340,116+80)], thicknes
 triangle2 = Triangle(points=[(320, 75), (300,116), (340,116)], color=fillColor)
 
 arc1 = Arc(center=(380, 80+80), radius=37, angle=(min=0, max=deg2rad(120)), thickness=7.5, color=strokeColor)
-arc2 = Arc(center=(380, 80), radius=37, angle=(min=0, max=deg2rad(120)), color=fillColor)
+
+pie1 = Pie(center=(450, 160), radius=37, angle=(min=0, max=deg2rad(120)), thickness=7.5, color=strokeColor)
+pie2 = Pie(center=(450, 80), radius=37, angle=(min=0, max=deg2rad(120)), color=fillColor)
 
 m(x, y) = (x, y) .+ (-340, -20)
 curve1 = Curve(startPoint=m(380,200), control1=m(405,270), control2=m(455,120), endPoint=m(480,200), thickness=7.5, color=strokeColor)
@@ -83,7 +85,8 @@ put!(canvas,
     stroke(rect1), fill(rect2),
     stroke(circle1), fill(circle2),
     stroke(triangle1), fill(triangle2),
-    stroke(arc1), fill(arc2),
+    stroke(arc1),
+    stroke(pie1), fill(pie2),
     stroke(curve1),
     stroke(polyline1),
     stroke(polygon1), fill(polygon2))
