@@ -1,15 +1,15 @@
 # module Poptart.Animations
 
-const ChronicleTasks = Dict{Float64,Tuple{Float64,Function}}
+const ChronicleTasks = Dict{UInt64,Tuple{Float64,Function}}
 
 """
     struct Animator
-        key::Float64
+        key::UInt64
         task::Function
     end
 """
 struct Animator
-    key::Float64
+    key::UInt64
     task::Function
 end
 
@@ -17,7 +17,7 @@ mutable struct Chronicle
     isrunning::Bool
     loader::Function
     tasks::ChronicleTasks
-    repeatable::Dict{Float64,Real}
+    repeatable::Dict{UInt64,Real}
 end
 
 function chronicle_loader(chronicle_time::Float64)
@@ -46,6 +46,6 @@ function chronicle_loader(chronicle_time::Float64)
     end
 end
 
-const chronicle = Chronicle(false, chronicle_loader, ChronicleTasks(), Dict{Float64,Real}())
+const chronicle = Chronicle(false, chronicle_loader, ChronicleTasks(), Dict{UInt64,Real}())
 
 # module Poptart.Animations

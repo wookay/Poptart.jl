@@ -119,7 +119,7 @@ function runloop(glsl_version, glwin::GLFW.Window, app::A) where {A <: UIApplica
 
         GLFW.SwapBuffers(glwin)
     end
-
+    Animations.chronicle.isrunning = false
     app.post_callback !== nothing && Base.invokelatest(app.post_callback)
 
     # cleanup

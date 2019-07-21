@@ -25,8 +25,9 @@ function animate(f; timing::CubicBezier=Linear, duration::Union{<:Real,<:Period}
         f(Δt)
         state
     end
-    key = time()
-    chronicle.tasks[key] = (key, task)
+    f_time = time()
+    key = hash(f_time)
+    chronicle.tasks[key] = (f_time, task)
     Animator(key, task)
 end
 

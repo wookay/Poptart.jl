@@ -1,0 +1,17 @@
+module test_poptart_animations_plots
+
+using Test
+using Poptart.Controls # ScatterPlot
+using Poptart.Animations
+
+n = 1
+a1 = animate() do dt
+    global n
+    n += 1
+end
+repeat(a1, 5)
+
+@test haskey(Animations.chronicle.tasks, a1.key)
+@test Animations.chronicle.repeatable[a1.key] == 4
+
+end # module test_poptart_animations_plots
