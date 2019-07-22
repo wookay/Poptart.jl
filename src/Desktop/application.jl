@@ -91,10 +91,9 @@ function runloop(glsl_version, glwin::GLFW.Window, app::A) where {A <: UIApplica
     heartbeat = throttle(60) do block # 1 minute
         block()
     end
+    bgcolor = app.bgcolor
 
     app.pre_callback !== nothing && Base.invokelatest(app.pre_callback)
-
-    bgcolor = app.bgcolor
     Animations.chronicle.isrunning = true
     while app.isrunning && !GLFW.WindowShouldClose(glwin)
         yield()
@@ -105,8 +104,8 @@ function runloop(glsl_version, glwin::GLFW.Window, app::A) where {A <: UIApplica
         CImGui.NewFrame()
 
         try
-            Animations.chronicle.loader(time())
             Windows.setup_window.(app.imctx, app.windows, heartbeat)
+            Animations.chronicle.regulate(time())
         catch err
             error_handling(err) && break
         end

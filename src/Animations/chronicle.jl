@@ -15,12 +15,12 @@ end
 
 mutable struct Chronicle
     isrunning::Bool
-    loader::Function
+    regulate::Function
     tasks::ChronicleTasks
     repeatable::Dict{UInt64,Real}
 end
 
-function chronicle_loader(chronicle_time::Float64)
+function chronicle_regulator(chronicle_time::Float64)
     isempty(chronicle.tasks) && return
     for (id, (f_time, task)) in chronicle.tasks
         f_state = Base.invokelatest(task, f_time, chronicle_time)
@@ -46,6 +46,6 @@ function chronicle_loader(chronicle_time::Float64)
     end
 end
 
-const chronicle = Chronicle(false, chronicle_loader, ChronicleTasks(), Dict{UInt64,Real}())
+const chronicle = Chronicle(false, chronicle_regulator, ChronicleTasks(), Dict{UInt64,Real}())
 
 # module Poptart.Animations
