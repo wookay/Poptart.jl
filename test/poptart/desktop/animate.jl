@@ -37,10 +37,15 @@ didClick(button1) do event
     end
 end
 
-a1 = animate(timing=Ease, duration=0.5) do Δt
+a1 = animate(timing=EaseOut, duration=0.5) do Δt
     x = lerp(100, 300, Δt)
-    line1.points = [(100, 100), (x, 100)]
+    line4.points = [(100, 250), (x, 250)]
 end
-repeat(a1, 3)
+@test a1.repeatable == 1
+
+a2 = repeat(a1, 3)
+@test a2.id == a1.id
+@test a2.task == a1.task
+@test a2.repeatable == 3
 
 end # module test_poptart_desktop_controls

@@ -1,9 +1,6 @@
 # module Poptart.Animations
 
-"""
-    animate(f; timing::CubicBezier=Linear, duration::Union{<:Real,<:Period}=Second(1))::Animator
-"""
-function animate(f; timing::CubicBezier=Linear, duration::Union{<:Real,<:Period}=Second(1))::Animator
+function Animator(f, timing::CubicBezier, duration::Union{<:Real,<:Period}, repeatable::Real)::Animator
     # http://graphics.cs.ucdavis.edu/education/CAGDNotes/Matrix-Cubic-Bezier-Curve.pdf
     M = [ 1  0  0  0;
          -3  3  0  0;
@@ -27,8 +24,26 @@ function animate(f; timing::CubicBezier=Linear, duration::Union{<:Real,<:Period}
     end
     f_time = time()
     id = hash(f_time + first(rand(1)))
-    chronicle.tasks[id] = (f_time, task)
-    Animator(id, task)
+    Animator(id, task, repeatable)
+end
+
+"""
+    animate(f; timing::CubicBezier=Linear, duration::Union{<:Real,<:Period}=Second(1))::Animator
+"""
+function animate(f; timing::CubicBezier=Linear, duration::Union{<:Real,<:Period}=Second(1))::Animator
+    animate(Animator(f, timing, duration, 1))
+end
+
+"""
+    animate(animator::Animator)::Animator
+"""
+function animate(animator::Animator)::Animator
+    if animator.repeatable > 0
+        chronicle.tasks[animator.id] = (time(), animator.task, animator.repeatable)
+    elseif haskey(chronicle.tasks, animator.id)
+        delete!(chronicle.tasks, animator.id)
+    end
+    animator
 end
 
 """
@@ -39,18 +54,10 @@ function lerp(a, b, dt)
 end
 
 """
-    repeat(animator::Animator, r::Real)
+    repeat(animator::Animator, r::Real)::Animator
 """
-function Base.repeat(animator::Animator, r::Real)
-    if r > 0
-        chronicle.repeatable[animator.id] = r - 1
-        if !haskey(chronicle.tasks, animator.id)
-            chronicle.tasks[animator.id] = (time(), animator.task)
-        end
-    elseif haskey(chronicle.repeatable, animator.id)
-        delete!(chronicle.repeatable, animator.id)
-    end
-    nothing
+function Base.repeat(animator::Animator, r::Real)::Animator
+    Animator(animator.id, animator.task, r)
 end
 
 # module Poptart.Animations
