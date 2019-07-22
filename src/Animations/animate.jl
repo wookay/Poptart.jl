@@ -1,14 +1,16 @@
 # module Poptart.Animations
 
-function Animator(f, timing::CubicBezier, duration::Union{<:Real,<:Period}, repeatable::Real)::Animator
-    # http://graphics.cs.ucdavis.edu/education/CAGDNotes/Matrix-Cubic-Bezier-Curve.pdf
+# http://graphics.cs.ucdavis.edu/education/CAGDNotes/Matrix-Cubic-Bezier-Curve.pdf
+function (q::CubicBezier)(t::Float64)
     M = [ 1  0  0  0;
          -3  3  0  0;
           3 -6  3  0;
          -1  3 -3  1]
-    P = [timing.p1; timing.p2; timing.p3; timing.p4]
-    MP = M * P
-    Q(t) = first([1 t t^2 t^3] * MP)
+    P = [q.p1; q.p2; q.p3; q.p4]
+    first([1 t t^2 t^3] * M * P)
+end
+
+function Animator(f, timing::CubicBezier, duration::Union{<:Real,<:Period}, repeatable::Real)::Animator
     d = Float64(duration)
     task = function (f_time, chronicle_time)
         elapsed = chronicle_time - f_time
@@ -16,7 +18,7 @@ function Animator(f, timing::CubicBezier, duration::Union{<:Real,<:Period}, repe
             Δt = 1
             state = nothing
         else
-            Δt = Q(elapsed / d)
+            Δt = timing(elapsed / d)
             state = (phase=1,)
         end
         f(Δt)

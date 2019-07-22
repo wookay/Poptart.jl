@@ -106,14 +106,20 @@ function imgui_control_item(block, imctx::Ptr, item::ScatterPlot)
     color_hovered = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLinesHovered)
     num_segments = 8
     X, Y = item.x, item.y
-    xlim = (0, 0)
-    ylim = (0, 0)
-    min_x, max_x = extend_limits(X, xlim)
-    min_y, max_y = extend_limits(Y, ylim)
-    scale = (x = (graph_size.x - 2frame_padding.x) / (max_x - min_x),
-             y = (graph_size.y - 2frame_padding.y) / (max_y - min_y))
+    if haskey(item.props, :scale)
+        scale = item.scale
+        min_x, max_x = scale.x
+        min_y, max_y = scale.y
+    else
+        xlim = (0, 0)
+        ylim = (0, 0)
+        min_x, max_x = extend_limits(X, xlim)
+        min_y, max_y = extend_limits(Y, ylim)
+    end
+    locate = (x = (graph_size.x - 2frame_padding.x) / (max_x - min_x),
+              y = (graph_size.y - 2frame_padding.y) / (max_y - min_y))
     for (x, y) in zip(X, Y)
-        pos = ((x - min_x) * scale.x + frame_padding.x, (y - min_y) * scale.y + frame_padding.y)
+        pos = ((x - min_x) * locate.x + frame_padding.x, (y - min_y) * locate.y + frame_padding.y)
         center = imgui_offset_vec2(window_pos, pos)
         if rect_contains_pos(ImVec4(center - radius, center + radius), mouse_pos)
             CImGui.BeginTooltip()
