@@ -51,7 +51,7 @@ function properties(::W) where {W <: UIWindow}
     (:title, :frame, :name, :flags, :pre_callback, :post_callback)
 end
 
-function setup_window(imctx::Ptr, window::W, heartbeat) where {W <: UIWindow}
+function setup_window(imctx::Ptr, window::W, heartbeat, under_revise) where {W <: UIWindow}
     (x, y) = (window.frame.x, window.frame.y)
     (width, height) = (window.frame.width, window.frame.height)
     CImGui.SetNextWindowPos((x, y), CImGui.ImGuiCond_FirstUseEver)
@@ -64,8 +64,13 @@ function setup_window(imctx::Ptr, window::W, heartbeat) where {W <: UIWindow}
     p_open = Ref(true)
     CImGui.Begin(name, p_open, window.flags) || (CImGui.End(); return)
     window.pre_callback !== nothing && Base.invokelatest(window.pre_callback)
+
     for item in window.items
-        imgui_control_item(imctx, item) do imctx, item
+        if under_revise
+            Base.invokelatest(imgui_control_item, (imctx, item) -> nothing, imctx, item)
+        else
+            imgui_control_item(imctx, item) do imctx, item
+            end
         end
     end
     window.post_callback !== nothing && Base.invokelatest(window.post_callback)

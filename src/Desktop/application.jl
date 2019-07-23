@@ -88,10 +88,11 @@ function runloop(glsl_version, glwin::GLFW.Window, app::A) where {A <: UIApplica
     ImGui_ImplGlfw_InitForOpenGL(glwin, true)
     ImGui_ImplOpenGL3_Init(glsl_version)
 
+    bgcolor = app.bgcolor
     heartbeat = throttle(60) do block # 1 minute
         block()
     end
-    bgcolor = app.bgcolor
+    under_revise = isdefined(Main, :Revise)
 
     app.pre_callback !== nothing && Base.invokelatest(app.pre_callback)
     Animations.chronicle.isrunning = true
@@ -104,7 +105,7 @@ function runloop(glsl_version, glwin::GLFW.Window, app::A) where {A <: UIApplica
         CImGui.NewFrame()
 
         try
-            Windows.setup_window.(app.imctx, app.windows, heartbeat)
+            Windows.setup_window.(app.imctx, app.windows, heartbeat, under_revise)
             Animations.chronicle.regulate(time())
         catch err
             error_handling(err) && break
