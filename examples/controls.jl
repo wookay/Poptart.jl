@@ -3,7 +3,8 @@ using Poptart.Controls # Button Label Slider didClick
 
 window1 = Windows.Window(title="A", frame=(x=10,y=20,width=200,height=200))
 window2 = Windows.Window(title="B", frame=(x=220,y=20,width=200,height=200))
-Application(windows=[window1, window2], title="App", frame=(width=430, height=300))
+closenotify = Condition()
+Application(windows=[window1, window2], title="App", frame=(width=430, height=300), closenotify=closenotify)
 
 button = Button(title="Hello", frame=(width=80, height=30))
 put!(window1, button)
@@ -24,3 +25,5 @@ end
 didClick(slider2) do event
     @info :didClick (event, slider2.value)
 end
+
+Base.JLOptions().isinteractive==0 && wait(closenotify)

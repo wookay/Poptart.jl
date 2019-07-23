@@ -2,7 +2,7 @@
 
 using UnicodePlots: extend_limits
 using Printf: @sprintf
-
+using SparseArrays: sparse
 
 # CImGui.Button
 function imgui_control_item(block, imctx::Ptr, item::Button)
@@ -101,7 +101,7 @@ function imgui_control_item(block, imctx::Ptr, item::ScatterPlot)
     frame_padding = (x=7, y=7)
     frame_bb = CImGui.ImVec4(window_pos, window_pos + ImVec2(graph_size.x, graph_size.y))
     renderframe(draw_list, ImVec2(frame_bb, min), ImVec2(frame_bb, max), CImGui.GetColorU32(CImGui.ImGuiCol_FrameBg), true, frame_rounding)
-    radius = 3.5
+    radius = 4
     color_normal = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLines)
     color_hovered = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLinesHovered)
     num_segments = 8
@@ -130,6 +130,52 @@ function imgui_control_item(block, imctx::Ptr, item::ScatterPlot)
             color = color_normal
         end
         CImGui.AddCircleFilled(draw_list, center, radius, color, num_segments)
+    end
+    CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 4, 3))
+    CImGui.igText(item.label)
+    margin = (x=0, y=5)
+    CImGui.SetCursorScreenPos(window_pos + ImVec2(0, graph_size.y + margin.y))
+end
+
+function imgui_control_item(block, imctx::Ptr, item::Spy)
+    draw_list = CImGui.GetWindowDrawList()
+    window_pos = CImGui.GetCursorScreenPos()
+    mouse_pos = CImGui.GetIO().MousePos
+    default_size = (width=CImGui.CalcItemWidth(), height=50)
+    if haskey(item.props, :frame)
+        w = get(item.frame, :width, default_size.width)
+        h = get(item.frame, :height, default_size.height)
+        graph_size = ImVec2(w, h)
+    else
+        graph_size = ImVec2(default_size.width, default_size.height)
+    end
+    frame_rounding = Cfloat(1)
+    frame_padding = (x=7, y=7)
+    frame_bb = CImGui.ImVec4(window_pos, window_pos + ImVec2(graph_size.x, graph_size.y))
+    renderframe(draw_list, ImVec2(frame_bb, min), ImVec2(frame_bb, max), CImGui.GetColorU32(CImGui.ImGuiCol_FrameBg), true, frame_rounding)
+    color_normal = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLines)
+    color_hovered = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLinesHovered)
+    rounding = 0
+    A = item.A
+    (rows, cols) = size(A)
+    cellsize = (graph_size.y - 2frame_padding.y) / cols
+    cellsize_pad = cellsize < 5 ? 0 : 3
+    for (ind, v) in pairs(sparse(A))
+        if v > 0
+            (i, j) = ind.I
+            pos = ((j-1) * cellsize + frame_padding.x, (i-1) * cellsize + frame_padding.y)
+            p_min = imgui_offset_vec2(window_pos, pos)
+            p_max = imgui_offset_vec2(window_pos, pos .+ cellsize .- cellsize_pad)
+            if rect_contains_pos(ImVec4(p_min, p_max), mouse_pos)
+                CImGui.BeginTooltip()
+                CImGui.Text(string("[", i, ", ", j, "] = ", v))
+                CImGui.EndTooltip()
+                color = color_hovered
+            else
+                color = color_normal
+            end
+            CImGui.AddRectFilled(draw_list, p_min, p_max, color, rounding)
+        end
     end
     CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 4, 3))
     CImGui.igText(item.label)

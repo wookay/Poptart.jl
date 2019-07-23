@@ -13,6 +13,15 @@ Button
 Slider
 Label
 ```
+
+# plots
+```@docs
+ScatterPlot
+Spy
+LinePlot
+Histogram
+```
+
 # canvas
 ```@docs
 Canvas

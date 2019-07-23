@@ -5,7 +5,8 @@ using Colors: RGBA
 
 canvas = Canvas()
 window1 = Windows.Window(items=[canvas], title="Drawings", frame=(x=0, y=0, width=550, height=400))
-Application(windows=[window1], title="App", frame=(width=550, height=400))
+closenotify = Condition()
+Application(windows=[window1], title="App", frame=(width=550, height=400), closenotify=closenotify)
 
 strokeColor = RGBA(0,0.7,0,1)
 fillColor   = RGBA(0.1, 0.7,0.8,0.9)
@@ -48,3 +49,5 @@ put!(canvas,
     stroke(curve1),
     stroke(polyline1),
     stroke(polygon1), fill(polygon2))
+
+Base.JLOptions().isinteractive==0 && wait(closenotify)

@@ -25,7 +25,7 @@ include("Controls/label.jl")
 export Canvas
 include("Controls/canvas.jl")
 
-export ScatterPlot, LinePlot, Histogram
+export ScatterPlot, Spy, LinePlot, Histogram
 include("Controls/plots.jl")
 
 end # module Poptart.Controls
