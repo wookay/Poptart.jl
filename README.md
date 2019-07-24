@@ -100,6 +100,8 @@ put!(canvas,
 
 ![drawings.png](https://wookay.github.io/docs/Poptart.jl/cimgui/assets/cimgui/drawings.png)
 
+* see more examples: [PoptartExamples.jl](https://github.com/wookay/PoptartExamples.jl/tree/master/examples)
+
 
 [docs-latest-img]: https://img.shields.io/badge/docs-latest-blue.svg
 [docs-latest-url]: https://wookay.github.io/docs/Poptart.jl/cimgui/
