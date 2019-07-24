@@ -160,4 +160,8 @@ function draw(element::E) where {E <: DrawingElement}
     Drawing{draw}(element)
 end
 
+function Base.convert(::Type{Drawing}, element::Union{TextBox})
+    Drawing{draw}(element)
+end
+
 # module Poptart.Drawings

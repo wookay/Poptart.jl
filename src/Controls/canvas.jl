@@ -10,7 +10,7 @@ Canvas
     # observers::Dict{Symbol, Vector}
     items::Vector{Drawing}
 
-    function Canvas(; items::Vector{Drawing} = Drawing[], kwargs...)
+    function Canvas(; items::Union{Vector{Any},Vector{Drawing}} = Drawing[], kwargs...)
         props = Dict{Symbol, Any}(kwargs...)
         observers = Dict{Symbol, Vector}()
         new(props, observers, Vector{Drawing}(items))
