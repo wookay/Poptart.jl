@@ -132,7 +132,8 @@ function imgui_control_item(block, imctx::Ptr, item::ScatterPlot)
         CImGui.AddCircleFilled(draw_list, center, radius, color, num_segments)
     end
     CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 4, 3))
-    CImGui.igText(item.label)
+    label = _get_item_property(item, :label, "")
+    CImGui.igText(label)
     margin = (x=0, y=5)
     CImGui.SetCursorScreenPos(window_pos + ImVec2(0, graph_size.y + margin.y))
 end
@@ -178,7 +179,66 @@ function imgui_control_item(block, imctx::Ptr, item::Spy)
         end
     end
     CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 4, 3))
-    CImGui.igText(item.label)
+    label = _get_item_property(item, :label, "")
+    CImGui.igText(label)
+    margin = (x=0, y=5)
+    CImGui.SetCursorScreenPos(window_pos + ImVec2(0, graph_size.y + margin.y))
+end
+
+function imgui_control_item(block, imctx::Ptr, item::BarPlot)
+    draw_list = CImGui.GetWindowDrawList()
+    window_pos = CImGui.GetCursorScreenPos()
+    mouse_pos = CImGui.GetIO().MousePos
+    default_size = (width=CImGui.CalcItemWidth(), height=150)
+    if haskey(item.props, :frame)
+        w = get(item.frame, :width, default_size.width)
+        h = get(item.frame, :height, default_size.height)
+        graph_size = ImVec2(w, h)
+    else
+        graph_size = ImVec2(default_size.width, default_size.height)
+    end
+    frame_rounding = Cfloat(1)
+    frame_padding = (x=7, y=7)
+    frame_bb = CImGui.ImVec4(window_pos, window_pos + ImVec2(graph_size.x, graph_size.y))
+    renderframe(draw_list, ImVec2(frame_bb, min), ImVec2(frame_bb, max), CImGui.GetColorU32(CImGui.ImGuiCol_FrameBg), true, frame_rounding)
+    color_normal = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLines)
+    color_hovered = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLinesHovered)
+    rounding = 0
+    captions = item.captions
+    values = item.values
+    len = length(values)
+    barsize = (graph_size.y - 2frame_padding.y) / len
+    barsize_pad = barsize < 5 ? 0 : 3
+    textsize = 80
+    if haskey(item.props, :scale)
+        min_x, max_x = item.scale
+    else
+        xlim = (0, 1)
+        min_x, max_x = extend_limits(values, xlim)
+    end
+    locate = (x = (graph_size.x - 2frame_padding.x) / (max_x - min_x) - textsize, )
+    for (idx, value) in enumerate(values)
+        barwidth = locate.x * value
+        caption = captions[idx]
+        pos = (textsize + frame_padding.x, (idx - 1) * barsize + frame_padding.y + barsize_pad)
+        p_min = imgui_offset_vec2(window_pos, pos)
+        p_max = imgui_offset_vec2(window_pos, pos .+ (barwidth, barsize .- barsize_pad))
+        captionpos = p_min + ImVec2(-textsize, -barsize_pad)
+        if rect_contains_pos(ImVec4(captionpos, p_max), mouse_pos)
+            CImGui.BeginTooltip()
+            CImGui.Text(string(caption, "\n", value))
+            CImGui.EndTooltip()
+            color = color_hovered
+        else
+            color = color_normal
+        end
+        CImGui.SetCursorScreenPos(captionpos)
+        CImGui.igTextColored(color, caption)
+        CImGui.AddRectFilled(draw_list, p_min, p_max, color, rounding)
+    end
+    CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 4, 3))
+    label = _get_item_property(item, :label, "")
+    CImGui.igText(label)
     margin = (x=0, y=5)
     CImGui.SetCursorScreenPos(window_pos + ImVec2(0, graph_size.y + margin.y))
 end

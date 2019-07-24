@@ -6,8 +6,9 @@ using Poptart.Controls # ScatterPlot LinePlot Histogram
 using Colors: RGBA
 using CImGui: ShowMetricsWindow
 
-window1 = Window(title="A", frame=(width=200,height=200))
-app = Application(windows=[window1], title="App", frame=(width=630, height=400))
+frame = (width=200, height=200)
+window1 = Window(title="A", frame=frame)
+app = Application(windows=[window1], title="App", frame=frame)
 
 using Random
 Random.seed!()

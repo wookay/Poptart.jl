@@ -18,6 +18,7 @@ Label
 ```@docs
 ScatterPlot
 Spy
+BarPlot
 LinePlot
 Histogram
 ```

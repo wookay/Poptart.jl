@@ -21,6 +21,16 @@ function properties(control::Spy)
 end
 
 """
+    BarPlot(; captions::Vector{String}, values::Vector{Number}, label::String, [frame])
+"""
+BarPlot
+@UI BarPlot
+
+function properties(control::BarPlot)
+    (properties(super(control))..., :captions, :values, :label, )
+end
+
+"""
     LinePlot(; values::AbstractVector, label::String, [overlay_text], [scale], [frame])
 """
 LinePlot
