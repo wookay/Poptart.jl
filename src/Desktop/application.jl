@@ -105,8 +105,8 @@ function runloop(glsl_version, glwin::GLFW.Window, app::A) where {A <: UIApplica
         CImGui.NewFrame()
 
         try
-            Windows.setup_window.(app.imctx, app.windows, heartbeat, under_revise)
             Animations.chronicle.regulate(time())
+            Windows.setup_window.(app.imctx, app.windows, heartbeat, under_revise)
         catch err
             error_handling(err) && break
         end
