@@ -8,7 +8,7 @@ using ...Controls
 using ...Drawings # Line Rect Circle Arc Curve Polyline Polygon stroke fill
 using CImGui: CImGui
 using .CImGui: ImVec2, ImVec4, ImU32, ImDrawList
-using Colors: RGBA
+using Colors: RGBA, RGB
 
 include("Windows/imgui_convert.jl")
 include("Windows/imgui_controls.jl")

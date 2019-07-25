@@ -154,26 +154,41 @@ function imgui_control_item(block, imctx::Ptr, item::Spy)
     frame_padding = (x=7, y=7)
     frame_bb = CImGui.ImVec4(window_pos, window_pos + ImVec2(graph_size.x, graph_size.y))
     renderframe(draw_list, ImVec2(frame_bb, min), ImVec2(frame_bb, max), CImGui.GetColorU32(CImGui.ImGuiCol_FrameBg), true, frame_rounding)
-    color_normal = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLines)
     color_hovered = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLinesHovered)
+    color_positive = RGB(0.3, 0.5, 0.58)
+    color_negative = RGB(0.32, 0.1, 0.1)
     rounding = 0
     A = item.A
     (rows, cols) = size(A)
-    cellsize = (graph_size.y - 2frame_padding.y) / cols
-    cellsize_pad = cellsize < 5 ? 0 : 3
+    if rows > cols
+        cellsize = (graph_size.y - 2frame_padding.y) / rows
+        x = graph_size.x - cellsize*cols - 2frame_padding.x
+        halfx = x > 0 ? x/2 : 0
+        halfy = 0
+    else
+        cellsize = (graph_size.x - 2frame_padding.x) / cols
+        y = graph_size.y - cellsize*rows - 2frame_padding.y
+        halfx = 0
+        halfy = y > 0 ? y/2 : 0
+    end
+    cellsize_pad = cellsize < 3 ? 3 : 0
     for (ind, v) in pairs(sparse(A))
-        if v > 0
+        if !iszero(v)
             (i, j) = ind.I
-            pos = ((j-1) * cellsize + frame_padding.x, (i-1) * cellsize + frame_padding.y)
+            pos = ((j-1) * cellsize + frame_padding.x + halfx, (i-1) * cellsize + frame_padding.y + halfy)
             p_min = imgui_offset_vec2(window_pos, pos)
-            p_max = imgui_offset_vec2(window_pos, pos .+ cellsize .- cellsize_pad)
+            p_max = imgui_offset_vec2(window_pos, pos .+ cellsize .+ cellsize_pad)
             if rect_contains_pos(ImVec4(p_min, p_max), mouse_pos)
                 CImGui.BeginTooltip()
                 CImGui.Text(string("[", i, ", ", j, "] = ", v))
                 CImGui.EndTooltip()
                 color = color_hovered
             else
-                color = color_normal
+                if v > 0
+                    color = imgui_color(RGBA(color_positive, v))
+                else
+                    color = imgui_color(RGBA(color_negative, -v))
+                end
             end
             CImGui.AddRectFilled(draw_list, p_min, p_max, color, rounding)
         end
@@ -201,39 +216,44 @@ function imgui_control_item(block, imctx::Ptr, item::BarPlot)
     frame_padding = (x=7, y=7)
     frame_bb = CImGui.ImVec4(window_pos, window_pos + ImVec2(graph_size.x, graph_size.y))
     renderframe(draw_list, ImVec2(frame_bb, min), ImVec2(frame_bb, max), CImGui.GetColorU32(CImGui.ImGuiCol_FrameBg), true, frame_rounding)
-    color_normal = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLines)
+    color_positive = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLines)
+    color_negative = imgui_color(RGBA(0.4, 0.1, 0.15, 0.9))
     color_hovered = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLinesHovered)
     rounding = 0
-    captions = item.captions
     values = item.values
     len = length(values)
+    captions = _get_item_property(item, :captions, fill("", len))
     barsize = (graph_size.y - 2frame_padding.y) / len
     barsize_pad = barsize < 5 ? 0 : 3
     textsize = 80
-    if haskey(item.props, :scale)
-        min_x, max_x = item.scale
-    else
-        xlim = (0, 1)
-        min_x, max_x = extend_limits(values, xlim)
-    end
-    locate = (x = (graph_size.x - 2frame_padding.x) / (max_x - min_x) - textsize, )
+    (min_x, max_x) = _get_item_property(item, :scale, (minimum(values) < 0 ? -1 : 0, 1))
+    locate = (x = (graph_size.x - 2frame_padding.x - textsize) / (max_x - min_x), )
+    has_negative = min_x < 0
+    offsetx = has_negative ? locate.x * (max_x - min_x) / 2 : 0
     for (idx, value) in enumerate(values)
-        barwidth = locate.x * value
         caption = captions[idx]
-        pos = (textsize + frame_padding.x, (idx - 1) * barsize + frame_padding.y + barsize_pad)
-        p_min = imgui_offset_vec2(window_pos, pos)
-        p_max = imgui_offset_vec2(window_pos, pos .+ (barwidth, barsize .- barsize_pad))
-        captionpos = p_min + ImVec2(-textsize, -barsize_pad)
+        barwidth = locate.x * value
+        pos = (offsetx + textsize + frame_padding.x, (idx - 1) * barsize + frame_padding.y + barsize_pad)
+        if value < 0
+            p_min = imgui_offset_vec2(window_pos, pos .+ (barwidth, 0))
+            p_max = imgui_offset_vec2(window_pos, pos .+ (0, barsize .- barsize_pad))
+        else
+            p_min = imgui_offset_vec2(window_pos, pos)
+            p_max = imgui_offset_vec2(window_pos, pos .+ (barwidth, barsize .- barsize_pad))
+        end
+        captionpos = imgui_offset_vec2(window_pos, (textsize + frame_padding.x, pos[2])) + ImVec2(-textsize, -barsize_pad)
         if rect_contains_pos(ImVec4(captionpos, p_max), mouse_pos)
             CImGui.BeginTooltip()
             CImGui.Text(string(caption, "\n", value))
             CImGui.EndTooltip()
             color = color_hovered
+            color_caption = color_hovered
         else
-            color = color_normal
+            color = value > 0 ? color_positive : color_negative
+            color_caption = color_positive
         end
         CImGui.SetCursorScreenPos(captionpos)
-        CImGui.igTextColored(color, caption)
+        CImGui.igTextColored(color_caption, caption)
         CImGui.AddRectFilled(draw_list, p_min, p_max, color, rounding)
     end
     CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 4, 3))
