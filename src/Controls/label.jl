@@ -5,15 +5,10 @@
 """
 Label
 
-@UI Label quote
-    function Label(; label::String="", text::String, kwargs...)
-        props = Dict{Symbol, Any}(:label => label, :text => text, pairs(kwargs)...)
-        new(props, Dict{Symbol, Vector}())
-    end
-end
+@UI Label
 
 function properties(control::Label)
-    (properties(super(control))..., :label, :text, )
+    (properties(super(control))..., :text, )
 end
 
 # module Poptart.Controls

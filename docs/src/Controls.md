@@ -40,6 +40,13 @@ NewLine
 Spacing
 ```
 
+# menus
+```@docs
+MenuBar
+Menu
+MenuItem
+```
+
 # Mouse
 ```@docs
 Mouse.leftClick

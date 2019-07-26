@@ -4,19 +4,28 @@ using UnicodePlots: extend_limits
 using Printf: @sprintf
 using SparseArrays: sparse
 
+function _get_item_props(item, name::Symbol, default)
+    get(item.props, name, default)
+end
+
 # CImGui.Button
-function imgui_control_item(block, imctx::Ptr, item::Button)
-    CImGui.Button(item.title) && @async Mouse.leftClick(item)
+function imgui_control_item(imctx::Ptr, item::Button)
+    if CImGui.Button(item.title)
+        block = _get_item_props(item, :block, nothing)
+        block !== nothing && block()
+        @async Mouse.leftClick(item)
+    end
 end
 
 # CImGui.SliderInt, CImGui.SliderFloat
 function _imgui_slider_item(item::Slider, value, f, refvalue::Ref)
-    label = item.label
     min = minimum(item.range)
     max = maximum(item.range)
-    if f(label, refvalue, min, max)
+    if f(item.label, refvalue, min, max)
         typ = typeof(value)
         item.value = typ(refvalue[])
+        block = _get_item_props(item, :block, nothing)
+        block !== nothing && block()
         @async Mouse.leftClick(item)
     end
 end
@@ -33,25 +42,20 @@ function _imgui_slider_item(item::Slider, value::AbstractFloat)
     _imgui_slider_item(item, value, f, refvalue)
 end
 
-function imgui_control_item(block, imctx::Ptr, item::Slider)
+function imgui_control_item(imctx::Ptr, item::Slider)
     _imgui_slider_item(item, item.value)
 end
 
-# CImGui.LabelText
-function imgui_control_item(block, imctx::Ptr, item::Label)
-    CImGui.LabelText(item.label, item.text)
+function imgui_control_item(imctx::Ptr, item::Label)
+    CImGui.igText(item.text)
 end
 
-function imgui_control_item(block, imctx::Ptr, item::Canvas)
+function imgui_control_item(imctx::Ptr, item::Canvas)
     draw_list = CImGui.GetWindowDrawList()
     window_pos = CImGui.GetCursorScreenPos()
     for drawing in item.items
-        imgui_drawing_item(imctx, draw_list, window_pos, drawing, drawing.element)
+        imgui_drawing_item(draw_list, window_pos, drawing, drawing.element)
     end
-end
-
-function _get_item_property(item, name::Symbol, default)
-    get(item.props, name, default)
 end
 
 function _get_item_scale(item)::NamedTuple{(:min, :max)}
@@ -85,7 +89,7 @@ function renderframe(draw_list, p_min::ImVec2, p_max::ImVec2, fill_col::ImU32, b
     end
 end
 
-function imgui_control_item(block, imctx::Ptr, item::ScatterPlot)
+function imgui_control_item(imctx::Ptr, item::ScatterPlot)
     draw_list = CImGui.GetWindowDrawList()
     window_pos = CImGui.GetCursorScreenPos()
     mouse_pos = CImGui.GetIO().MousePos
@@ -132,13 +136,13 @@ function imgui_control_item(block, imctx::Ptr, item::ScatterPlot)
         CImGui.AddCircleFilled(draw_list, center, radius, color, num_segments)
     end
     CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 4, 3))
-    label = _get_item_property(item, :label, "")
+    label = _get_item_props(item, :label, "")
     CImGui.igText(label)
     margin = (x=0, y=5)
     CImGui.SetCursorScreenPos(window_pos + ImVec2(0, graph_size.y + margin.y))
 end
 
-function imgui_control_item(block, imctx::Ptr, item::Spy)
+function imgui_control_item(imctx::Ptr, item::Spy)
     draw_list = CImGui.GetWindowDrawList()
     window_pos = CImGui.GetCursorScreenPos()
     mouse_pos = CImGui.GetIO().MousePos
@@ -194,13 +198,13 @@ function imgui_control_item(block, imctx::Ptr, item::Spy)
         end
     end
     CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 4, 3))
-    label = _get_item_property(item, :label, "")
+    label = _get_item_props(item, :label, "")
     CImGui.igText(label)
     margin = (x=0, y=5)
     CImGui.SetCursorScreenPos(window_pos + ImVec2(0, graph_size.y + margin.y))
 end
 
-function imgui_control_item(block, imctx::Ptr, item::BarPlot)
+function imgui_control_item(imctx::Ptr, item::BarPlot)
     draw_list = CImGui.GetWindowDrawList()
     window_pos = CImGui.GetCursorScreenPos()
     mouse_pos = CImGui.GetIO().MousePos
@@ -222,11 +226,11 @@ function imgui_control_item(block, imctx::Ptr, item::BarPlot)
     rounding = 0
     values = item.values
     len = length(values)
-    captions = _get_item_property(item, :captions, fill("", len))
+    captions = _get_item_props(item, :captions, fill("", len))
     barsize = (graph_size.y - 2frame_padding.y) / len
     barsize_pad = barsize < 5 ? 0 : 3
     textsize = 80
-    (min_x, max_x) = _get_item_property(item, :scale, (minimum(values) < 0 ? -1 : 0, 1))
+    (min_x, max_x) = _get_item_props(item, :scale, (minimum(values) < 0 ? -1 : 0, 1))
     locate = (x = (graph_size.x - 2frame_padding.x - textsize) / (max_x - min_x), )
     has_negative = min_x < 0
     offsetx = has_negative ? locate.x * (max_x - min_x) / 2 : 0
@@ -257,35 +261,34 @@ function imgui_control_item(block, imctx::Ptr, item::BarPlot)
         CImGui.AddRectFilled(draw_list, p_min, p_max, color, rounding)
     end
     CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 4, 3))
-    label = _get_item_property(item, :label, "")
+    label = _get_item_props(item, :label, "")
     CImGui.igText(label)
     margin = (x=0, y=5)
     CImGui.SetCursorScreenPos(window_pos + ImVec2(0, graph_size.y + margin.y))
 end
 
 # CImGui.PlotLines
-function imgui_control_item(block, imctx::Ptr, item::LinePlot)
-    label = _get_item_property(item, :label, "")
+function imgui_control_item(imctx::Ptr, item::LinePlot)
+    label = _get_item_props(item, :label, "")
     values = Cfloat.(item.values)
-    overlay_text = _get_item_property(item, :overlay_text, C_NULL)
+    overlay_text = _get_item_props(item, :overlay_text, C_NULL)
     scale = _get_item_scale(item)
     graph_size = _get_item_frame_size(item)
     CImGui.PlotLines(label, values, length(values), Cint(0), overlay_text, scale.min, scale.max, graph_size)
 end
 
 # CImGui.PlotHistogram
-function imgui_control_item(block, imctx::Ptr, item::Histogram)
-    label = _get_item_property(item, :label, "")
+function imgui_control_item(imctx::Ptr, item::Histogram)
+    label = _get_item_props(item, :label, "")
     values = Cfloat.(item.values)
-    overlay_text = _get_item_property(item, :overlay_text, C_NULL)
+    overlay_text = _get_item_props(item, :overlay_text, C_NULL)
     scale = _get_item_scale(item)
     graph_size = _get_item_frame_size(item)
     CImGui.PlotHistogram(label, values, length(values), Cint(0), overlay_text, scale.min, scale.max, graph_size)
 end
 
 # layouts
-
-function imgui_control_item(block, imctx::Ptr, item::Group)
+function imgui_control_item(imctx::Ptr, item::Group)
     CImGui.BeginGroup()
     for el in item.items
         if el isa UIControl
@@ -293,29 +296,60 @@ function imgui_control_item(block, imctx::Ptr, item::Group)
         elseif el isa LayoutElement
             f = imgui_layout_item
         end
-        f((imctx, item) -> nothing, imctx, el)
+        f(imctx, el)
     end
     CImGui.EndGroup()
 end
 
-function imgui_layout_item(block, imctx::Ptr, item::Separator)
+function imgui_layout_item(imctx::Ptr, item::Separator)
     CImGui.Separator()
 end
 
-function imgui_layout_item(block, imctx::Ptr, item::SameLine)
+function imgui_layout_item(imctx::Ptr, item::SameLine)
     CImGui.SameLine()
 end
 
-function imgui_layout_item(block, imctx::Ptr, item::NewLine)
+function imgui_layout_item(imctx::Ptr, item::NewLine)
     CImGui.NewLine()
 end
 
-function imgui_layout_item(block, imctx::Ptr, item::Spacing)
+function imgui_layout_item(imctx::Ptr, item::Spacing)
     CImGui.Spacing()
 end
 
+# menus
+using Jive
+function imgui_control_item(imctx::Ptr, item::MenuBar)
+    if CImGui.BeginMenuBar()
+        for menu in item.menus
+            imgui_control_item(imctx, menu)
+        end
+        CImGui.EndMenuBar()
+    end
+end
+
+function imgui_control_item(imctx::Ptr, item::Menu)
+    if CImGui.BeginMenu(item.title)
+        for menuitem in item.items
+            imgui_control_item(imctx, menuitem)
+        end
+        CImGui.EndMenu()
+    end
+end
+
+function imgui_control_item(imctx::Ptr, item::MenuItem)
+    shortcut = _get_item_props(item, :shortcut, C_NULL)
+    selected = _get_item_props(item, :selected, false)
+    enabled = _get_item_props(item, :enabled, true)
+    ref_selected = Ref(selected)
+    if CImGui.MenuItem(item.title, shortcut, ref_selected, enabled)
+        block = _get_item_props(item, :block, nothing)
+        block !== nothing && block()
+    end
+end
+
 using Jive # @onlyonce
-function imgui_control_item(block, imctx::Ptr, item::Any)
+function imgui_control_item(imctx::Ptr, item::Any)
     @onlyonce begin
         @info "not implemented" item
     end

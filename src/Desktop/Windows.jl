@@ -68,10 +68,9 @@ function setup_window(imctx::Ptr, window::W, heartbeat, under_revise) where {W <
 
     for item in window.items
         if under_revise
-            Base.invokelatest(imgui_control_item, (imctx, item) -> nothing, imctx, item)
+            Base.invokelatest(imgui_control_item, imctx, item)
         else
-            imgui_control_item(imctx, item) do imctx, item
-            end
+            imgui_control_item(imctx, item)
         end
     end
     window.post_callback !== nothing && Base.invokelatest(window.post_callback)

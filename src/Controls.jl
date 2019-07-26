@@ -31,4 +31,7 @@ include("Controls/plots.jl")
 export Group, Separator, SameLine, NewLine, Spacing
 include("Controls/layouts.jl")
 
+export MenuBar, Menu, MenuItem
+include("Controls/menus.jl")
+
 end # module Poptart.Controls
