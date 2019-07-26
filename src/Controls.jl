@@ -28,4 +28,7 @@ include("Controls/canvas.jl")
 export ScatterPlot, Spy, BarPlot, LinePlot, Histogram
 include("Controls/plots.jl")
 
+export Group, Separator, SameLine, NewLine, Spacing
+include("Controls/layouts.jl")
+
 end # module Poptart.Controls

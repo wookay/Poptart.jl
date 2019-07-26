@@ -31,6 +31,15 @@ Controls.remove!(canvas::Canvas, elements::Drawings.Drawing...)
 empty!(canvas::Canvas)
 ```
 
+# layouts
+```@docs
+Group
+Separator
+SameLine
+NewLine
+Spacing
+```
+
 # Mouse
 ```@docs
 Mouse.leftClick

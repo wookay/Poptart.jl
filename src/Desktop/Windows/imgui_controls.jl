@@ -283,6 +283,37 @@ function imgui_control_item(block, imctx::Ptr, item::Histogram)
     CImGui.PlotHistogram(label, values, length(values), Cint(0), overlay_text, scale.min, scale.max, graph_size)
 end
 
+# layouts
+
+function imgui_control_item(block, imctx::Ptr, item::Group)
+    CImGui.BeginGroup()
+    for el in item.items
+        if el isa UIControl
+            f = imgui_control_item
+        elseif el isa LayoutElement
+            f = imgui_layout_item
+        end
+        f((imctx, item) -> nothing, imctx, el)
+    end
+    CImGui.EndGroup()
+end
+
+function imgui_layout_item(block, imctx::Ptr, item::Separator)
+    CImGui.Separator()
+end
+
+function imgui_layout_item(block, imctx::Ptr, item::SameLine)
+    CImGui.SameLine()
+end
+
+function imgui_layout_item(block, imctx::Ptr, item::NewLine)
+    CImGui.NewLine()
+end
+
+function imgui_layout_item(block, imctx::Ptr, item::Spacing)
+    CImGui.Spacing()
+end
+
 using Jive # @onlyonce
 function imgui_control_item(block, imctx::Ptr, item::Any)
     @onlyonce begin

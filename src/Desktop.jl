@@ -13,4 +13,6 @@ include("Desktop/application.jl")
 export FontAtlas
 include("Desktop/FontAtlas.jl")
 
+include("Desktop/Shortcuts.jl")
+
 end # module Poptart.Desktop
