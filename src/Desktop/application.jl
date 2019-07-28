@@ -2,6 +2,7 @@
 
 import ..Interfaces: put!, remove!
 using ..Animations: Animations
+using .Shortcuts: Shortcuts, Ctrl, Alt, Shift, Key, Conjunction
 using CImGui
 using .CImGui.GLFWBackend # ImGui_ImplGlfw_InitForOpenGL
 using .CImGui.OpenGLBackend # ImGui_ImplOpenGL3_NewFrame ImGui_ImplOpenGL3_Shutdown
@@ -84,6 +85,80 @@ function throttle(f, timeout; leading=true, trailing=false)
   end
 end
 
+function set_keyboard_callbacks(glwin::GLFW.Window)
+    keyboard_state = Dict{GLFW.Key, Bool}(
+        GLFW.KEY_LEFT_SHIFT    => false,
+        GLFW.KEY_RIGHT_SHIFT   => false,
+        GLFW.KEY_LEFT_CONTROL  => false,
+        GLFW.KEY_RIGHT_CONTROL => false,
+        GLFW.KEY_LEFT_ALT      => false,
+        GLFW.KEY_RIGHT_ALT     => false,
+        GLFW.KEY_LEFT_SUPER    => false,
+        GLFW.KEY_RIGHT_SUPER   => false,
+    )
+    keyboard_modifier_ranges = 340:347 # GLFW.KEY_LEFT_SHIFT:GLFW.KEY_RIGHT_SUPER
+
+    function get_modifier(key::GLFW.Key)::Symbol
+        (key == GLFW.KEY_LEFT_SHIFT || key == GLFW.KEY_RIGHT_SHIFT) && return :shift
+        (key == GLFW.KEY_LEFT_CONTROL || key == GLFW.KEY_RIGHT_CONTROL) && return :ctrl
+        (key == GLFW.KEY_LEFT_ALT || key == GLFW.KEY_RIGHT_ALT) && return :alt
+        (key == GLFW.KEY_LEFT_SUPER || key == GLFW.KEY_RIGHT_SUPER) && return :super
+        throw(DomainError(key))
+    end
+
+    function conjunction_match(conjunction::Conjunction)::Bool
+        if conjunction.shift
+            !(keyboard_state[GLFW.KEY_LEFT_SHIFT] || keyboard_state[GLFW.KEY_RIGHT_SHIFT]) && return false
+        end
+        if conjunction.ctrl
+            !(keyboard_state[GLFW.KEY_LEFT_CONTROL] || keyboard_state[GLFW.KEY_RIGHT_CONTROL]) && return false
+        end
+        if conjunction.alt
+            !(keyboard_state[GLFW.KEY_LEFT_ALT] || keyboard_state[GLFW.KEY_RIGHT_ALT]) && return false
+        end
+        if conjunction.super
+            !(keyboard_state[GLFW.KEY_LEFT_SUPER] || keyboard_state[GLFW.KEY_RIGHT_SUPER]) && return false
+        end
+        true
+    end
+
+    block = function (_, key, scancode, action, mods)
+        keyval = Int(key)
+        if action == GLFW.PRESS
+            if keyval in keyboard_modifier_ranges
+                keyboard_state[key] = true
+                if !isempty(Shortcuts.pressed_modifier_callbacks)
+                    for (conjunction, f) in Shortcuts.pressed_modifier_callbacks
+                         getfield(conjunction, get_modifier(key)) && conjunction_match(conjunction) && f((pressed=conjunction,))
+                    end
+                end
+            else
+                if (any ∘ values)(keyboard_state)
+                    if !isempty(Shortcuts.pressed_conjunction_callbacks)
+                        for (conjunction, f) in Shortcuts.pressed_conjunction_callbacks
+                            nothing === conjunction.key && continue
+                            if conjunction_match(conjunction) && keyval == conjunction.key.value
+                                f((pressed=conjunction,))
+                                break
+                            end
+                        end
+                    end
+                elseif !isempty(Shortcuts.pressed_key_callbacks)
+                    for (k, f) in Shortcuts.pressed_key_callbacks
+                        if keyval == k.value
+                            f((pressed=k,))
+                            break
+                        end
+                    end
+                end
+            end
+        elseif action == GLFW.RELEASE && keyval in keyboard_modifier_ranges
+            keyboard_state[key] = false
+        end
+    end
+    GLFW.SetKeyCallback(glwin, block)
+end
+
 function runloop(glsl_version, glwin::GLFW.Window, app::A) where {A <: UIApplication}
     ImGui_ImplGlfw_InitForOpenGL(glwin, true)
     ImGui_ImplOpenGL3_Init(glsl_version)
@@ -93,9 +168,10 @@ function runloop(glsl_version, glwin::GLFW.Window, app::A) where {A <: UIApplica
         block()
     end
     under_revise = isdefined(Main, :Revise)
+    set_keyboard_callbacks(glwin)
 
-    app.pre_callback !== nothing && Base.invokelatest(app.pre_callback)
     Animations.chronicle.isrunning = true
+    app.pre_block !== nothing && Base.invokelatest(app.pre_block)
     while app.isrunning && !GLFW.WindowShouldClose(glwin)
         yield()
 
@@ -119,8 +195,8 @@ function runloop(glsl_version, glwin::GLFW.Window, app::A) where {A <: UIApplica
 
         GLFW.SwapBuffers(glwin)
     end
+    app.post_block !== nothing && Base.invokelatest(app.post_block)
     Animations.chronicle.isrunning = false
-    app.post_callback !== nothing && Base.invokelatest(app.post_callback)
 
     # cleanup
     ImGui_ImplOpenGL3_Shutdown()
@@ -165,7 +241,7 @@ mutable struct Application <: UIApplication
             env[glwin.handle] = app
             return app
         end
-        props = Dict(:title=>title, :frame=>frame, :bgcolor=>bgcolor, :pre_callback => nothing, :post_callback => nothing)
+        props = Dict(:title=>title, :frame=>frame, :bgcolor=>bgcolor, :pre_block => nothing, :post_block => nothing)
         app = new(props, app_windows, nothing, nothing, closenotify, true)
         do_resume(app)
         app
@@ -209,7 +285,7 @@ function do_resume(app::A) where {A <: UIApplication}
 end
 
 function properties(::A) where {A <: UIApplication}
-    (:title, :frame, :bgcolor, :pre_callback, :post_callback)
+    (:title, :frame, :bgcolor, :pre_block, :post_block, )
 end
 
 function Base.getproperty(app::A, prop::Symbol) where {A <: UIApplication}

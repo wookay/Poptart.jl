@@ -10,11 +10,7 @@ end
 
 # CImGui.Button
 function imgui_control_item(imctx::Ptr, item::Button)
-    if CImGui.Button(item.title)
-        block = _get_item_props(item, :block, nothing)
-        block !== nothing && block()
-        @async Mouse.leftClick(item)
-    end
+    CImGui.Button(item.title) && @async Mouse.leftClick(item)
 end
 
 # CImGui.SliderInt, CImGui.SliderFloat
@@ -24,8 +20,6 @@ function _imgui_slider_item(item::Slider, value, f, refvalue::Ref)
     if f(item.label, refvalue, min, max)
         typ = typeof(value)
         item.value = typ(refvalue[])
-        block = _get_item_props(item, :block, nothing)
-        block !== nothing && block()
         @async Mouse.leftClick(item)
     end
 end
@@ -46,8 +40,113 @@ function imgui_control_item(imctx::Ptr, item::Slider)
     _imgui_slider_item(item, item.value)
 end
 
+# code from https://github.com/ocornut/imgui/issues/942#issuecomment-401730694
+
+function imgui_control_item(imctx::Ptr, item::Knob)
+    label = item.label
+    value_p = Ref{Cfloat}(item.value)
+    v_min = minimum(item.range)
+    v_max = maximum(item.range)
+    fac = v_max
+    sz = 20
+    thickness = 4
+
+    window_pos = CImGui.GetCursorScreenPos()
+
+    radio = sz
+    center = ImVec2(window_pos.x + radio, window_pos.y + radio)
+
+    ANGLE_MIN = pi * 0.75
+    ANGLE_MAX = pi * 2.25
+
+    t = value_p[]/fac
+    angle = ANGLE_MIN + (ANGLE_MAX - ANGLE_MIN) * t
+
+    x2 = cos(angle)*radio + center.x
+    y2 = sin(angle)*radio + center.y
+
+    CImGui.InvisibleButton(string(label, "t"), ImVec2(2radio, 2radio))
+    is_active = CImGui.IsItemActive()
+    is_hovered = CImGui.IsItemHovered()
+
+    circular = false
+    io = CImGui.GetIO()
+    touched = false
+    if is_active
+        touched = true
+        m = io.MousePos
+        md = CImGui.ImGuiIO_Get_MouseDelta(io)
+        if md.x == 0 && md.y == 0
+            touched = false
+        end
+        mp = ImVec2(m.x - md.x, m.y - md.y)
+        ax = mp.x - center.x
+        ay = mp.y - center.y
+        bx = m.x - center.x
+        by = m.y - center.y
+        ma = sqrt(ax*ax + ay*ay)
+        mb = sqrt(bx*bx + by*by)
+        ab  = ax * bx + ay * by
+        vet = ax * by - bx * ay
+        ab = ab / (ma * mb)
+        if !(ma == 0 || mb == 0 || ab < -1 || ab > 1)
+            if vet > 0
+                val = value_p[] + acos(ab) * fac
+                if val > v_max
+                    if circular
+                        value_p[] = v_min
+                    else
+                        value_p[] = v_max
+                    end
+                else
+                    value_p[] = val
+                end
+            else
+                val = value_p[] - acos(ab) * fac
+                if val < v_min
+                    if circular
+                        value_p[] = v_max
+                    else
+                        value_p[] = v_min
+                    end
+                else
+                    value_p[] = val
+                end
+            end
+	    end
+	end
+
+    if is_active
+        col32idx = CImGui.ImGuiCol_FrameBgActive
+    else
+        if is_hovered
+            col32idx = CImGui.ImGuiCol_FrameBgHovered
+        else
+            col32idx = CImGui.ImGuiCol_FrameBg
+        end
+    end
+    col32 = CImGui.igGetColorU32(col32idx, 1)
+    col32line = CImGui.igGetColorU32(CImGui.ImGuiCol_SliderGrabActive, 1)
+    draw_list = CImGui.GetWindowDrawList()
+    CImGui.AddCircleFilled(draw_list, center, radio, col32, 16)
+    CImGui.AddLine(draw_list, center, ImVec2(x2, y2), col32line, thickness)
+    CImGui.SameLine()
+
+    CImGui.PushItemWidth(50)
+    if CImGui.InputFloat(label, value_p, 0.0, 0.1)
+        touched = true
+    end
+    if value_p[] != item.value && v_min <= value_p[] <= v_max
+        item.value = value_p[]
+        @async Mouse.leftClick(item)
+    end
+    CImGui.PopItemWidth()
+
+    return touched
+end
+
 function imgui_control_item(imctx::Ptr, item::Label)
-    CImGui.igText(item.text)
+    CImGui.Text(item.text)
 end
 
 function imgui_control_item(imctx::Ptr, item::Canvas)
@@ -137,7 +236,7 @@ function imgui_control_item(imctx::Ptr, item::ScatterPlot)
     end
     CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 4, 3))
     label = _get_item_props(item, :label, "")
-    CImGui.igText(label)
+    CImGui.Text(label)
     margin = (x=0, y=5)
     CImGui.SetCursorScreenPos(window_pos + ImVec2(0, graph_size.y + margin.y))
 end
@@ -199,7 +298,7 @@ function imgui_control_item(imctx::Ptr, item::Spy)
     end
     CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 4, 3))
     label = _get_item_props(item, :label, "")
-    CImGui.igText(label)
+    CImGui.Text(label)
     margin = (x=0, y=5)
     CImGui.SetCursorScreenPos(window_pos + ImVec2(0, graph_size.y + margin.y))
 end
@@ -257,12 +356,12 @@ function imgui_control_item(imctx::Ptr, item::BarPlot)
             color_caption = color_positive
         end
         CImGui.SetCursorScreenPos(captionpos)
-        CImGui.igTextColored(color_caption, caption)
+        CImGui.TextColored(color_caption, caption)
         CImGui.AddRectFilled(draw_list, p_min, p_max, color, rounding)
     end
     CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 4, 3))
     label = _get_item_props(item, :label, "")
-    CImGui.igText(label)
+    CImGui.Text(label)
     margin = (x=0, y=5)
     CImGui.SetCursorScreenPos(window_pos + ImVec2(0, graph_size.y + margin.y))
 end
@@ -318,7 +417,6 @@ function imgui_layout_item(imctx::Ptr, item::Spacing)
 end
 
 # menus
-using Jive
 function imgui_control_item(imctx::Ptr, item::MenuBar)
     if CImGui.BeginMenuBar()
         for menu in item.menus
@@ -342,10 +440,7 @@ function imgui_control_item(imctx::Ptr, item::MenuItem)
     selected = _get_item_props(item, :selected, false)
     enabled = _get_item_props(item, :enabled, true)
     ref_selected = Ref(selected)
-    if CImGui.MenuItem(item.title, shortcut, ref_selected, enabled)
-        block = _get_item_props(item, :block, nothing)
-        block !== nothing && block()
-    end
+    CImGui.MenuItem(item.title, shortcut, ref_selected, enabled) && @async Mouse.leftClick(item)
 end
 
 using Jive # @onlyonce

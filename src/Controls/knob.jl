@@ -1,13 +1,13 @@
 # module Poptart.Controls
 
 """
-    Slider(; label::String, range, value, [frame])
+    Knob(; label::String, range, value, [frame])
 """
-Slider
+Knob
 
-@UI Slider
+@UI Knob
 
-function properties(control::Slider)
+function properties(control::Knob)
     (properties(super(control))..., :label, :range, :value, )
 end
 

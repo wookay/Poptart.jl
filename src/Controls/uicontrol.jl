@@ -90,7 +90,7 @@ macro UI(sym::Symbol)
 end
 
 function properties(::Type{Super{C}}) where {C <: UIControl}
-    (:frame, )
+    (:frame, :pre_block, :post_block, )
 end
 
 # module Poptart.Controls

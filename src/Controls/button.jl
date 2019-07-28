@@ -8,11 +8,11 @@ Button
 @UI Button
 
 function properties(control::Button)
-    (properties(super(control))..., :block, :title, )
+    (properties(super(control))..., :title, )
 end
 
 function Button(f::Function; kwargs...)
-    Button(; block=f, kwargs...)
+    Button(; post_block=f, kwargs...)
 end
 
 # module Poptart.Controls

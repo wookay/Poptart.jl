@@ -11,6 +11,7 @@ didClick(block, control::C) where {C <: UIControl}
 ```@docs
 Button
 Slider
+Knob
 Label
 ```
 

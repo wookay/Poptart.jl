@@ -16,14 +16,14 @@ include("Windows/imgui_controls.jl")
 include("Windows/imgui_drawings.jl")
 
 """
-    Window(; items::Vector{UIControl} = UIControl[], title::String="Title", frame::NamedTuple{(:x,:y,:width,:height)}, name::Union{Nothing,String}=nothing, flags=CImGui.ImGuiWindowFlags(0))
+    Window(; items::Union{Vector{Any},Vector{<:UIControl}} = UIControl[], title::String="Title", frame::Union{NamedTuple{(:width,:height)}, NamedTuple{(:x,:y,:width,:height)}}, name::Union{Nothing,String}=nothing, flags=CImGui.ImGuiWindowFlags(0))
 """
 struct Window <: UIWindow
     items::Vector{UIControl}
     props::Dict{Symbol,Any}
 
     function Window(; items::Union{Vector{Any},Vector{<:UIControl}} = UIControl[], title::String="Title", frame::Union{NamedTuple{(:width,:height)}, NamedTuple{(:x,:y,:width,:height)}}, name::Union{Nothing,String}=nothing, flags=CImGui.ImGuiWindowFlags(0))
-        props = Dict{Symbol,Any}(:title => title, :frame => merge((x=0, y=0), frame), :name => nothing, :flags => flags, :pre_callback => nothing, :post_callback => nothing)
+        props = Dict{Symbol,Any}(:title => title, :frame => merge((x=0, y=0), frame), :name => nothing, :flags => flags, :pre_block => nothing, :post_block => nothing)
         window = new(Vector{UIControl}(items), props)
     end
 end
@@ -49,7 +49,7 @@ function Base.getproperty(window::W, prop::Symbol) where {W <: UIWindow}
 end
 
 function properties(::W) where {W <: UIWindow}
-    (:title, :frame, :name, :flags, :pre_callback, :post_callback)
+    (:title, :frame, :name, :flags, :pre_block, :post_block, )
 end
 
 function setup_window(imctx::Ptr, window::W, heartbeat, under_revise) where {W <: UIWindow}
@@ -64,16 +64,17 @@ function setup_window(imctx::Ptr, window::W, heartbeat, under_revise) where {W <
     end
     p_open = Ref(true)
     CImGui.Begin(name, p_open, window.flags) || (CImGui.End(); return)
-    window.pre_callback !== nothing && Base.invokelatest(window.pre_callback)
-
+    window.pre_block !== nothing && Base.invokelatest(window.pre_block)
     for item in window.items
+        haskey(item.props, :pre_block) && item.pre_block !== nothing && Base.invokelatest(item.pre_block)
         if under_revise
             Base.invokelatest(imgui_control_item, imctx, item)
         else
             imgui_control_item(imctx, item)
         end
+        haskey(item.props, :post_block) && item.post_block !== nothing && Base.invokelatest(item.post_block)
     end
-    window.post_callback !== nothing && Base.invokelatest(window.post_callback)
+    window.post_block !== nothing && Base.invokelatest(window.post_block)
     CImGui.End()
     heartbeat() do
         nothing

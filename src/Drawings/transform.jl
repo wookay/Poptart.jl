@@ -73,4 +73,24 @@ function transform(element::TextBox, f, (x, y))::TextBox
     TextBox(text=element.text, rect=(from..., to...), color=element.color)
 end
 
+function scale(tup::Tuple{T,T}, x::Real) where {T <: Real}
+    scale(tup, (x, x))
+end
+
+function scale(tup::Tuple{T,T}, (x, y)) where {T <: Real}
+    transform(tup, *, (x, y))
+end
+
+function translate(tup::Tuple{T,T}, x::Real) where {T <: Real}
+    translate(tup, (x, x))
+end
+
+function translate(tup::Tuple{T,T}, (x, y)) where {T <: Real}
+    transform(tup, +, (x, y))
+end
+
+function transform(tup::Tuple{T,T}, f, (x, y))::Tuple{T,T} where {T <: Real}
+    broadcast(f, tup, (x, y))
+end
+
 # module Poptart.Drawings

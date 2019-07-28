@@ -30,11 +30,7 @@ MenuItem
 @UI MenuItem
 
 function properties(control::MenuItem)
-    (properties(super(control))..., :block, :title, :shortcut, :selected, :enabled, )
-end
-
-function MenuItem(f::Function; kwargs...)
-    MenuItem(; block=f, kwargs...)
+    (properties(super(control))..., :title, :shortcut, :selected, :enabled, )
 end
 
 # module Poptart.Controls

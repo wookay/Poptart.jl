@@ -31,6 +31,6 @@ put!(window1, plot3)
 plot4 = Histogram(values=values, scale=(min=0, max=1.1), frame=(width=150, height=100), overlay_text="Histogram")
 put!(window1, plot4)
 
-window1.post_callback = ShowMetricsWindow
+window1.post_block = ShowMetricsWindow
 
 end # module test_poptart_desktop_plots
