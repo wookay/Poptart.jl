@@ -16,14 +16,14 @@ include("Windows/imgui_controls.jl")
 include("Windows/imgui_drawings.jl")
 
 """
-    Window(; items::Union{Vector{Any},Vector{<:UIControl}} = UIControl[], title::String="Title", frame::Union{NamedTuple{(:width,:height)}, NamedTuple{(:x,:y,:width,:height)}}, name::Union{Nothing,String}=nothing, flags=CImGui.ImGuiWindowFlags(0))
+    Window(; items::Union{Vector{Any},Vector{<:UIControl}} = UIControl[], title::String="Title", frame::Union{NamedTuple{(:width,:height)}, NamedTuple{(:x,:y,:width,:height)}} = (width=400, height=300), name::Union{Nothing,String}=nothing, flags=CImGui.ImGuiWindowFlags(0), pre_block=nothing, post_block=nothing)
 """
 struct Window <: UIWindow
     items::Vector{UIControl}
     props::Dict{Symbol,Any}
 
-    function Window(; items::Union{Vector{Any},Vector{<:UIControl}} = UIControl[], title::String="Title", frame::Union{NamedTuple{(:width,:height)}, NamedTuple{(:x,:y,:width,:height)}}, name::Union{Nothing,String}=nothing, flags=CImGui.ImGuiWindowFlags(0))
-        props = Dict{Symbol,Any}(:title => title, :frame => merge((x=0, y=0), frame), :name => nothing, :flags => flags, :pre_block => nothing, :post_block => nothing)
+    function Window(; items::Union{Vector{Any},Vector{<:UIControl}} = UIControl[], title::String="Title", frame::Union{NamedTuple{(:width,:height)}, NamedTuple{(:x,:y,:width,:height)}} = (width=400, height=300), name::Union{Nothing,String}=nothing, flags=CImGui.ImGuiWindowFlags(0), pre_block=nothing, post_block=nothing)
+        props = Dict{Symbol,Any}(:title => title, :frame => merge((x=0, y=0), frame), :name => nothing, :flags => flags, :pre_block => pre_block, :post_block => post_block)
         window = new(Vector{UIControl}(items), props)
     end
 end
@@ -105,6 +105,10 @@ end
 function Base.empty!(window::W) where {W <: UIWindow}
     remove_imgui_control_item.(window.items)
     empty!(window.items)
+end
+
+function Window(f; kwargs...)
+    Window(; post_block=f, kwargs...)
 end
 
 end # Poptart.Desktop.Windows
