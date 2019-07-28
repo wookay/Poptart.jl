@@ -8,6 +8,7 @@ Line
 Rect
 RectMultiColor
 Circle
+Quad
 Triangle
 Arc
 Pie

@@ -47,6 +47,26 @@ function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Dr
     CImGui.AddCircleFilled(draw_list, center, radius, color, num_segments)
 end
 
+function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{stroke}, element::Quad)
+    point1, point2, point3, point4 = element.points
+    a = imgui_offset_vec2(window_pos, point1)
+    b = imgui_offset_vec2(window_pos, point2)
+    c = imgui_offset_vec2(window_pos, point3)
+    d = imgui_offset_vec2(window_pos, point4)
+    color = imgui_color(element.color)
+    CImGui.AddQuad(draw_list, a, b, c, d, color, element.thickness)
+end
+
+function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{fill}, element::Quad)
+    point1, point2, point3, point4 = element.points
+    a = imgui_offset_vec2(window_pos, point1)
+    b = imgui_offset_vec2(window_pos, point2)
+    c = imgui_offset_vec2(window_pos, point3)
+    d = imgui_offset_vec2(window_pos, point4)
+    color = imgui_color(element.color)
+    CImGui.AddQuadFilled(draw_list, a, b, c, d, color)
+end
+
 function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{stroke}, element::Triangle)
     point1, point2, point3 = element.points
     a = imgui_offset_vec2(window_pos, point1)

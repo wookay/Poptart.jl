@@ -68,6 +68,12 @@ Circle
 @DrawingElement Circle (center, radius, color, num_segments, thickness)
 
 """
+    Quad(; points::Vector{<:Tuple}, [thickness], color::RGBA)
+"""
+Quad
+@DrawingElement Quad (points, thickness, color)
+
+"""
     Triangle(; points::Vector{<:Tuple}, [thickness], color::RGBA)
 """
 Triangle
