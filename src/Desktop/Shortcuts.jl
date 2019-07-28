@@ -73,13 +73,16 @@ function Base.:(+)(a::Modifier, b::Modifier, c::Modifier, key::Key)
     Conjunction(_conjunction_from_modifiers([a, b, c])..., key)
 end
 
+function Conjunction(modifier::Modifier)
+    Conjunction(_conjunction_from_modifiers([modifier])..., nothing)
+end
+
 function didPress(f, key::Key)
     pressed_key_callbacks[key] = f
 end
 
 function didPress(f, modifier::Modifier)
-    conjuction = Conjunction(_conjunction_from_modifiers([modifier])..., nothing)
-    didPress(f, conjuction)
+    didPress(f, Conjunction(modifier))
 end
 
 function didPress(f, conjuction::Conjunction)
@@ -88,6 +91,19 @@ function didPress(f, conjuction::Conjunction)
     else
         pressed_conjunction_callbacks[conjuction] = f
     end
+end
+
+function press(key::Key)
+    haskey(pressed_key_callbacks, key) && pressed_key_callbacks[key]((pressed=key,))
+end
+
+function press(modifier::Modifier)
+    conjuction = Conjunction(modifier)
+    haskey(pressed_modifier_callbacks, conjuction) && pressed_modifier_callbacks[conjuction]((pressed=conjuction,))
+end
+
+function press(conjuction::Conjunction)
+    haskey(pressed_conjunction_callbacks, conjuction) && pressed_conjunction_callbacks[conjuction]((pressed=conjuction,))
 end
 
 function Base.empty!(::typeof(didPress))
