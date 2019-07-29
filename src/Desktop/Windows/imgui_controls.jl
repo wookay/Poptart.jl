@@ -45,15 +45,19 @@ end
 function imgui_control_item(imctx::Ptr, item::Knob)
     label = item.label
     value_p = Ref{Cfloat}(item.value)
-    v_min = minimum(item.range)
-    v_max = maximum(item.range)
+    if item.range isa AbstractRange
+        v_min, v_max = minimum(item.range), maximum(item.range)
+    else
+        v_min, v_max = item.range
+    end
+    num_segments = _get_item_props(item, :num_segments, 16)
+    thickness = _get_item_props(item, :thickness, 4)
+
+    frame = _get_item_props(item, :frame, (width=20,))
+    radio = frame.width
+
     fac = v_max
-    sz = 20
-    thickness = 4
-
     window_pos = CImGui.GetCursorScreenPos()
-
-    radio = sz
     center = ImVec2(window_pos.x + radio, window_pos.y + radio)
 
     ANGLE_MIN = pi * 0.75
@@ -118,17 +122,15 @@ function imgui_control_item(imctx::Ptr, item::Knob)
 
     if is_active
         col32idx = CImGui.ImGuiCol_FrameBgActive
+    elseif is_hovered
+        col32idx = CImGui.ImGuiCol_FrameBgHovered
     else
-        if is_hovered
-            col32idx = CImGui.ImGuiCol_FrameBgHovered
-        else
-            col32idx = CImGui.ImGuiCol_FrameBg
-        end
+        col32idx = CImGui.ImGuiCol_FrameBg
     end
     col32 = CImGui.igGetColorU32(col32idx, 1)
     col32line = CImGui.igGetColorU32(CImGui.ImGuiCol_SliderGrabActive, 1)
     draw_list = CImGui.GetWindowDrawList()
-    CImGui.AddCircleFilled(draw_list, center, radio, col32, 16)
+    CImGui.AddCircleFilled(draw_list, center, radio, col32, num_segments)
     CImGui.AddLine(draw_list, center, ImVec2(x2, y2), col32line, thickness)
     CImGui.SameLine()
 
