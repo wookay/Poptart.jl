@@ -107,7 +107,7 @@ function Base.empty!(window::W) where {W <: UIWindow}
     empty!(window.items)
 end
 
-function Window(f; kwargs...)
+function Window(f::Function; kwargs...)
     Window(; post_block=f, kwargs...)
 end
 

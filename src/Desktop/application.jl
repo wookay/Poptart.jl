@@ -98,28 +98,12 @@ function set_keyboard_callbacks(glwin::GLFW.Window)
     )
     keyboard_modifier_ranges = 340:347 # GLFW.KEY_LEFT_SHIFT:GLFW.KEY_RIGHT_SUPER
 
-    function get_modifier(key::GLFW.Key)::Symbol
-        (key == GLFW.KEY_LEFT_SHIFT || key == GLFW.KEY_RIGHT_SHIFT) && return :shift
-        (key == GLFW.KEY_LEFT_CONTROL || key == GLFW.KEY_RIGHT_CONTROL) && return :ctrl
-        (key == GLFW.KEY_LEFT_ALT || key == GLFW.KEY_RIGHT_ALT) && return :alt
-        (key == GLFW.KEY_LEFT_SUPER || key == GLFW.KEY_RIGHT_SUPER) && return :super
-        throw(DomainError(key))
-    end
-
-    function conjunction_match(conjunction::Conjunction)::Bool
-        if conjunction.shift
-            !(keyboard_state[GLFW.KEY_LEFT_SHIFT] || keyboard_state[GLFW.KEY_RIGHT_SHIFT]) && return false
-        end
-        if conjunction.ctrl
-            !(keyboard_state[GLFW.KEY_LEFT_CONTROL] || keyboard_state[GLFW.KEY_RIGHT_CONTROL]) && return false
-        end
-        if conjunction.alt
-            !(keyboard_state[GLFW.KEY_LEFT_ALT] || keyboard_state[GLFW.KEY_RIGHT_ALT]) && return false
-        end
-        if conjunction.super
-            !(keyboard_state[GLFW.KEY_LEFT_SUPER] || keyboard_state[GLFW.KEY_RIGHT_SUPER]) && return false
-        end
-        true
+    function conjunction_from_keyboard_state(key::Union{Nothing, Key})::Conjunction # keyboard_state
+        shift = keyboard_state[GLFW.KEY_LEFT_SHIFT] || keyboard_state[GLFW.KEY_RIGHT_SHIFT]
+        ctrl = keyboard_state[GLFW.KEY_LEFT_CONTROL] || keyboard_state[GLFW.KEY_RIGHT_CONTROL]
+        alt = keyboard_state[GLFW.KEY_LEFT_ALT] || keyboard_state[GLFW.KEY_RIGHT_ALT]
+        super = keyboard_state[GLFW.KEY_LEFT_SUPER] || keyboard_state[GLFW.KEY_RIGHT_SUPER]
+        Conjunction(shift, ctrl, alt, super, key)
     end
 
     block = function (_, key, scancode, action, mods)
@@ -128,27 +112,23 @@ function set_keyboard_callbacks(glwin::GLFW.Window)
             if keyval in keyboard_modifier_ranges
                 keyboard_state[key] = true
                 if !isempty(Shortcuts.pressed_modifier_callbacks)
-                    for (conjunction, f) in Shortcuts.pressed_modifier_callbacks
-                         getfield(conjunction, get_modifier(key)) && conjunction_match(conjunction) && f((pressed=conjunction,))
+                    conjunction = conjunction_from_keyboard_state(nothing)
+                    if haskey(Shortcuts.pressed_modifier_callbacks, conjunction)
+                        Shortcuts.pressed_modifier_callbacks[conjunction]((pressed=conjunction,))
                     end
                 end
             else
-                if (any ∘ values)(keyboard_state)
+                k = Key(keyval)
+                conjunction = conjunction_from_keyboard_state(k)
+                if conjunction.shift || conjunction.ctrl || conjunction.alt || conjunction.super
                     if !isempty(Shortcuts.pressed_conjunction_callbacks)
-                        for (conjunction, f) in Shortcuts.pressed_conjunction_callbacks
-                            nothing === conjunction.key && continue
-                            if conjunction_match(conjunction) && keyval == conjunction.key.value
-                                f((pressed=conjunction,))
-                                break
-                            end
+                        if haskey(Shortcuts.pressed_conjunction_callbacks, conjunction)
+                            Shortcuts.pressed_conjunction_callbacks[conjunction]((pressed=conjunction,))
                         end
                     end
                 elseif !isempty(Shortcuts.pressed_key_callbacks)
-                    for (k, f) in Shortcuts.pressed_key_callbacks
-                        if keyval == k.value
-                            f((pressed=k,))
-                            break
-                        end
+                    if haskey(Shortcuts.pressed_key_callbacks, k)
+                        Shortcuts.pressed_key_callbacks[k]((pressed=k,))
                     end
                 end
             end
