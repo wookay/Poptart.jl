@@ -21,7 +21,7 @@ function properties(control::Spy)
 end
 
 """
-    BarPlot(; values::Vector{Number}, [captions::Vector{String}], [label::String], [scale::NamedTuple{(:min, :max)}], [frame])
+    BarPlot(; values::Vector{Number}, [captions::Vector{String}], [label::String], [scale::NamedTuple{(:min_x, :max_x)}], [frame])
 """
 BarPlot
 @UI BarPlot

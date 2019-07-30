@@ -13,7 +13,7 @@ function get_prop_frame_size(item::UIControl, default=(width=0, height=0))::ImVe
     ImVec2(frame.width, frame.height)
 end
 
-function get_prop_scale(item::UIControl, default=(min=0, max=1))::NamedTuple{(:min, :max)}
+function get_prop_scale(item::UIControl, default=(min=0, max=1))::NamedTuple
     get_prop(item, :scale, default)
 end
 
@@ -286,7 +286,7 @@ function imgui_control_item(imctx::Ptr, item::BarPlot)
     len = length(values)
     captions = get_prop(item, :captions, fill("", len))
     label = get_prop(item, :label, "")
-    (min_x, max_x) = get_prop_scale(item, (min=minimum(values) < 0 ? -1 : 0, max=1)) # :scale
+    (min_x, max_x) = get_prop_scale(item, (min_x=minimum(values) < 0 ? -1 : 0, max_x=1)) # :scale
     graph_size = get_prop_frame_size(item, (width=CImGui.CalcItemWidth(), height=150)) # :frame
     draw_list = CImGui.GetWindowDrawList()
     window_pos = CImGui.GetCursorScreenPos()
