@@ -1,7 +1,7 @@
 # module Poptart.Controls
 
 """
-    MenuBar
+    MenuBar(; menus::Vector)
 """
 MenuBar
 
@@ -12,7 +12,7 @@ function properties(control::MenuBar)
 end
 
 """
-    Menu
+    Menu(; title::String, items::Vector)
 """
 Menu
 
@@ -23,7 +23,7 @@ function properties(control::Menu)
 end
 
 """
-    MenuItem
+    MenuItem(; title::String, [shortcut], [selected], [enabled])
 """
 MenuItem
 

@@ -44,13 +44,13 @@ end
 
 
 """
-    Line(; points::Vector{<:Tuple}, thickness, color::RGBA)
+    Line(; points::Vector{<:Tuple}, [thickness::Number], [color::RGBA])
 """
 Line
 @DrawingElement Line (points, thickness, color)
 
 """
-    Rect(; rect, rounding, [thickness], color::RGBA)
+    Rect(; rect, [rounding], [thickness], [color::RGBA])
 """
 Rect
 @DrawingElement Rect (rect, rounding, thickness, color)
@@ -62,58 +62,58 @@ RectMultiColor
 @DrawingElement RectMultiColor (rect, color_upper_left, color_upper_right, color_bottom_left, color_bottom_right)
 
 """
-    Circle(; center, radius, color::RGBA, [num_segments], [thickness])
+    Circle(; center::Tuple, [radius], [num_segments], [thickness], [color::RGBA])
 """
 Circle
-@DrawingElement Circle (center, radius, color, num_segments, thickness)
+@DrawingElement Circle (center, radius, num_segments, thickness, color)
 
 """
-    Quad(; points::Vector{<:Tuple}, [thickness], color::RGBA)
+    Quad(; points::Vector{<:Tuple}, [thickness], [color::RGBA])
 """
 Quad
 @DrawingElement Quad (points, thickness, color)
 
 """
-    Triangle(; points::Vector{<:Tuple}, [thickness], color::RGBA)
+    Triangle(; points::Vector{<:Tuple}, [thickness], [color::RGBA])
 """
 Triangle
 @DrawingElement Triangle (points, thickness, color)
 
 """
-    Arc(; center, radius, angle, [num_segments], [thickness], color::RGBA)
+    Arc(; center, angle, [radius], [num_segments], [thickness], [color::RGBA])
 """
 Arc
-@DrawingElement Arc (center, radius, angle, num_segments, thickness, color)
+@DrawingElement Arc (center, angle, radius, num_segments, thickness, color)
 
 """
-    Pie(; center, radius, angle, [num_segments], [thickness], color::RGBA)
+    Pie(; center, angle, [radius], [num_segments], [thickness], [color::RGBA])
 """
 Pie
-@DrawingElement Pie (center, radius, angle, num_segments, thickness, color)
+@DrawingElement Pie (center, angle, radius, num_segments, thickness, color)
 
 """
-    Curve(; startPoint, control1, control2, endPoint, thickness, color::RGBA)
+    Curve(; startPoint, control1, control2, endPoint, [thickness], [color::RGBA])
 """
 Curve
 @DrawingElement Curve (startPoint, control1, control2, endPoint, thickness, color)
 
 """
-    Polyline(; points::Vector{<:Tuple}, thickness, color::RGBA)
+    Polyline(; points::Vector{<:Tuple}, [thickness], [color::RGBA])
 """
 Polyline
 @DrawingElement Polyline (points, thickness, color)
 
 """
-    Polygon(; points::Vector{<:Tuple}, [thickness], color::RGBA)
+    Polygon(; points::Vector{<:Tuple}, [thickness], [color::RGBA])
 """
 Polygon
 @DrawingElement Polygon (points, thickness, color)
 
 """
-    TextBox(; text::String, rect, color::RGBA)
+    TextBox(; text::String, rect::Tuple, [font_size], [color::RGBA])
 """
 TextBox
-@DrawingElement TextBox (text, rect, color)
+@DrawingElement TextBox (text, rect, font_size, color)
 
 
 struct Drawing{paint}

@@ -1,7 +1,7 @@
 # module Poptart.Controls
 
 """
-    Slider(; label::String, range, value, [frame])
+    Slider(; label::String, range::Union{<:AbstractRange, Tuple, <:NamedTuple}, value)
 """
 Slider
 

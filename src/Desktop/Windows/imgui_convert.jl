@@ -37,6 +37,10 @@ function imgui_offset_rect(offset::ImVec2, rect::Tuple{<:Real,<:Real,<:Real,<:Re
     (ImVec2(offset.x + x,  offset.y + y), ImVec2(offset.x + x + rect[3], offset.y + y + rect[4]))
 end
 
+function rect_contains_pos(rect::ImVec4, p::ImVec2)::Bool
+    p.x >= ImVec2(rect, min).x && p.y >= ImVec2(rect, min).y && p.x < ImVec2(rect, max).x && p.y < ImVec2(rect, max).y
+end
+
 function imgui_color(c::RGBA)::ImU32
     col = (c.r, c.g, c.b, c.alpha)
     CImGui.ColorConvertFloat4ToU32(ImVec4(col...))

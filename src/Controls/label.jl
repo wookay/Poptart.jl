@@ -1,7 +1,7 @@
 # module Poptart.Controls
 
 """
-    Label(; text::String, [frame])
+    Label(; text::String)
 """
 Label
 

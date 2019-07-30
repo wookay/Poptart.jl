@@ -7,6 +7,7 @@ using ..Desktop: UIApplication, UIWindow
 using ...Controls
 using .Controls: LayoutElement
 using ...Drawings # Line Rect Quad Triangle Circle Arc Curve Polyline Polygon stroke fill
+using .Drawings: DrawingElement
 using CImGui: CImGui
 using .CImGui: ImVec2, ImVec4, ImU32, ImDrawList
 using Colors: RGBA, RGB

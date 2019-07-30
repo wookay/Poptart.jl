@@ -28,7 +28,7 @@ include("Controls/label.jl")
 export Canvas
 include("Controls/canvas.jl")
 
-export ScatterPlot, Spy, BarPlot, LinePlot, Histogram
+export ScatterPlot, Spy, BarPlot, LinePlot, MultiLinePlot, Histogram
 include("Controls/plots.jl")
 
 export Group, Separator, SameLine, NewLine, Spacing

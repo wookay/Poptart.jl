@@ -189,10 +189,12 @@ end
 
 """
     Application(; title::String="App",
-                  frame::NamedTuple{(:width,:height)}=(width=400, height=300),
-                  windows=[Windows.Window(title="Title", frame=(x=0,y=0,frame...))],
-                  bgcolor=RGBA(0.10, 0.18, 0.24, 1),
-                  closenotify=Condition())
+                  frame::NamedTuple{(:width,:height)} = (width=400, height=300),
+                  windows = [Windows.Window(title="Title", frame=(x=0,y=0,frame...))],
+                  bgcolor = RGBA(0.10, 0.18, 0.24, 1),
+                  pre_block = nothing,
+                  post_block = nothing,
+                  closenotify = Condition())
 """
 mutable struct Application <: UIApplication
     props::Dict{Symbol,Any}
@@ -203,10 +205,12 @@ mutable struct Application <: UIApplication
     isrunning::Bool
 
     function Application(; title::String="App",
-                           frame::NamedTuple{(:width,:height)}=(width=400, height=300),
-                           windows=[Windows.Window(title="Title", frame=(x=0,y=0,frame...))],
-                           bgcolor=RGBA(0.10, 0.18, 0.24, 1),
-                           closenotify=Condition())
+                           frame::NamedTuple{(:width,:height)} = (width=400, height=300),
+                           windows = [Windows.Window(title="Title", frame=(x=0,y=0,frame...))],
+                           bgcolor = RGBA(0.10, 0.18, 0.24, 1),
+                           pre_block = nothing,
+                           post_block = nothing,
+                           closenotify = Condition())
         app_windows = isempty(windows) ? UIWindow[] : windows
         glwin = GLFW.GetCurrentContext()
         if glwin.handle !== C_NULL && haskey(env, glwin.handle)
@@ -221,7 +225,7 @@ mutable struct Application <: UIApplication
             env[glwin.handle] = app
             return app
         end
-        props = Dict(:title=>title, :frame=>frame, :bgcolor=>bgcolor, :pre_block => nothing, :post_block => nothing)
+        props = Dict(:title => title, :frame => frame, :bgcolor => bgcolor, :pre_block => pre_block, :post_block =>  post_block)
         app = new(props, app_windows, nothing, nothing, closenotify, true)
         do_resume(app)
         app

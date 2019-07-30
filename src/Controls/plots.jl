@@ -1,7 +1,7 @@
 # module Poptart.Controls
 
 """
-    ScatterPlot(; x::AbstractVector, y::AbstractVector, label::String, [scale], [frame])
+    ScatterPlot(; x::AbstractVector, y::AbstractVector, [label::String], [scale::NamedTuple{(:x, :y)}], [frame])
 """
 ScatterPlot
 @UI ScatterPlot
@@ -11,7 +11,7 @@ function properties(control::ScatterPlot)
 end
 
 """
-    Spy(; A::AbstractMatrix, label::String, [frame])
+    Spy(; A::AbstractMatrix, [label::String], [frame])
 """
 Spy
 @UI Spy
@@ -21,27 +21,37 @@ function properties(control::Spy)
 end
 
 """
-    BarPlot(; captions::Vector{String}, values::Vector{Number}, label::String, [frame])
+    BarPlot(; values::Vector{Number}, [captions::Vector{String}], [label::String], [scale::NamedTuple{(:min, :max)}], [frame])
 """
 BarPlot
 @UI BarPlot
 
 function properties(control::BarPlot)
-    (properties(super(control))..., :captions, :values, :label, )
+    (properties(super(control))..., :values, :captions, :label, :scale, )
 end
 
 """
-    LinePlot(; values::AbstractVector, label::String, [overlay_text], [scale], [frame])
+    LinePlot(; values::AbstractVector, [label::String], [color], [overlay_text], [scale::NamedTuple{(:min, :max)}], [frame])
 """
 LinePlot
 @UI LinePlot
 
 function properties(control::LinePlot)
-    (properties(super(control))..., :values, :label, :overlay_text, :scale, )
+    (properties(super(control))..., :values, :label, :color, :overlay_text, :scale, )
 end
 
 """
-    Histogram(; values::AbstractVector, label::String, [overlay_text], [scale], [frame])
+    MultiLinePlot(; items::Vector{LinePlot}, [label::String], [frame])
+"""
+MultiLinePlot
+@UI MultiLinePlot
+
+function properties(control::MultiLinePlot)
+    (properties(super(control))..., :items, :label, )
+end
+
+"""
+    Histogram(; values::AbstractVector, [label::String], [overlay_text], [scale::NamedTuple{(:min, :max)}], [frame])
 """
 Histogram
 @UI Histogram

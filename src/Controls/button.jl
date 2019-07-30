@@ -1,7 +1,7 @@
 # module Poptart.Controls
 
 """
-    Button(; title::String, [frame::NamedTuple{(:width,:height)}])
+    Button(; title::String)
 """
 Button
 

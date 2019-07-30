@@ -4,9 +4,19 @@ using UnicodePlots: extend_limits
 using Printf: @sprintf
 using SparseArrays: sparse
 
-function _get_item_props(item, name::Symbol, default)
+function get_prop(item::UIControl, name::Symbol, default::Any)
     get(item.props, name, default)
 end
+
+function get_prop_frame_size(item::UIControl, default=(width=0, height=0))::ImVec2
+    frame = get_prop(item, :frame, default)
+    ImVec2(frame.width, frame.height)
+end
+
+function get_prop_scale(item::UIControl, default=(min=0, max=1))::NamedTuple{(:min, :max)}
+    get_prop(item, :scale, default)
+end
+
 
 # CImGui.Button
 function imgui_control_item(imctx::Ptr, item::Button)
@@ -14,10 +24,10 @@ function imgui_control_item(imctx::Ptr, item::Button)
 end
 
 # CImGui.SliderInt, CImGui.SliderFloat
-function _imgui_slider_item(item::Slider, value, f, refvalue::Ref)
-    min = minimum(item.range)
-    max = maximum(item.range)
-    if f(item.label, refvalue, min, max)
+function _imgui_slider_item(item::Slider, value, f::Union{typeof(CImGui.SliderInt), typeof(CImGui.SliderFloat)}, refvalue::Ref)
+    v_min = minimum(item.range)
+    v_max = maximum(item.range)
+    if f(item.label, refvalue, v_min, v_max)
         typ = typeof(value)
         item.value = typ(refvalue[])
         @async Mouse.leftClick(item)
@@ -43,17 +53,18 @@ end
 # code from https://github.com/ocornut/imgui/issues/942#issuecomment-401730694
 
 function imgui_control_item(imctx::Ptr, item::Knob)
-    label = item.label
-    value_p = Ref{Cfloat}(item.value)
     if item.range isa AbstractRange
         v_min, v_max = minimum(item.range), maximum(item.range)
     else
         v_min, v_max = item.range
     end
-    num_segments = _get_item_props(item, :num_segments, 16)
-    thickness = _get_item_props(item, :thickness, 4)
+    item_value = get_prop(item, :value, v_min)
+    label = get_prop(item, :label, "")
+    num_segments = get_prop(item, :num_segments, 16)
+    thickness = get_prop(item, :thickness, 4)
+    frame = get_prop(item, :frame, (width=20,))
 
-    frame = _get_item_props(item, :frame, (width=20,))
+    value_p = Ref{Cfloat}(item_value)
     radio = frame.width
 
     fac = v_max
@@ -148,38 +159,17 @@ function imgui_control_item(imctx::Ptr, item::Knob)
 end
 
 function imgui_control_item(imctx::Ptr, item::Label)
-    CImGui.Text(item.text)
+    CImGui.Text(item.text) # :text
 end
 
 function imgui_control_item(imctx::Ptr, item::Canvas)
     draw_list = CImGui.GetWindowDrawList()
     window_pos = CImGui.GetCursorScreenPos()
-    for drawing in item.items
+    for drawing in item.items # :items
         imgui_drawing_item(draw_list, window_pos, drawing, drawing.element)
     end
 end
 
-function _get_item_scale(item)::NamedTuple{(:min, :max)}
-    if haskey(item.props, :scale)
-        item.scale
-    else
-        (min=0, max=1)
-    end
-end
-
-function _get_item_frame_size(item)::ImVec2
-    if haskey(item.props, :frame)
-        width = get(item.frame, :width, 0)
-        height = get(item.frame, :height, 0)
-    else
-        width, height = (0, 0)
-    end
-    ImVec2(width, height)
-end
-
-function rect_contains_pos(rect::ImVec4, p::ImVec2)
-    p.x >= ImVec2(rect, min).x && p.y >= ImVec2(rect, min).y && p.x < ImVec2(rect, max).x && p.y < ImVec2(rect, max).y
-end
 
 function renderframe(draw_list, p_min::ImVec2, p_max::ImVec2, fill_col::ImU32, border::Bool, rounding::Cfloat)
     CImGui.AddRectFilled(draw_list, p_min, p_max, fill_col, rounding)
@@ -191,26 +181,8 @@ function renderframe(draw_list, p_min::ImVec2, p_max::ImVec2, fill_col::ImU32, b
 end
 
 function imgui_control_item(imctx::Ptr, item::ScatterPlot)
-    draw_list = CImGui.GetWindowDrawList()
-    window_pos = CImGui.GetCursorScreenPos()
-    mouse_pos = CImGui.GetIO().MousePos
-    default_size = (width=CImGui.CalcItemWidth(), height=50)
-    if haskey(item.props, :frame)
-        w = get(item.frame, :width, default_size.width)
-        h = get(item.frame, :height, default_size.height)
-        graph_size = ImVec2(w, h)
-    else
-        graph_size = ImVec2(default_size.width, default_size.height)
-    end
-    frame_rounding = Cfloat(1)
-    frame_padding = (x=7, y=7)
-    frame_bb = CImGui.ImVec4(window_pos, window_pos + ImVec2(graph_size.x, graph_size.y))
-    renderframe(draw_list, ImVec2(frame_bb, min), ImVec2(frame_bb, max), CImGui.GetColorU32(CImGui.ImGuiCol_FrameBg), true, frame_rounding)
-    radius = 4
-    color_normal = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLines)
-    color_hovered = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLinesHovered)
-    num_segments = 8
-    X, Y = item.x, item.y
+    X, Y = item.x, item.y # :x :y
+    label = get_prop(item, :label, "")
     if haskey(item.props, :scale)
         scale = item.scale
         min_x, max_x = scale.x
@@ -221,6 +193,18 @@ function imgui_control_item(imctx::Ptr, item::ScatterPlot)
         min_x, max_x = extend_limits(X, xlim)
         min_y, max_y = extend_limits(Y, ylim)
     end
+    graph_size = get_prop_frame_size(item, (width=CImGui.CalcItemWidth(), height=50)) # :frame
+    draw_list = CImGui.GetWindowDrawList()
+    window_pos = CImGui.GetCursorScreenPos()
+    mouse_pos = CImGui.GetIO().MousePos
+    frame_rounding = Cfloat(1)
+    frame_padding = (x=7, y=7)
+    frame_bb = CImGui.ImVec4(window_pos, window_pos + ImVec2(graph_size.x, graph_size.y))
+    renderframe(draw_list, ImVec2(frame_bb, min), ImVec2(frame_bb, max), CImGui.GetColorU32(CImGui.ImGuiCol_FrameBg), true, frame_rounding)
+    radius = 4
+    color_normal = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLines)
+    color_hovered = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLinesHovered)
+    num_segments = 8
     locate = (x = (graph_size.x - 2frame_padding.x) / (max_x - min_x),
               y = (graph_size.y - 2frame_padding.y) / (max_y - min_y))
     for (x, y) in zip(X, Y)
@@ -237,24 +221,18 @@ function imgui_control_item(imctx::Ptr, item::ScatterPlot)
         CImGui.AddCircleFilled(draw_list, center, radius, color, num_segments)
     end
     CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 4, 3))
-    label = _get_item_props(item, :label, "")
     CImGui.Text(label)
     margin = (x=0, y=5)
     CImGui.SetCursorScreenPos(window_pos + ImVec2(0, graph_size.y + margin.y))
 end
 
 function imgui_control_item(imctx::Ptr, item::Spy)
+    A = item.A # :A
+    label = get_prop(item, :label, "")
+    graph_size = get_prop_frame_size(item, (width=CImGui.CalcItemWidth(), height=50)) # :frame
     draw_list = CImGui.GetWindowDrawList()
     window_pos = CImGui.GetCursorScreenPos()
     mouse_pos = CImGui.GetIO().MousePos
-    default_size = (width=CImGui.CalcItemWidth(), height=50)
-    if haskey(item.props, :frame)
-        w = get(item.frame, :width, default_size.width)
-        h = get(item.frame, :height, default_size.height)
-        graph_size = ImVec2(w, h)
-    else
-        graph_size = ImVec2(default_size.width, default_size.height)
-    end
     frame_rounding = Cfloat(1)
     frame_padding = (x=7, y=7)
     frame_bb = CImGui.ImVec4(window_pos, window_pos + ImVec2(graph_size.x, graph_size.y))
@@ -263,7 +241,6 @@ function imgui_control_item(imctx::Ptr, item::Spy)
     color_positive = RGB(0.3, 0.5, 0.58)
     color_negative = RGB(0.32, 0.1, 0.1)
     rounding = 0
-    A = item.A
     (rows, cols) = size(A)
     if rows > cols
         cellsize = (graph_size.y - 2frame_padding.y) / rows
@@ -299,24 +276,21 @@ function imgui_control_item(imctx::Ptr, item::Spy)
         end
     end
     CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 4, 3))
-    label = _get_item_props(item, :label, "")
     CImGui.Text(label)
     margin = (x=0, y=5)
     CImGui.SetCursorScreenPos(window_pos + ImVec2(0, graph_size.y + margin.y))
 end
 
 function imgui_control_item(imctx::Ptr, item::BarPlot)
+    values = item.values # :values
+    len = length(values)
+    captions = get_prop(item, :captions, fill("", len))
+    label = get_prop(item, :label, "")
+    (min_x, max_x) = get_prop_scale(item, (min=minimum(values) < 0 ? -1 : 0, max=1)) # :scale
+    graph_size = get_prop_frame_size(item, (width=CImGui.CalcItemWidth(), height=150)) # :frame
     draw_list = CImGui.GetWindowDrawList()
     window_pos = CImGui.GetCursorScreenPos()
     mouse_pos = CImGui.GetIO().MousePos
-    default_size = (width=CImGui.CalcItemWidth(), height=150)
-    if haskey(item.props, :frame)
-        w = get(item.frame, :width, default_size.width)
-        h = get(item.frame, :height, default_size.height)
-        graph_size = ImVec2(w, h)
-    else
-        graph_size = ImVec2(default_size.width, default_size.height)
-    end
     frame_rounding = Cfloat(1)
     frame_padding = (x=7, y=7)
     frame_bb = CImGui.ImVec4(window_pos, window_pos + ImVec2(graph_size.x, graph_size.y))
@@ -325,13 +299,9 @@ function imgui_control_item(imctx::Ptr, item::BarPlot)
     color_negative = imgui_color(RGBA(0.4, 0.1, 0.15, 0.9))
     color_hovered = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLinesHovered)
     rounding = 0
-    values = item.values
-    len = length(values)
-    captions = _get_item_props(item, :captions, fill("", len))
     barsize = (graph_size.y - 2frame_padding.y) / len
     barsize_pad = barsize < 5 ? 0 : 3
     textsize = 80
-    (min_x, max_x) = _get_item_props(item, :scale, (minimum(values) < 0 ? -1 : 0, 1))
     locate = (x = (graph_size.x - 2frame_padding.x - textsize) / (max_x - min_x), )
     has_negative = min_x < 0
     offsetx = has_negative ? locate.x * (max_x - min_x) / 2 : 0
@@ -362,7 +332,6 @@ function imgui_control_item(imctx::Ptr, item::BarPlot)
         CImGui.AddRectFilled(draw_list, p_min, p_max, color, rounding)
     end
     CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 4, 3))
-    label = _get_item_props(item, :label, "")
     CImGui.Text(label)
     margin = (x=0, y=5)
     CImGui.SetCursorScreenPos(window_pos + ImVec2(0, graph_size.y + margin.y))
@@ -370,77 +339,88 @@ end
 
 # CImGui.PlotLines
 function imgui_control_item(imctx::Ptr, item::LinePlot)
-    label = _get_item_props(item, :label, "")
-    values = Cfloat.(item.values)
-    overlay_text = _get_item_props(item, :overlay_text, C_NULL)
-    scale = _get_item_scale(item)
-    graph_size = _get_item_frame_size(item)
+    values = Cfloat.(item.values) # :values
+    label = get_prop(item, :label, "")
+    # :color
+    overlay_text = get_prop(item, :overlay_text, C_NULL)
+    scale = get_prop_scale(item) # :scale
+    graph_size = get_prop_frame_size(item) # :frame
     CImGui.PlotLines(label, values, length(values), Cint(0), overlay_text, scale.min, scale.max, graph_size)
+end
+
+function imgui_control_item(imctx::Ptr, item::MultiLinePlot)
+    # :items
+    label = get_prop(item, :label, "")
+    graph_size = get_prop_frame_size(item, (width=CImGui.CalcItemWidth(), height=150)) # :frame
+    draw_list = CImGui.GetWindowDrawList()
+    window_pos = CImGui.GetCursorScreenPos()
+    mouse_pos = CImGui.GetIO().MousePos
+    frame_rounding = Cfloat(1)
+    frame_padding = (x=7, y=7)
+    frame_bb = CImGui.ImVec4(window_pos, window_pos + ImVec2(graph_size.x, graph_size.y))
+    renderframe(draw_list, ImVec2(frame_bb, min), ImVec2(frame_bb, max), CImGui.GetColorU32(CImGui.ImGuiCol_FrameBg), true, frame_rounding)
+
+    # impl
+
+    CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 4, 3))
+    CImGui.Text(label)
+    margin = (x=0, y=5)
+    CImGui.SetCursorScreenPos(window_pos + ImVec2(0, graph_size.y + margin.y))
 end
 
 # CImGui.PlotHistogram
 function imgui_control_item(imctx::Ptr, item::Histogram)
-    label = _get_item_props(item, :label, "")
-    values = Cfloat.(item.values)
-    overlay_text = _get_item_props(item, :overlay_text, C_NULL)
-    scale = _get_item_scale(item)
-    graph_size = _get_item_frame_size(item)
+    values = Cfloat.(item.values) # :values
+    label = get_prop(item, :label, "")
+    overlay_text = get_prop(item, :overlay_text, C_NULL)
+    scale = get_prop_scale(item) # :scale
+    graph_size = get_prop_frame_size(item) # :frame
     CImGui.PlotHistogram(label, values, length(values), Cint(0), overlay_text, scale.min, scale.max, graph_size)
 end
 
 # layouts
 function imgui_control_item(imctx::Ptr, item::Group)
     CImGui.BeginGroup()
-    for el in item.items
-        if el isa UIControl
-            f = imgui_control_item
-        elseif el isa LayoutElement
-            f = imgui_layout_item
-        end
-        f(imctx, el)
-    end
+    imgui_control_item.(Ref(imctx), item.items) # :items
     CImGui.EndGroup()
 end
 
-function imgui_layout_item(imctx::Ptr, item::Separator)
+function imgui_control_item(imctx::Ptr, item::Separator)
     CImGui.Separator()
 end
 
-function imgui_layout_item(imctx::Ptr, item::SameLine)
+function imgui_control_item(imctx::Ptr, item::SameLine)
     CImGui.SameLine()
 end
 
-function imgui_layout_item(imctx::Ptr, item::NewLine)
+function imgui_control_item(imctx::Ptr, item::NewLine)
     CImGui.NewLine()
 end
 
-function imgui_layout_item(imctx::Ptr, item::Spacing)
+function imgui_control_item(imctx::Ptr, item::Spacing)
     CImGui.Spacing()
 end
 
 # menus
 function imgui_control_item(imctx::Ptr, item::MenuBar)
     if CImGui.BeginMenuBar()
-        for menu in item.menus
-            imgui_control_item(imctx, menu)
-        end
+        imgui_control_item.(Ref(imctx), item.menus) # :menus
         CImGui.EndMenuBar()
     end
 end
 
 function imgui_control_item(imctx::Ptr, item::Menu)
-    if CImGui.BeginMenu(item.title)
-        for menuitem in item.items
-            imgui_control_item(imctx, menuitem)
-        end
+    if CImGui.BeginMenu(item.title) # :title
+        imgui_control_item.(Ref(imctx), item.items) # :items
         CImGui.EndMenu()
     end
 end
 
 function imgui_control_item(imctx::Ptr, item::MenuItem)
-    shortcut = _get_item_props(item, :shortcut, C_NULL)
-    selected = _get_item_props(item, :selected, false)
-    enabled = _get_item_props(item, :enabled, true)
+    title = item.title # :title
+    shortcut = get_prop(item, :shortcut, C_NULL)
+    selected = get_prop(item, :selected, false)
+    enabled = get_prop(item, :enabled, true)
     ref_selected = Ref(selected)
     CImGui.MenuItem(item.title, shortcut, ref_selected, enabled) && @async Mouse.leftClick(item)
 end

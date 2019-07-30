@@ -1,14 +1,14 @@
 # module Poptart.Controls
 
 """
-    Knob(; label::String, range, value, [num_segments], [thickness], [frame])
+    Knob(; range::Union{<:AbstractRange, Tuple, <:NamedTuple}, [value], [label::String], [num_segments], [thickness], [frame])
 """
 Knob
 
 @UI Knob
 
 function properties(control::Knob)
-    (properties(super(control))..., :label, :range, :value, :num_segments, :thickness, )
+    (properties(super(control))..., :range, :value, :label, :num_segments, :thickness, )
 end
 
 # module Poptart.Controls
