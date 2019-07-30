@@ -8,7 +8,7 @@ function haskey_and_broadcast_event(control::C, event) where {C <: UIControl}
 end
 
 """
-    leftClick(control::C; kwargs...) where {C <: UIControl}
+    Mouse.leftClick(control::C; kwargs...) where {C <: UIControl}
 """
 function leftClick(control::C; kwargs...) where {C <: UIControl}
     event = (action=leftClick, kwargs...)

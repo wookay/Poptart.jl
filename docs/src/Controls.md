@@ -7,6 +7,11 @@ Controls
 didClick(block, control::C) where {C <: UIControl}
 ```
 
+# Mouse
+```@docs
+Mouse.leftClick
+```
+
 # widgets
 ```@docs
 Button
@@ -21,6 +26,7 @@ ScatterPlot
 Spy
 BarPlot
 LinePlot
+MultiLinePlot
 Histogram
 ```
 
@@ -46,9 +52,4 @@ Spacing
 MenuBar
 Menu
 MenuItem
-```
-
-# Mouse
-```@docs
-Mouse.leftClick
 ```

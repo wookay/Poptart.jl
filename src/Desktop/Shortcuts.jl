@@ -77,14 +77,23 @@ function Conjunction(modifier::Modifier)
     Conjunction(_conjunction_from_modifiers([modifier])..., nothing)
 end
 
+"""
+    didPress(f, key::Key)
+"""
 function didPress(f, key::Key)
     pressed_key_callbacks[key] = f
 end
 
+"""
+    didPress(f, modifier::Modifier)
+"""
 function didPress(f, modifier::Modifier)
     didPress(f, Conjunction(modifier))
 end
 
+"""
+    didPress(f, conjuction::Conjunction)
+"""
 function didPress(f, conjuction::Conjunction)
     if conjuction.key === nothing
         pressed_modifier_callbacks[conjuction] = f
@@ -93,15 +102,24 @@ function didPress(f, conjuction::Conjunction)
     end
 end
 
+"""
+    press(key::Key)
+"""
 function press(key::Key)
     haskey(pressed_key_callbacks, key) && pressed_key_callbacks[key]((pressed=key,))
 end
 
+"""
+    press(modifier::Modifier)
+"""
 function press(modifier::Modifier)
     conjuction = Conjunction(modifier)
     haskey(pressed_modifier_callbacks, conjuction) && pressed_modifier_callbacks[conjuction]((pressed=conjuction,))
 end
 
+"""
+    press(conjuction::Conjunction)
+"""
 function press(conjuction::Conjunction)
     haskey(pressed_conjunction_callbacks, conjuction) && pressed_conjunction_callbacks[conjuction]((pressed=conjuction,))
 end
