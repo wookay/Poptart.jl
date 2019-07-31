@@ -348,8 +348,10 @@ function imgui_control_item(imctx::Ptr, item::LinePlot)
     CImGui.PlotLines(label, values, length(values), Cint(0), overlay_text, scale.min, scale.max, graph_size)
 end
 
+using Jive
+
 function imgui_control_item(imctx::Ptr, item::MultiLinePlot)
-    # :items
+    plot_items = item.items # :items
     label = get_prop(item, :label, "")
     graph_size = get_prop_frame_size(item, (width=CImGui.CalcItemWidth(), height=150)) # :frame
     draw_list = CImGui.GetWindowDrawList()
@@ -359,6 +361,9 @@ function imgui_control_item(imctx::Ptr, item::MultiLinePlot)
     frame_padding = (x=7, y=7)
     frame_bb = CImGui.ImVec4(window_pos, window_pos + ImVec2(graph_size.x, graph_size.y))
     renderframe(draw_list, ImVec2(frame_bb, min), ImVec2(frame_bb, max), CImGui.GetColorU32(CImGui.ImGuiCol_FrameBg), true, frame_rounding)
+
+    v_min = mapfoldl(x -> minimum(x.values), min, plot_items)
+    v_max = mapfoldl(x -> maximum(x.values), max, plot_items)
 
     # impl
 
