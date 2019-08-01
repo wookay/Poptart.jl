@@ -348,8 +348,6 @@ function imgui_control_item(imctx::Ptr, item::LinePlot)
     CImGui.PlotLines(label, values, length(values), Cint(0), overlay_text, scale.min, scale.max, graph_size)
 end
 
-using Jive
-
 function imgui_control_item(imctx::Ptr, item::MultiLinePlot)
     plot_items = item.items # :items
     label = get_prop(item, :label, "")

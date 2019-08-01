@@ -11,7 +11,7 @@ end
 
 function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{stroke}, element::Line)
     point1, point2 = element.points # :points
-    thickness = get_prop(element, :thickness, 3)
+    thickness = element.thickness # :thickness
     color = get_prop_color(element) # :color
     a = imgui_offset_vec2(window_pos, point1)
     b = imgui_offset_vec2(window_pos, point2)
@@ -22,7 +22,7 @@ end
 function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{stroke}, element::Rect)
     (a, b) = imgui_offset_rect(window_pos, element.rect) # :rect
     rounding = get_prop(element, :rounding, 0)
-    thickness = get_prop(element, :thickness, 3)
+    thickness = element.thickness # :thickness
     color = get_prop_color(element) # :color
     rounding_corners_flags = CImGui.ImDrawCornerFlags_All
     CImGui.AddRect(draw_list, a, b, color, rounding, rounding_corners_flags, thickness)
@@ -49,7 +49,7 @@ function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Dr
     center = imgui_offset_vec2(window_pos, element.center) # :center
     radius = get_prop(element, :radius, 30)
     num_segments = get_prop(element, :num_segments, 32)
-    thickness = get_prop(element, :thickness, 3)
+    thickness = element.thickness # :thickness
     color = get_prop_color(element) # :color
     CImGui.AddCircle(draw_list, center, radius, color, num_segments, thickness)
 end
@@ -64,7 +64,7 @@ end
 
 function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{stroke}, element::Quad)
     point1, point2, point3, point4 = element.points # :points
-    thickness = get_prop(element, :thickness, 3)
+    thickness = element.thickness # :thickness
     color = get_prop_color(element) # :color
     a = imgui_offset_vec2(window_pos, point1)
     b = imgui_offset_vec2(window_pos, point2)
@@ -85,7 +85,7 @@ end
 
 function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{stroke}, element::Triangle)
     point1, point2, point3 = element.points # :points
-    thickness = get_prop(element, :thickness, 3)
+    thickness = element.thickness # :thickness
     color = get_prop_color(element) # :color
     a = imgui_offset_vec2(window_pos, point1)
     b = imgui_offset_vec2(window_pos, point2)
@@ -107,7 +107,7 @@ function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Dr
     a_min, a_max = element.angle # :angle
     radius = get_prop(element, :radius, 30)
     num_segments = get_prop(element, :num_segments, 32)
-    thickness = get_prop(element, :thickness, 3)
+    thickness = element.thickness # :thickness
     color = get_prop_color(element) # :color
     CImGui.PathArcTo(draw_list, center, radius, a_min, a_max, num_segments)
     closed = false
@@ -129,7 +129,7 @@ function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Dr
     a_min, a_max = element.angle # :angle
     radius = get_prop(element, :radius, 30)
     num_segments = get_prop(element, :num_segments, 32)
-    thickness = get_prop(element, :thickness, 3)
+    thickness = element.thickness # :thickness
     color = get_prop_color(element) # :color
     CImGui.PathLineTo(draw_list, center)
     CImGui.PathArcTo(draw_list, center, radius, a_min, a_max, num_segments)
@@ -153,7 +153,7 @@ function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Dr
     cp0 = imgui_offset_vec2(window_pos, element.control1) # :control1
     cp1 = imgui_offset_vec2(window_pos, element.control2) # :control2
     pos1 = imgui_offset_vec2(window_pos, element.endPoint) # :endPoint
-    thickness = get_prop(element, :thickness, 3)
+    thickness = element.thickness # :thickness
     color = get_prop_color(element) # :color
     num_segments = 0
     CImGui.AddBezierCurve(draw_list, pos0, cp0, cp1, pos1, color, thickness, num_segments)
@@ -161,7 +161,7 @@ end
 
 function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{stroke}, element::Polyline)
     points = map(point -> imgui_offset_vec2(window_pos, point), element.points) # :points
-    thickness = get_prop(element, :thickness, 3)
+    thickness = element.thickness # :thickness
     color = get_prop_color(element) # :color
     num_points = length(element.points)
     closed = false
@@ -170,7 +170,7 @@ end
 
 function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{stroke}, element::Polygon)
     points = map(point -> imgui_offset_vec2(window_pos, point), element.points) # :points
-    thickness = get_prop(element, :thickness, 3)
+    thickness = element.thickness # :thickness
     color = get_prop_color(element) # :color
     num_points = length(element.points)
     closed = true
