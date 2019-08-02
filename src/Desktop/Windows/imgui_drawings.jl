@@ -47,8 +47,8 @@ end
 
 function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{stroke}, element::Circle)
     center = imgui_offset_vec2(window_pos, element.center) # :center
-    radius = get_prop(element, :radius, 30)
-    num_segments = get_prop(element, :num_segments, 32)
+    radius = element.radius # :radius
+    num_segments = element.num_segments # :num_segments
     thickness = element.thickness # :thickness
     color = get_prop_color(element) # :color
     CImGui.AddCircle(draw_list, center, radius, color, num_segments, thickness)
@@ -56,9 +56,9 @@ end
 
 function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{fill}, element::Circle)
     center = imgui_offset_vec2(window_pos, element.center)
-    radius = element.radius
-    color = imgui_color(element.color)
-    num_segments = get_prop(element, :num_segments, 32)
+    radius = element.radius # :radius
+    color = imgui_color(element.color) # :color
+    num_segments = element.num_segments # :num_segments
     CImGui.AddCircleFilled(draw_list, center, radius, color, num_segments)
 end
 
@@ -105,8 +105,8 @@ end
 function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{stroke}, element::Arc)
     center = imgui_offset_vec2(window_pos, element.center) # :center
     a_min, a_max = element.angle # :angle
-    radius = get_prop(element, :radius, 30)
-    num_segments = get_prop(element, :num_segments, 32)
+    radius = element.radius # :radius
+    num_segments = element.num_segments # :num_segments
     thickness = element.thickness # :thickness
     color = get_prop_color(element) # :color
     CImGui.PathArcTo(draw_list, center, radius, a_min, a_max, num_segments)
@@ -117,8 +117,8 @@ end
 function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{fill}, element::Arc)
     center = imgui_offset_vec2(window_pos, element.center) # :center
     a_min, a_max = element.angle # :angle
-    radius = get_prop(element, :radius, 30)
-    num_segments = get_prop(element, :num_segments, 32)
+    radius = element.radius # :radius
+    num_segments = element.num_segments # :num_segments
     color = get_prop_color(element) # :color
     CImGui.PathArcTo(draw_list, center, radius, a_min, a_max, num_segments)
     CImGui.PathFillConvex(draw_list, color)
@@ -127,8 +127,8 @@ end
 function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{stroke}, element::Pie)
     center = imgui_offset_vec2(window_pos, element.center) # :center
     a_min, a_max = element.angle # :angle
-    radius = get_prop(element, :radius, 30)
-    num_segments = get_prop(element, :num_segments, 32)
+    radius = element.radius # :radius
+    num_segments = element.num_segments # :num_segments
     thickness = element.thickness # :thickness
     color = get_prop_color(element) # :color
     CImGui.PathLineTo(draw_list, center)
@@ -140,8 +140,8 @@ end
 function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{fill}, element::Pie)
     center = imgui_offset_vec2(window_pos, element.center) # :center
     a_min, a_max = element.angle # :angle
-    radius = get_prop(element, :radius, 30)
-    num_segments = get_prop(element, :num_segments, 32)
+    radius = element.radius # :radius
+    num_segments = element.num_segments # :num_segments
     color = get_prop_color(element) # :color
     CImGui.PathLineTo(draw_list, center)
     CImGui.PathArcTo(draw_list, center, radius, a_min, a_max, num_segments)
@@ -220,11 +220,11 @@ function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Dr
     else
         tex_id = ImGui_ImplOpenGL3_CreateImageTexture(w, h)
         element.tex_id = tex_id
+        element.props[:texture_size] = (w, h)
 
         glubytes = imgui_glubytes(image)
         ImGui_ImplOpenGL3_UpdateImageTexture(tex_id, glubytes, w, h)
         element.props[:hash] = hash(image)
-        element.props[:texture_size] = (w, h)
     end
     (a, b) = imgui_offset_rect(window_pos, rect)
     CImGui.AddImage(draw_list, Ptr{Cvoid}(tex_id), a, b)

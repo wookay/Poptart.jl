@@ -4,12 +4,10 @@
 function build_drawing_element(sym::Symbol, props::Vector{Union{Symbol, Expr}})
     prop_names = []
     params = Expr(:parameters)
-    dict_args = Pair[]
     for expr in props
         if expr isa Expr && expr.head == :(=)
             push!(prop_names, first(expr.args))
             push!(params.args, Expr(:kw, expr.args...))
-            push!(dict_args, =>(expr.args...))
         elseif expr isa Symbol
             push!(prop_names, expr)
         end
@@ -20,8 +18,9 @@ function build_drawing_element(sym::Symbol, props::Vector{Union{Symbol, Expr}})
         struct $sym <: DrawingElement
             props::Dict{Symbol, Any}
 
-            function $sym($params)
-                new(Dict{Symbol, Any}($dict_args..., kwargs...))
+            function $sym(; kwargs...)
+                f(; kwargs...) = Dict{Symbol, Any}(kwargs...)
+                new(f($params))
             end
         end # struct
 
@@ -57,79 +56,79 @@ macro DrawingElement(sym::Symbol, props::Expr)
 end
 
 """
-    Line(; points::Vector{<:Tuple}, [thickness=3], [color::RGBA])
+    Line(; points::Vector{<:NTuple{2}}, [thickness=3], [color::RGBA])
 """
 Line
 @DrawingElement Line (points, thickness=3, color)
 
 """
-    Rect(; rect, [rounding], [thickness=3], [color::RGBA])
+    Rect(; rect::NTuple{4}, [rounding], [thickness=3], [color::RGBA])
 """
 Rect
 @DrawingElement Rect (rect, rounding, thickness=3, color)
 
 """
-    RectMultiColor(; rect, color_upper_left::RGBA, color_upper_right::RGBA, color_bottom_left::RGBA, color_bottom_right::RGBA)
+    RectMultiColor(; rect::NTuple{4}, color_upper_left::RGBA, color_upper_right::RGBA, color_bottom_left::RGBA, color_bottom_right::RGBA)
 """
 RectMultiColor
 @DrawingElement RectMultiColor (rect, color_upper_left, color_upper_right, color_bottom_left, color_bottom_right)
 
 """
-    Circle(; center::Tuple, [radius], [num_segments], [thickness=3], [color::RGBA])
+    Circle(; center::NTuple{2}, [radius=30], [num_segments=32], [thickness=3], [color::RGBA])
 """
 Circle
-@DrawingElement Circle (center, radius, num_segments, thickness=3, color)
+@DrawingElement Circle (center, radius=30, num_segments=32, thickness=3, color)
 
 """
-    Quad(; points::Vector{<:Tuple}, [thickness=3], [color::RGBA])
+    Quad(; points::Vector{<:NTuple{2}}, [thickness=3], [color::RGBA])
 """
 Quad
 @DrawingElement Quad (points, thickness=3, color)
 
 """
-    Triangle(; points::Vector{<:Tuple}, [thickness=3], [color::RGBA])
+    Triangle(; points::Vector{<:NTuple{2}}, [thickness=3], [color::RGBA])
 """
 Triangle
 @DrawingElement Triangle (points, thickness=3, color)
 
 """
-    Arc(; center, angle, [radius], [num_segments], [thickness=3], [color::RGBA])
+    Arc(; center::NTuple{2}, angle, [radius=30], [num_segments=32], [thickness=3], [color::RGBA])
 """
 Arc
-@DrawingElement Arc (center, angle, radius, num_segments, thickness=3, color)
+@DrawingElement Arc (center, angle, radius=30, num_segments=32, thickness=3, color)
 
 """
-    Pie(; center, angle, [radius], [num_segments], [thickness=3], [color::RGBA])
+    Pie(; center::NTuple{2}, angle, [radius=30], [num_segments=32], [thickness=3], [color::RGBA])
 """
 Pie
-@DrawingElement Pie (center, angle, radius, num_segments, thickness=3, color)
+@DrawingElement Pie (center, angle, radius=30, num_segments=32, thickness=3, color)
 
 """
-    Curve(; startPoint, control1, control2, endPoint, [thickness=3], [color::RGBA])
+    Curve(; startPoint::NTuple{2}, control1::NTuple{2}, control2::NTuple{2}, endPoint::NTuple{2}, [thickness=3], [color::RGBA])
 """
 Curve
 @DrawingElement Curve (startPoint, control1, control2, endPoint, thickness=3, color)
 
 """
-    Polyline(; points::Vector{<:Tuple}, [thickness=3], [color::RGBA])
+    Polyline(; points::Vector{<:NTuple{2}}, [thickness=3], [color::RGBA])
 """
 Polyline
 @DrawingElement Polyline (points, thickness=3, color)
 
 """
-    Polygon(; points::Vector{<:Tuple}, [thickness=3], [color::RGBA])
+    Polygon(; points::Vector{<:NTuple{2}}, [thickness=3], [color::RGBA])
 """
 Polygon
 @DrawingElement Polygon (points, thickness=3, color)
 
 """
-    TextBox(; text::String, rect::Tuple, [font_size], [color::RGBA])
+    TextBox(; text::String, rect::NTuple{4}, [font_size], [color::RGBA])
 """
 TextBox
 @DrawingElement TextBox (text, rect, font_size, color)
 
 """
-    ImageBox(; image::GenericImage, [rect:Tuple])
+    ImageBox(; image::Union{Nothing, GenericImage}, [rect::Union{Nothing, NTuple{4}}])
 """
 ImageBox
 @DrawingElement ImageBox (image, rect, tex_id)

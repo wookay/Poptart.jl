@@ -16,6 +16,7 @@ Curve
 Polyline
 Polygon
 TextBox
+ImageBox
 ```
 
 # paints
@@ -25,3 +26,11 @@ Drawings.fill(element::E) where {E <: DrawingElement}
 ```
 
 `stroke ∘ fill`
+
+# transforms
+```@docs
+translate
+scale
+translate!
+scale!
+```
