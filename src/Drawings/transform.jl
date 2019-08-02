@@ -56,7 +56,7 @@ end
     scale(tup::Tuple{Real,Real,Real,Real}, xy::Tuple{Real,Real})
 """
 function scale(tup::Tuple{Real,Real,Real,Real}, xy::Tuple{Real,Real})
-    transform(tup, *, xy)
+    tuple(tup[1:2]..., transform(tup[3:4], *, xy)...)
 end
 
 """

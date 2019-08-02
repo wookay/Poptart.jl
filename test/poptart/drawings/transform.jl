@@ -81,17 +81,17 @@ imagebox1 = ImageBox(image=nothing, rect=(160, 150, 50, 50))
 translate!(rect1, (1, 1))
 @test rect1.rect == (160, 150, 50, 50) .+ 1
 scale!(rect1, (2, 2))
-@test rect1.rect == (160+1, 150+1, 50+1, 50+1) .* 2
+@test rect1.rect == (160+1, 150+1, 2 .* (50+1, 50+1)...)
 
 translate!(textbox1, (1, 1))
 @test textbox1.rect == (160, 150, 50, 50) .+ 1
 scale!(textbox1, (2, 2))
-@test textbox1.rect == (160+1, 150+1, 50+1, 50+1) .* 2
+@test textbox1.rect == (160+1, 150+1, 2 .* (50+1, 50+1)...)
 
 translate!(imagebox1, (1, 1))
 @test imagebox1.rect == (160, 150, 50, 50) .+ 1
 scale!(imagebox1, (2, 2))
-@test imagebox1.rect == (160+1, 150+1, 50+1, 50+1) .* 2
+@test imagebox1.rect == (160+1, 150+1, 2 .* (50+1, 50+1)...)
 
 imagebox2 = ImageBox(image=nothing, rect=nothing)
 translate!(imagebox2, (1, 1))
