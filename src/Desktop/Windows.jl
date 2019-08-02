@@ -5,12 +5,17 @@ export put!, remove!
 import ...Interfaces: properties, put!, remove!
 using ..Desktop: UIApplication, UIWindow
 using ...Controls
+import .Controls: remove_imgui_drawing_item
 using .Controls: LayoutElement
-using ...Drawings # Line Rect Quad Triangle Circle Arc Curve Polyline Polygon stroke fill
+using ...Drawings # Line Rect Quad Triangle Circle Arc Curve Polyline Polygon TextBox ImageBox stroke fill
 using .Drawings: DrawingElement
 using CImGui: CImGui
 using .CImGui: ImVec2, ImVec4, ImU32, ImDrawList
 using Colors: RGBA, RGB
+using ColorTypes
+using FixedPointNumbers
+using CImGui.OpenGLBackend: GLubyte, ImGui_ImplOpenGL3_CreateImageTexture, ImGui_ImplOpenGL3_UpdateImageTexture, ImGui_ImplOpenGL3_DestroyImageTexture
+
 
 include("Windows/imgui_convert.jl")
 include("Windows/imgui_controls.jl")

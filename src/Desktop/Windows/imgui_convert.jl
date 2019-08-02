@@ -46,4 +46,12 @@ function imgui_color(c::RGBA)::ImU32
     CImGui.ColorConvertFloat4ToU32(ImVec4(col...))
 end
 
+function imgui_glubytes(img::Array{ColorTypes.RGB{FixedPointNumbers.Normed{UInt8,8}},2})
+    transpose(RGBA{Normed{UInt8,8}}.(img))
+end
+
+function imgui_glubytes(img::Array{ColorTypes.Gray{FixedPointNumbers.Normed{UInt8,8}},2})
+    transpose(RGBA{Normed{UInt8,8}}.(img))
+end
+
 # module Poptart.Desktop.Windows

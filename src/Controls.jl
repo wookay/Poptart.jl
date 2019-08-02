@@ -2,7 +2,7 @@ module Controls # Poptart
 
 export put!, remove!
 import ..Interfaces: properties, put!, remove!
-using ..Drawings: Drawing, TextBox
+using ..Drawings: Drawing, TextBox, ImageBox
 using Colors: RGBA
 
 abstract type UIControl end

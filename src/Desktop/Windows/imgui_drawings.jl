@@ -192,6 +192,52 @@ function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Dr
     CImGui.AddText(draw_list, Ptr{CImGui.ImFont}(C_NULL), font_size, pos, color, text)
 end
 
+function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawings.Drawing{Drawings.draw}, element::ImageBox)
+    image = element.image
+    image === nothing && return
+    (w, h) = size(image)
+    element_rect = get_prop(element, :rect, nothing)
+    if element_rect === nothing
+        rect = (0, 0, w, h)
+    else
+        rect = element_rect
+    end
+    if haskey(element.props, :tex_id)
+        tex_id = element.tex_id
+        if hash(element.image) == element.props[:hash]
+        else
+            if element.props[:texture_size] == (w, h)
+            else
+                ImGui_ImplOpenGL3_DestroyImageTexture(tex_id)
+                tex_id = ImGui_ImplOpenGL3_CreateImageTexture(w, h)
+                element.tex_id = tex_id
+                element.props[:texture_size] = (w, h)
+            end
+            glubytes = imgui_glubytes(image)
+            ImGui_ImplOpenGL3_UpdateImageTexture(tex_id, glubytes, w, h)
+            element.props[:hash] = hash(image)
+        end
+    else
+        tex_id = ImGui_ImplOpenGL3_CreateImageTexture(w, h)
+        element.tex_id = tex_id
+
+        glubytes = imgui_glubytes(image)
+        ImGui_ImplOpenGL3_UpdateImageTexture(tex_id, glubytes, w, h)
+        element.props[:hash] = hash(image)
+        element.props[:texture_size] = (w, h)
+    end
+    (a, b) = imgui_offset_rect(window_pos, rect)
+    CImGui.AddImage(draw_list, Ptr{Cvoid}(tex_id), a, b)
+end
+
+function remove_imgui_drawing_item(element::ImageBox)
+    if haskey(element.props, :tex_id)
+        tex_id = element.tex_id
+        ImGui_ImplOpenGL3_DestroyImageTexture(tex_id)
+        delete!(element.props, :tex_id)
+    end
+end
+
 using Jive # @onlyonce
 function imgui_drawing_item(::Ptr{ImDrawList}, ::ImVec2, drawing::Any, element::Any)
     @onlyonce begin

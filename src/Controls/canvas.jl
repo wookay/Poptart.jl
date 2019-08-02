@@ -1,7 +1,7 @@
 # module Poptart.Controls
 
 """
-    Canvas(; items::Vector{Drawing} = Drawing[])
+    Canvas(; items::Vector{Union{Drawing, TextBox, ImageBox}} = Union{Drawing, TextBox, ImageBox}[])
 """
 Canvas
 
@@ -10,10 +10,10 @@ Canvas
     # observers::Dict{Symbol, Vector}
     items::Vector{Drawing}
 
-    function Canvas(; items::Union{Vector{Any},Vector{Drawing}} = Drawing[], kwargs...)
+    function Canvas(; items::Union{Vector{Any},Vector{Union{Drawing, TextBox, ImageBox}}} = Union{Drawing, TextBox, ImageBox}[], kwargs...)
         props = Dict{Symbol, Any}(kwargs...)
         observers = Dict{Symbol, Vector}()
-        new(props, observers, Vector{Drawing}(items))
+        new(props, observers, Vector{Union{Drawing, TextBox, ImageBox}}(items))
     end
 end
 
@@ -22,18 +22,18 @@ function properties(control::Canvas)
 end
 
 """
-    Controls.put!(canvas::Canvas, elements::Union{Drawing, TextBox}...)
+    Controls.put!(canvas::Canvas, elements::Union{Drawing, TextBox, ImageBox}...)
 """
-function put!(canvas::Canvas, elements::Union{Drawing, TextBox}...)
+function put!(canvas::Canvas, elements::Union{Drawing, TextBox, ImageBox}...)
     drawing_elements = convert.(Drawing, elements)
     push!(canvas.items, drawing_elements...)
     nothing
 end
 
 """
-    Controls.remove!(canvas::Canvas, elements::Union{Drawing, TextBox}...)
+    Controls.remove!(canvas::Canvas, elements::Union{Drawing, TextBox, ImageBox}...)
 """
-function remove!(canvas::Canvas, elements::Union{Drawing, TextBox}...)
+function remove!(canvas::Canvas, elements::Union{Drawing, TextBox, ImageBox}...)
     drawing_elements = convert.(Drawing, elements)
     indices = filter(x -> x !== nothing, indexin(drawing_elements, canvas.items))
     deleteat!(canvas.items, indices)

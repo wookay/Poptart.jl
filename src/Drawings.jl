@@ -4,7 +4,7 @@ import ..Interfaces: properties
 using Colors: RGBA
 
 export Line, Rect, RectMultiColor, Circle, Quad, Triangle, Arc, Pie, Curve, Polyline, Polygon
-export TextBox
+export TextBox, ImageBox
 export stroke, fill
 export scale, translate
 
