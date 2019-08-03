@@ -41,13 +41,13 @@ function properties(control::LinePlot)
 end
 
 """
-    MultiLinePlot(; items::Vector{LinePlot}, [label::String], [frame])
+    MultiLinePlot(; items::Vector{LinePlot}, [label::String], [scale::NamedTuple{(:min, :max)}], [frame])
 """
 MultiLinePlot
 @UI MultiLinePlot
 
 function properties(control::MultiLinePlot)
-    (properties(super(control))..., :items, :label, )
+    (properties(super(control))..., :items, :label, :scale, )
 end
 
 """

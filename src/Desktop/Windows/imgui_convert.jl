@@ -41,6 +41,10 @@ function rect_contains_pos(rect::ImVec4, p::ImVec2)::Bool
     p.x >= ImVec2(rect, min).x && p.y >= ImVec2(rect, min).y && p.x < ImVec2(rect, max).x && p.y < ImVec2(rect, max).y
 end
 
+function rect_contains_pos(center::ImVec2, radius::Real, p::ImVec2)::Bool
+    rect_contains_pos(ImVec4(ImVec2(center.x - radius, center.y - radius), ImVec2(center.x + radius, center.y + radius)), p)
+end
+
 function imgui_color(c::RGBA)::ImU32
     col = (c.r, c.g, c.b, c.alpha)
     CImGui.ColorConvertFloat4ToU32(ImVec4(col...))

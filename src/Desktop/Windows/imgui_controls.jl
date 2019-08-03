@@ -351,21 +351,76 @@ end
 function imgui_control_item(imctx::Ptr, item::MultiLinePlot)
     plot_items = item.items # :items
     label = get_prop(item, :label, "")
+    scale = get_prop_scale(item) # :scale
     graph_size = get_prop_frame_size(item, (width=CImGui.CalcItemWidth(), height=150)) # :frame
     draw_list = CImGui.GetWindowDrawList()
     window_pos = CImGui.GetCursorScreenPos()
     mouse_pos = CImGui.GetIO().MousePos
     frame_rounding = Cfloat(1)
-    frame_padding = (x=7, y=7)
+    frame_padding = (x=2, y=7)
     frame_bb = CImGui.ImVec4(window_pos, window_pos + ImVec2(graph_size.x, graph_size.y))
     renderframe(draw_list, ImVec2(frame_bb, min), ImVec2(frame_bb, max), CImGui.GetColorU32(CImGui.ImGuiCol_FrameBg), true, frame_rounding)
 
-    v_min = mapfoldl(x -> minimum(x.values), min, plot_items)
-    v_max = mapfoldl(x -> maximum(x.values), max, plot_items)
+    min_y, max_y = scale
+    rounding = 0
+    len = length(first(plot_items).values)
+    barsize = (graph_size.x - 2frame_padding.x) / len
+    barsize_pad = barsize < 5 ? 0 : 4
+    locate = (y = (graph_size.y - 2frame_padding.y) / (max_y - min_y), )
+    line_thickness = 2
+    hovered_idx = nothing
+    hovered_points = nothing
+    hovered_color = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLinesHovered)
+    label_color = CImGui.GetColorU32(CImGui.ImGuiCol_Text)
+    point_radius = 2
+    for (plot_idx, lineplot) in enumerate(plot_items)
+        points = []
+        line_color = imgui_color(lineplot.color)
+        point_color = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLines)
+        for (idx, value) in enumerate(lineplot.values)
+            barheight = (value - min_y) * locate.y
+            pos = ((idx - 1) * barsize + frame_padding.x, graph_size.y - frame_padding.y - barheight)
+            p_min = imgui_offset_vec2(window_pos, pos)
+            p_max = imgui_offset_vec2(window_pos, pos .+ (barsize .- barsize_pad, barheight))
+            center = ImVec2(p_min.x + barsize/2, p_min.y)
+            push!(points, center)
+            if hovered_idx === nothing && rect_contains_pos(center, point_radius + 2, mouse_pos)
+                line_color = hovered_color
+                hovered_idx = plot_idx
+                CImGui.BeginTooltip()
+                CImGui.Text(string(lineplot.label, "\n", "index: ", idx, "\n", "value: ", value))
+                CImGui.EndTooltip()
+            end
+        end
+        a = imgui_offset_vec2(window_pos, (graph_size.x + 5, (plot_idx - 1) * 20 + 10))
+        b = imgui_offset_vec2(a, (30, 0))
+        if hovered_idx === nothing && rect_contains_pos(ImVec4(imgui_offset_vec2(a, (0, -5)), imgui_offset_vec2(b, (80, 10))), mouse_pos)
+            hovered_idx = plot_idx
+            line_color = hovered_color
+        end
+        if hovered_idx === plot_idx
+            hovered_points = points
+        end
+        if hovered_points !== plot_idx && length(points) >= 2
+            for (a, b) in zip(points[1:end-1], points[2:end])
+                CImGui.AddLine(draw_list, a, b, line_color, line_thickness)
+            end
+        end
+        num_segments = 5
+        for (idx, center) in enumerate(points)
+            CImGui.AddCircleFilled(draw_list, center, point_radius, hovered_idx == plot_idx ? line_color : point_color, num_segments)
+        end
+        CImGui.AddLine(draw_list, a, b, line_color, 5)
+        CImGui.SetCursorScreenPos(imgui_offset_vec2(b, (5, -7)))
+        CImGui.TextColored(label_color, lineplot.label)
+    end
+    if hovered_points !== nothing && length(hovered_points) >= 2
+        for (a, b) in zip(hovered_points[1:end-1], hovered_points[2:end])
+            CImGui.AddLine(draw_list, a, b, hovered_color, line_thickness)
+        end
+    end
 
-    # impl
-
-    CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 4, 3))
+    CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 6, graph_size.y - 20))
     CImGui.Text(label)
     margin = (x=0, y=5)
     CImGui.SetCursorScreenPos(window_pos + ImVec2(0, graph_size.y + margin.y))

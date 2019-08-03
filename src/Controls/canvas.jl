@@ -49,7 +49,8 @@ function Base.empty!(canvas::Canvas)
     empty!(canvas.items)
 end
 
-function remove_imgui_drawing_item(::Any)
+# others are at Desktop/Windows/imgui_drawings.jl
+function remove_imgui_drawing_item
 end
 
 # module Poptart.Controls

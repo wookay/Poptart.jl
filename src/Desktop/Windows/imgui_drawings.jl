@@ -230,6 +230,14 @@ function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Dr
     CImGui.AddImage(draw_list, Ptr{Cvoid}(tex_id), a, b)
 end
 
+using Jive # @onlyonce
+function imgui_drawing_item(::Ptr{ImDrawList}, ::ImVec2, drawing::Any, element::Any)
+    @onlyonce begin
+        @info "not implemented" drawing element
+    end
+end
+
+# see also Controls/canvas.jl
 function remove_imgui_drawing_item(element::ImageBox)
     if haskey(element.props, :tex_id)
         tex_id = element.tex_id
@@ -238,11 +246,8 @@ function remove_imgui_drawing_item(element::ImageBox)
     end
 end
 
-using Jive # @onlyonce
-function imgui_drawing_item(::Ptr{ImDrawList}, ::ImVec2, drawing::Any, element::Any)
-    @onlyonce begin
-        @info "not implemented" drawing element
-    end
+function remove_imgui_drawing_item(::Any)
+    nothing
 end
 
 # module Poptart.Desktop.Windows
