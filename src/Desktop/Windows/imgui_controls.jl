@@ -319,7 +319,7 @@ function imgui_control_item(imctx::Ptr, item::BarPlot)
         captionpos = imgui_offset_vec2(window_pos, (textsize + frame_padding.x, pos[2])) + ImVec2(-textsize, -barsize_pad)
         if rect_contains_pos(ImVec4(captionpos, p_max), mouse_pos)
             CImGui.BeginTooltip()
-            CImGui.Text(string(caption, "\n", value))
+            CImGui.Text(string(caption, "\n", "value: ", value))
             CImGui.EndTooltip()
             color = color_hovered
             color_caption = color_hovered
@@ -337,15 +337,58 @@ function imgui_control_item(imctx::Ptr, item::BarPlot)
     CImGui.SetCursorScreenPos(window_pos + ImVec2(0, graph_size.y + margin.y))
 end
 
-# CImGui.PlotLines
 function imgui_control_item(imctx::Ptr, item::LinePlot)
-    values = Cfloat.(item.values) # :values
+    values = item.values # :values
     label = get_prop(item, :label, "")
-    # :color
-    overlay_text = get_prop(item, :overlay_text, C_NULL)
     scale = get_prop_scale(item) # :scale
-    graph_size = get_prop_frame_size(item) # :frame
-    CImGui.PlotLines(label, values, length(values), Cint(0), overlay_text, scale.min, scale.max, graph_size)
+    plot_color = get_prop(item, :color, nothing)
+    line_color = plot_color === nothing ? CImGui.GetColorU32(CImGui.ImGuiCol_PlotLines) : imgui_color(plot_color)
+    line_thickness = 2
+    graph_size = get_prop_frame_size(item, (width=CImGui.CalcItemWidth(), height=150)) # :frame
+    draw_list = CImGui.GetWindowDrawList()
+    window_pos = CImGui.GetCursorScreenPos()
+    mouse_pos = CImGui.GetIO().MousePos
+    frame_rounding = Cfloat(1)
+    frame_padding = (x=2, y=7)
+    frame_bb = CImGui.ImVec4(window_pos, window_pos + ImVec2(graph_size.x, graph_size.y))
+    renderframe(draw_list, ImVec2(frame_bb, min), ImVec2(frame_bb, max), CImGui.GetColorU32(CImGui.ImGuiCol_FrameBg), true, frame_rounding)
+
+    min_y, max_y = scale
+    len = length(values)
+    barsize = (graph_size.x - 2frame_padding.x) / len
+    barsize_pad = barsize < 5 ? 0 : 4
+    locate = (y = (graph_size.y - 2frame_padding.y) / (max_y - min_y), )
+    points = []
+    for (idx, value) in enumerate(values)
+        barheight = (value - min_y) * locate.y
+        pos = ((idx - 1) * barsize + frame_padding.x, graph_size.y - frame_padding.y - barheight)
+        p_min = imgui_offset_vec2(window_pos, pos)
+        p_max = imgui_offset_vec2(window_pos, pos .+ (barsize .- barsize_pad, barheight))
+        center = ImVec2(p_min.x + barsize/2, p_min.y)
+        push!(points, center)
+    end
+    if length(points) >= 2
+        for (a, b) in zip(points[1:end-1], points[2:end])
+            CImGui.AddLine(draw_list, a, b, line_color, line_thickness)
+        end
+    end
+    point_radius = 2
+    num_segments = 5
+    for (idx, center) in enumerate(points)
+        if rect_contains_pos(center, point_radius + 3, mouse_pos)
+            point_color = CImGui.GetColorU32(CImGui.ImGuiCol_PlotLinesHovered)
+            CImGui.BeginTooltip()
+            CImGui.Text(string("index: ", idx, "\n", "value: ", values[idx]))
+            CImGui.EndTooltip()
+        else
+            point_color = CImGui.GetColorU32(CImGui.ImGuiCol_PlotHistogram)
+        end
+        CImGui.AddCircleFilled(draw_list, center, point_radius, point_color, num_segments)
+    end
+    CImGui.SetCursorScreenPos(window_pos + ImVec2(graph_size.x + 6, 3))
+    CImGui.Text(label)
+    margin = (x=0, y=5)
+    CImGui.SetCursorScreenPos(window_pos + ImVec2(0, graph_size.y + margin.y))
 end
 
 function imgui_control_item(imctx::Ptr, item::MultiLinePlot)
@@ -430,9 +473,9 @@ end
 function imgui_control_item(imctx::Ptr, item::Histogram)
     values = Cfloat.(item.values) # :values
     label = get_prop(item, :label, "")
-    overlay_text = get_prop(item, :overlay_text, C_NULL)
     scale = get_prop_scale(item) # :scale
     graph_size = get_prop_frame_size(item) # :frame
+    overlay_text = C_NULL
     CImGui.PlotHistogram(label, values, length(values), Cint(0), overlay_text, scale.min, scale.max, graph_size)
 end
 

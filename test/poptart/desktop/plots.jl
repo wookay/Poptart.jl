@@ -4,7 +4,6 @@ using Test
 using Poptart.Desktop # Application Window put!
 using Poptart.Controls # ScatterPlot LinePlot Histogram
 using Colors: RGBA
-using CImGui: ShowMetricsWindow
 
 frame = (width=200, height=200)
 window1 = Window(title="A", frame=frame)
@@ -31,6 +30,7 @@ put!(window1, plot3)
 plot4 = Histogram(values=values, scale=(min=0, max=1.1), frame=(width=150, height=100), overlay_text="Histogram")
 put!(window1, plot4)
 
-window1.post_block = ShowMetricsWindow
+using CImGui
+window1.post_block = CImGui.ShowMetricsWindow
 
 end # module test_poptart_desktop_plots

@@ -31,13 +31,13 @@ function properties(control::BarPlot)
 end
 
 """
-    LinePlot(; values::AbstractVector, [label::String], [color], [overlay_text], [scale::NamedTuple{(:min, :max)}], [frame])
+    LinePlot(; values::AbstractVector, [label::String], [scale::NamedTuple{(:min, :max)}], [color::RGBA], [frame])
 """
 LinePlot
 @UI LinePlot
 
 function properties(control::LinePlot)
-    (properties(super(control))..., :values, :label, :color, :overlay_text, :scale, )
+    (properties(super(control))..., :values, :label, :scale, :color, )
 end
 
 """
@@ -51,13 +51,13 @@ function properties(control::MultiLinePlot)
 end
 
 """
-    Histogram(; values::AbstractVector, [label::String], [overlay_text], [scale::NamedTuple{(:min, :max)}], [frame])
+    Histogram(; values::AbstractVector, [label::String], [scale::NamedTuple{(:min, :max)}], [frame])
 """
 Histogram
 @UI Histogram
 
 function properties(control::Histogram)
-    (properties(super(control))..., :values, :label, :overlay_text, :scale, )
+    (properties(super(control))..., :values, :label, :scale, )
 end
 
 # module Poptart.Controls
