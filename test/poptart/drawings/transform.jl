@@ -47,17 +47,20 @@ pie1 = Pie(center=(100, 200), radius=25, angle=(min=0, max=deg2rad(120)))
 
 translate!(circle1, (1, 1))
 @test circle1.center == (100, 200) .+ 1
-scale!(circle1, 2)
+scale!(circle1, (3,4), 2)
+@test circle1.center == (3,4) .* ((100, 200) .+1)
 @test circle1.radius == 25 * 2
 
 translate!(arc1, (1, 1))
 @test arc1.center == (100, 200) .+ 1
-scale!(arc1, 2)
+scale!(arc1, (3,4), 2)
+@test arc1.center == (3,4) .* ((100, 200) .+1)
 @test arc1.radius == 25 * 2
 
 translate!(pie1, (1, 1))
 @test pie1.center == (100, 200) .+ 1
-scale!(pie1, 2)
+scale!(pie1, (3,4), 2)
+@test pie1.center == (3,4) .* ((100, 200) .+1)
 @test pie1.radius == 25 * 2
 
 curve1 = Curve(startPoint=(100, 200), control1=(110, 210), control2=(120, 220), endPoint=(130, 230))
@@ -81,17 +84,17 @@ imagebox1 = ImageBox(image=nothing, rect=(160, 150, 50, 50))
 translate!(rect1, (1, 1))
 @test rect1.rect == (160, 150, 50, 50) .+ 1
 scale!(rect1, (2, 2))
-@test rect1.rect == (160+1, 150+1, 2 .* (50+1, 50+1)...)
+@test rect1.rect == 2 .* (160+1, 150+1, 50+1, 50+1)
 
 translate!(textbox1, (1, 1))
 @test textbox1.rect == (160, 150, 50, 50) .+ 1
 scale!(textbox1, (2, 2))
-@test textbox1.rect == (160+1, 150+1, 2 .* (50+1, 50+1)...)
+@test textbox1.rect == 2 .* (160+1, 150+1, 50+1, 50+1)
 
 translate!(imagebox1, (1, 1))
 @test imagebox1.rect == (160, 150, 50, 50) .+ 1
 scale!(imagebox1, (2, 2))
-@test imagebox1.rect == (160+1, 150+1, 2 .* (50+1, 50+1)...)
+@test imagebox1.rect == 2 .* (160+1, 150+1, 50+1, 50+1)
 
 imagebox2 = ImageBox(image=nothing, rect=nothing)
 translate!(imagebox2, (1, 1))
@@ -103,9 +106,10 @@ circle2 = Circle(center=(100, 200))
 arc2 = Arc(center=(100, 200), angle=(min=0, max=deg2rad(120)))
 pie2 = Pie(center=(100, 200), angle=(min=0, max=deg2rad(120)))
 @test circle2.radius == arc2.radius == pie2.radius == 30
-scale!(circle2, 2)
-scale!(arc2, 2)
-scale!(pie2, 2)
+scale!(circle2, (3,4), 2)
+scale!(arc2, (3,4), 2)
+scale!(pie2, (3,4), 2)
+@test circle2.center == arc2.center == pie2.center == (100, 200) .* (3,4)
 @test circle2.radius == arc2.radius == pie2.radius == 30 * 2
 
 end # module test_poptart_drawings_transform

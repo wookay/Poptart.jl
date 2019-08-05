@@ -56,7 +56,7 @@ end
     scale(tup::Tuple{Real,Real,Real,Real}, xy::Tuple{Real,Real})
 """
 function scale(tup::Tuple{Real,Real,Real,Real}, xy::Tuple{Real,Real})
-    tuple(tup[1:2]..., transform(tup[3:4], *, xy)...)
+    transform(tup, *, xy)
 end
 
 """
@@ -158,11 +158,12 @@ function scale!(element::Union{Line, Rect, RectMultiColor, Triangle, Quad, Polyl
 end
 
 """
-    scale!(element::Union{Circle, Arc, Pie}, x::Real)
+    scale!(element::Union{Circle, Arc, Pie}, scale_center::Tuple{Real, Real}, scale_radius::Real)
 """
-function scale!(element::Union{Circle, Arc, Pie}, x::Real)
-    element.radius *= x
-    (radius = element.radius, )
+function scale!(element::Union{Circle, Arc, Pie}, scale_center::Tuple{Real, Real}, scale_radius::Real)
+    element.center = element.center .* scale_center
+    element.radius *= scale_radius
+    (center = element.center, radius = element.radius, )
 end
 
 # module Poptart.Drawings
