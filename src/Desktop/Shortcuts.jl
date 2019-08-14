@@ -1,6 +1,6 @@
 module Shortcuts # module Poptart.Desktop
 
-export Shift, Ctrl, Alt, Super, Key, didPress, Esc, Enter, Space, Backspace
+export Shift, Ctrl, Alt, Super, Key, didPress, Esc, Enter, Space, Backspace, Right, Left, Down, Up
 
 struct Modifier
     name::Symbol
@@ -36,6 +36,10 @@ const Esc       = Key(256)
 const Enter     = Key(257)
 const Space     = Key(' ') # 32
 const Backspace = Key(259)
+const Right     = Key(262)
+const Left      = Key(263)
+const Down      = Key(264)
+const Up        = Key(265)
 
 function _conjunction_from_modifiers(modifiers::Vector{Modifier})::NamedTuple{(:shift, :ctrl, :alt, :super)}
     shift, ctrl, alt, super = false, false, false, false
