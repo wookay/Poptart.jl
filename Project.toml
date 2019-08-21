@@ -4,7 +4,7 @@ keywords = ["GUI"]
 license = "MIT"
 desc = "GUI programming in Julia based on CImGui.jl"
 authors = ["WooKyoung Noh <wookay.noh@gmail.com>"]
-version = "0.2.2-DEV"
+version = "0.2.2"
 
 [deps]
 CImGui = "5d785b6c-b76f-510e-a07c-3070796c7e87"
@@ -26,4 +26,4 @@ test = ["Test", "Random"]
 
 [compat]
 julia = "1"
-CImGui = "≥ 1.69.2"
+CImGui = "≥ 1.69.3"
