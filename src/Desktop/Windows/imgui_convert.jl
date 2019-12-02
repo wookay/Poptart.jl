@@ -58,4 +58,8 @@ function imgui_glubytes(img::Array{ColorTypes.Gray{FixedPointNumbers.Normed{UInt
     transpose(RGBA{Normed{UInt8,8}}.(img))
 end
 
+function imgui_glubytes(img::Array{ColorTypes.RGB{Float64},2})
+    RGBA{Normed{UInt8,8}}.(img)
+end
+
 # module Poptart.Desktop.Windows

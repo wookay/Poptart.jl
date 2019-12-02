@@ -1,5 +1,7 @@
 # Poptart.jl 🏂
 
+<https://github.com/wookay/Poptart.jl>
+
 GUI programming in Julia based on [CImGui.jl](https://github.com/Gnimuc/CImGui.jl)
 
  * ☕️   You can [make a donation](https://wookay.github.io/donate/) to support this project.
@@ -35,7 +37,7 @@ didClick(slider2) do event
 end
 ```
 
-![app.png](https://wookay.github.io/docs/Poptart.jl/cimgui/assets/cimgui/app.png)
+![app.png](https://wookay.github.io/docs/Poptart.jl/assets/cimgui/app.png)
 
 
 ### Poptart.Drawings
@@ -93,6 +95,6 @@ put!(canvas,
     stroke(polygon1), fill(polygon2))
 ```
 
-![drawings.png](https://wookay.github.io/docs/Poptart.jl/cimgui/assets/cimgui/drawings.png)
+![drawings.png](https://wookay.github.io/docs/Poptart.jl/assets/cimgui/drawings.png)
 
 * see more examples: [PoptartExamples.jl](https://github.com/wookay/PoptartExamples.jl/tree/master/examples)

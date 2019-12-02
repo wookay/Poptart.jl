@@ -27,3 +27,4 @@ test = ["Test", "Random"]
 [compat]
 julia = "1"
 CImGui = "≥ 1.69.3"
+UnicodePlots = "≥ 1.1.0"

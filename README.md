@@ -40,7 +40,7 @@ didClick(slider2) do event
 end
 ```
 
-![app.png](https://wookay.github.io/docs/Poptart.jl/cimgui/assets/cimgui/app.png)
+![app.png](https://wookay.github.io/docs/Poptart.jl/assets/cimgui/app.png)
 
 
 ### Poptart.Drawings
@@ -98,13 +98,13 @@ put!(canvas,
     stroke(polygon1), fill(polygon2))
 ```
 
-![drawings.png](https://wookay.github.io/docs/Poptart.jl/cimgui/assets/cimgui/drawings.png)
+![drawings.png](https://wookay.github.io/docs/Poptart.jl/assets/cimgui/drawings.png)
 
 * see more examples: [PoptartExamples.jl](https://github.com/wookay/PoptartExamples.jl/tree/master/examples)
 
 
 [docs-latest-img]: https://img.shields.io/badge/docs-latest-blue.svg
-[docs-latest-url]: https://wookay.github.io/docs/Poptart.jl/cimgui/
+[docs-latest-url]: https://wookay.github.io/docs/Poptart.jl/
 
 [travis-img]: https://api.travis-ci.org/wookay/Poptart.jl.svg?branch=master
 [travis-url]: https://travis-ci.org/wookay/Poptart.jl
