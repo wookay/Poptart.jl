@@ -152,10 +152,11 @@ function runloop(glsl_version, glwin::GLFW.Window, app::A) where {A <: UIApplica
 
     Animations.chronicle.isrunning = true
     app.pre_block !== nothing && Base.invokelatest(app.pre_block)
+    quantum = 0.016666666f0
     while app.isrunning && !GLFW.WindowShouldClose(glwin)
         yield()
 
-        GLFW.PollEvents()
+        GLFW.WaitEvents(quantum)
         ImGui_ImplOpenGL3_NewFrame()
         ImGui_ImplGlfw_NewFrame()
         CImGui.NewFrame()
