@@ -4,7 +4,7 @@ keywords = ["GUI"]
 license = "MIT"
 desc = "GUI programming in Julia based on CImGui.jl"
 authors = ["WooKyoung Noh <wookay.noh@gmail.com>"]
-version = "0.2.2"
+version = "0.2.3-DEV"
 
 [deps]
 CImGui = "5d785b6c-b76f-510e-a07c-3070796c7e87"
@@ -20,11 +20,13 @@ FixedPointNumbers = "53c48c17-4a7d-5ca2-90c5-79b7896eea93"
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+GLFW = "f7f18e0c-5ee9-5ccd-a5bf-e8befd85ed98"
 
 [targets]
-test = ["Test", "Random"]
+test = ["Test", "Random", "GLFW"]
 
 [compat]
 julia = "1"
-CImGui = "≥ 1.69.3"
-UnicodePlots = "≥ 1.1.0"
+CImGui = "1.77"
+UnicodePlots = "1.2"
+GLFW = "3.2"
