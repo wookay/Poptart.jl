@@ -36,10 +36,10 @@ end
 end
 
 """
-    Canvas(; items::Vector{Union{Drawing, TextBox, ImageBox}} = Union{Drawing, TextBox, ImageBox}[])
+    Canvas(; items::Vector{Drawing}} = Drawing[])
 """
 @kwdef mutable struct Canvas <: UIControl
-    items::Vector{Union{Drawing, TextBox, ImageBox}} = Union{Drawing, TextBox, ImageBox}[]
+    items::Vector{Drawing} = Drawing[]
 end
 
 # module Poptart.Desktop

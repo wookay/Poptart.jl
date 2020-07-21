@@ -5,6 +5,7 @@ export Button, InputText, Label, Slider
 export Canvas
 export ScatterPlot, Spy, BarPlot, LinePlot, MultiLinePlot, Histogram
 export Separator, SameLine, NewLine, Spacing, Group
+export MenuBar, Menu, MenuItem
 export Mouse, didClick
 export pause, resume
 export RGBA
@@ -31,6 +32,7 @@ include("Desktop/plots.jl")
 include("Desktop/drawings.jl")
 include("Desktop/imgui_controls.jl")
 include("Desktop/imgui_drawings.jl")
+include("Desktop/menus.jl")
 include("Desktop/events.jl")
 
 env = Dict{Ptr{Cvoid},UIApplication}()

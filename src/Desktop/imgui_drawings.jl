@@ -208,22 +208,22 @@ function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Dr
         else
             if element.props[:texture_size] == (w, h)
             else
-                ImGui_ImplOpenGL3_DestroyImageTexture(tex_id)
-                tex_id = ImGui_ImplOpenGL3_CreateImageTexture(w, h)
+                OpenGLBackend.ImGui_ImplOpenGL3_DestroyImageTexture(tex_id)
+                tex_id = OpenGLBackend.ImGui_ImplOpenGL3_CreateImageTexture(w, h)
                 element.tex_id = tex_id
                 element.props[:texture_size] = (w, h)
             end
             glubytes = imgui_glubytes(image)
-            ImGui_ImplOpenGL3_UpdateImageTexture(tex_id, glubytes, w, h)
+            OpenGLBackend.ImGui_ImplOpenGL3_UpdateImageTexture(tex_id, glubytes, w, h)
             element.props[:hash] = hash(image)
         end
     else
-        tex_id = ImGui_ImplOpenGL3_CreateImageTexture(w, h)
+        tex_id = OpenGLBackend.ImGui_ImplOpenGL3_CreateImageTexture(w, h)
         element.tex_id = tex_id
         element.props[:texture_size] = (w, h)
 
         glubytes = imgui_glubytes(image)
-        ImGui_ImplOpenGL3_UpdateImageTexture(tex_id, glubytes, w, h)
+        OpenGLBackend.ImGui_ImplOpenGL3_UpdateImageTexture(tex_id, glubytes, w, h)
         element.props[:hash] = hash(image)
     end
     (a, b) = imgui_offset_rect(window_pos, rect)

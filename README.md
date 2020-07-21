@@ -65,6 +65,8 @@ Desktop.exit_on_esc() = true
 Base.JLOptions().isinteractive==0 && wait(app.closenotify)
 ```
 
+* see more examples: [PoptartExamples.jl](https://github.com/wookay/PoptartExamples.jl/tree/master/examples)
+
 
 [travis-img]: https://api.travis-ci.org/wookay/Poptart.jl.svg?branch=master
 [travis-url]: https://travis-ci.org/wookay/Poptart.jl
