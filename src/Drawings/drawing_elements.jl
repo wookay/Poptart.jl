@@ -138,21 +138,21 @@ struct Drawing{paint}
     element::E where {E <: DrawingElement}
 end
 
-function stroke_and_fill(element::E) where {E <: DrawingElement}
+function stroke_and_fill(element::DrawingElement)
     Drawing{stroke_and_fill}(element)
 end
 
 """
-    Drawings.stroke(element::E) where {E <: DrawingElement}
+    Drawings.stroke(element::DrawingElement)
 """
-function stroke(element::E) where {E <: DrawingElement}
+function stroke(element::DrawingElement)
     Drawing{stroke}(element)
 end
 
 """
-    Drawings.fill(element::E) where {E <: DrawingElement}
+    Drawings.fill(element::DrawingElement)
 """
-function Base.fill(element::E) where {E <: DrawingElement}
+function Base.fill(element::DrawingElement)
     Drawing{fill}(element)
 end
 
@@ -186,6 +186,26 @@ end
 
 function Base.convert(::Type{Drawing}, element::Union{TextBox, ImageBox})
     Drawing{draw}(element)
+end
+
+function Base.pop!(items::Vector{Drawing}, elements...)
+    drawing_elements = convert.(Drawing, elements)
+    indices = filter(x -> x !== nothing, indexin(drawing_elements, items))
+    deleteat!(items, indices)
+    remove_imgui_drawing_item.(elements)
+    nothing
+end
+
+function remove_imgui_drawing_item(element::ImageBox)
+    if haskey(element.props, :tex_id)
+        tex_id = element.tex_id
+        ImGui_ImplOpenGL3_DestroyImageTexture(tex_id)
+        delete!(element.props, :tex_id)
+    end
+end
+
+function remove_imgui_drawing_item(::Any)
+    nothing
 end
 
 # module Poptart.Drawings

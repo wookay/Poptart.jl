@@ -22,14 +22,20 @@ abstract type UIApplication end
 abstract type UIWindow end
 abstract type UIControl end
 
+"""
+    Desktop.exit_on_esc()
+"""
 exit_on_esc() = false
+
+"""
+    Desktop.custom_fonts(::Application)
+"""
 custom_fonts(::Any) = nothing
 
 include("Desktop/controls.jl")
 include("Desktop/layouts.jl")
 include("Desktop/imgui_convert.jl")
 include("Desktop/plots.jl")
-include("Desktop/drawings.jl")
 include("Desktop/imgui_controls.jl")
 include("Desktop/imgui_drawings.jl")
 include("Desktop/menus.jl")

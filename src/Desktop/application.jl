@@ -68,6 +68,9 @@ function setup_app(app::UIApplication)
     end
 end
 
+"""
+    resume(app::UIApplication)
+"""
 function resume(app::UIApplication)
     glwin = GLFW.GetCurrentContext()
     glwin.handle !== C_NULL && haskey(env, glwin.handle) && return nothing
@@ -75,7 +78,10 @@ function resume(app::UIApplication)
     nothing
 end
 
-function pause(app::UIApplication)
+"""
+    pause(::UIApplication)
+"""
+function pause(::UIApplication)
     glwin = GLFW.GetCurrentContext()
     glwin.handle !== C_NULL && GLFW.SetWindowShouldClose(glwin, true)
 end

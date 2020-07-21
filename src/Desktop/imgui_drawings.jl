@@ -1,5 +1,8 @@
 # module Poptart.Desktop
 
+using ..Drawings
+using .Drawings: DrawingElement
+
 function get_prop(element::DrawingElement, name::Symbol, default::Any)
     get(element.props, name, default)
 end
@@ -235,19 +238,6 @@ function imgui_drawing_item(::Ptr{ImDrawList}, ::ImVec2, drawing::Any, element::
     @onlyonce begin
         @info "not implemented" drawing element
     end
-end
-
-# see also Controls/canvas.jl
-function remove_imgui_drawing_item(element::ImageBox)
-    if haskey(element.props, :tex_id)
-        tex_id = element.tex_id
-        ImGui_ImplOpenGL3_DestroyImageTexture(tex_id)
-        delete!(element.props, :tex_id)
-    end
-end
-
-function remove_imgui_drawing_item(::Any)
-    nothing
 end
 
 # module Poptart.Desktop
