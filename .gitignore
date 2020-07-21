@@ -1,3 +1,4 @@
+imgui.ini
 docs/build
 .DS_Store
 *.jl.cov

@@ -1,12 +1,10 @@
-using Poptart.Desktop # Application Windows put!
-using Poptart.Controls # Canvas
+using Poptart.Desktop # Application Window Canvas
 using Poptart.Drawings # Line Rect Circle Triangle Arc Pie Curve Polyline Polygon stroke fill
 using Colors: RGBA
 
 canvas = Canvas()
-window1 = Windows.Window(items=[canvas], title="Drawings", frame=(x=0, y=0, width=550, height=400))
-closenotify = Condition()
-Application(windows=[window1], title="App", frame=(width=550, height=400), closenotify=closenotify)
+window1 = Window(items=[canvas], title="Drawings", frame=(x=0, y=0, width=550, height=400))
+app = Application(windows=[window1], title="App", frame=(width=550, height=400))
 
 strokeColor = RGBA(0,0.7,0,1)
 fillColor   = RGBA(0.1, 0.7,0.8,0.9)
@@ -39,7 +37,7 @@ polyline1 = Polyline(points=[(320-60, 75+150), (300-60,116+150), (340-60,116+150
 polygon1 = Polygon(points=[(320, 75+150), (300,116+150), (340,116+150)], thickness=7.5, color=strokeColor)
 polygon2 = Polygon(points=[(320, 75+220), (300,116+220), (340,116+220)], color=fillColor)
 
-put!(canvas,
+push!(canvas.items,
     stroke.((line1, line2, line3))...,
     stroke(rect1), fill(rect2),
     stroke(circle1), fill(circle2),
@@ -50,4 +48,5 @@ put!(canvas,
     stroke(polyline1),
     stroke(polygon1), fill(polygon2))
 
-Base.JLOptions().isinteractive==0 && wait(closenotify)
+Desktop.exit_on_esc() = true
+Base.JLOptions().isinteractive==0 && wait(app.closenotify)

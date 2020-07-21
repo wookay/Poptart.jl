@@ -1,8 +1,7 @@
 module test_poptart_desktop_drawings
 
 using Test
-using Poptart.Desktop # Application Window
-using Poptart.Controls # Canvas put! remove!
+using Poptart.Desktop # Application Window Canvas
 using Poptart.Drawings # Line Rect RectMultiColor Circle Triangle TextBox stroke fill
 using Colors: RGBA
 
@@ -41,7 +40,7 @@ polyline1 = Polyline(points=[(320-60, 75+150), (300-60,116+150), (340-60,116+150
 polygon1 = Polygon(points=[(320, 75+150), (300,116+150), (340,116+150)], thickness=7.5, color=strokeColor)
 polygon2 = Polygon(points=[(320, 75+220), (300,116+220), (340,116+220)], color=fillColor)
 
-put!(canvas,
+push!(canvas.items,
     stroke.((line1, line2, line3))...,
     stroke(rect1), fill(rect2),
     fill(rectmulticolor1),
@@ -55,7 +54,10 @@ put!(canvas,
 
 rect3 = Rect(rect=(80, 270, 50, 50), rounding=0, thickness=7.5, color=strokeColor)
 stroke1 = stroke(rect3)
-put!(canvas, stroke1)
-remove!(canvas, stroke1)
+push!(canvas.items, stroke1)
+@test length(canvas.items) == 17
+
+pop!(canvas.items, stroke1)
+@test length(canvas.items) == 16
 
 end # module test_poptart_desktop_drawings
