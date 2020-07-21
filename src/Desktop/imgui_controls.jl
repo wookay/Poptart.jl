@@ -16,6 +16,13 @@ macro cstatic_var(exprs...)
     end
 end
 
+using Jive # @onlyonce
+function imgui_control_item(imctx::Ptr, item::Any)
+    @onlyonce begin
+        @info "not implemented" item
+    end
+end
+
 # CImGui.InputText
 function imgui_control_item(imctx::Ptr, item::InputText)
     null = '\0'
