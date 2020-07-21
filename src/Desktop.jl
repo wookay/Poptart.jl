@@ -3,6 +3,8 @@ module Desktop # Poptart
 export Application, Window
 export Button, InputText, Label, Slider
 export Canvas
+export ScatterPlot, Spy, BarPlot, LinePlot, MultiLinePlot, Histogram
+export Separator, SameLine, NewLine, Spacing, Group
 export Mouse, didClick
 export pause, resume
 export RGBA
@@ -23,9 +25,11 @@ exit_on_esc() = false
 custom_fonts(::Any) = nothing
 
 include("Desktop/controls.jl")
+include("Desktop/layouts.jl")
+include("Desktop/imgui_convert.jl")
+include("Desktop/plots.jl")
 include("Desktop/drawings.jl")
 include("Desktop/imgui_controls.jl")
-include("Desktop/imgui_convert.jl")
 include("Desktop/imgui_drawings.jl")
 include("Desktop/events.jl")
 
