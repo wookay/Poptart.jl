@@ -1,6 +1,5 @@
 module Drawings # Poptart
 
-import ..Interfaces: properties
 using Colors: RGBA
 
 export Line, Rect, RectMultiColor, Circle, Quad, Triangle, Arc, Pie, Curve, Polyline, Polygon, TextBox, ImageBox

@@ -1,18 +1,39 @@
 module Desktop # Poptart
 
-using ..Controls
-include("Desktop/types.jl")
+export Application, Window
+export Button, InputText, Label, Slider
+export Canvas
+export Mouse, didClick
+export pause, resume
+export RGBA
 
-export Windows, Window, put!, remove!
-include("Desktop/Windows.jl")
-using .Windows: Window
+using CImGui
+using .CImGui: GLFWBackend, OpenGLBackend
+using .GLFWBackend: GLFW
+using .OpenGLBackend: ModernGL
+using Colors: RGBA
+using Base: @kwdef
+using ..Drawings: Drawing, TextBox, ImageBox
 
-include("Desktop/Shortcuts.jl")
+abstract type UIApplication end
+abstract type UIWindow end
+abstract type UIControl end
 
-export Application, pause, resume
-include("Desktop/application.jl")
+exit_on_esc() = false
+custom_fonts(::Any) = nothing
 
-export FontAtlas
-include("Desktop/FontAtlas.jl")
+include("Desktop/controls.jl")
+include("Desktop/drawings.jl")
+include("Desktop/imgui_controls.jl")
+include("Desktop/imgui_convert.jl")
+include("Desktop/imgui_drawings.jl")
+include("Desktop/events.jl")
+
+env = Dict{Ptr{Cvoid},UIApplication}()
+include("Desktop/glfw.jl") # env exit_on_esc
+include("Desktop/window.jl")
+include("Desktop/application.jl") # env custom_fonts
+
+include("deprecated/Desktop.jl")
 
 end # module Poptart.Desktop

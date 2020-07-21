@@ -1,9 +1,7 @@
 module Poptart
 
-include("Interfaces.jl")
 include("Drawings.jl")
-include("Controls.jl")
-include("Animations.jl")
 include("Desktop.jl")
+include("deprecated/Controls.jl")
 
 end # module Poptart

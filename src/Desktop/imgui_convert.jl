@@ -1,4 +1,8 @@
-# module Poptart.Desktop.Windows
+# module Poptart.Desktop
+
+using CImGui: ImVec2, ImVec4, ImU32, ImDrawList
+using ColorTypes
+using FixedPointNumbers
 
 function Base.:+(a::ImVec2, b::ImVec2)::ImVec2
     ImVec2(a.x + b.x, a.y + b.y)
@@ -62,4 +66,4 @@ function imgui_glubytes(img::Array{ColorTypes.RGB{Float64},2})
     RGBA{Normed{UInt8,8}}.(img)
 end
 
-# module Poptart.Desktop.Windows
+# module Poptart.Desktop
