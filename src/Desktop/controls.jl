@@ -42,4 +42,13 @@ end
     items::Vector{Drawing} = Drawing[]
 end
 
+"""
+    Checkbox(; label::String = "", value::Bool = false)
+"""
+@kwdef mutable struct Checkbox <: UIControl
+    label::String = ""
+    value::Bool = false
+    callback::Union{Nothing,Function} = nothing
+end
+
 # module Poptart.Desktop

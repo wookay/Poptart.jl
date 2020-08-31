@@ -79,4 +79,13 @@ function imgui_control_item(imctx::Ptr, item::Canvas)
     end
 end
 
+# CImGui.Checkbox
+function imgui_control_item(imctx::Ptr, item::Checkbox)
+    refvalue = Ref(item.value)
+    if CImGui.Checkbox(item.label, refvalue)
+        item.value = refvalue[]
+        @async Mouse.leftClick(item)
+    end
+end
+
 # module Poptart.Desktop
