@@ -22,6 +22,10 @@ slider1 = Slider(label="Int", range=1:10, value=5)
 slider2 = Slider(label="Float", range=1:10, value=2.0)
 push!(window1.items, label1, slider1, slider2)
 
+check1 = Checkbox(label="check1", value=true)
+check2 = Checkbox(label="check2", value=false)
+push!(window1.items, check1, check2)
+
 pause(app)
 
 end # module test_poptart_desktop_controls
