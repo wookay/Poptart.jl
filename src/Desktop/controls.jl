@@ -51,4 +51,24 @@ end
     callback::Union{Nothing,Function} = nothing
 end
 
+"""
+    SyncButton(; title::String = "Button", callback::Union{Nothing,Function} = nothing) 
+
+    A SyncButton is just a button except its callback is run synchronizedly.
+"""
+@kwdef mutable struct SyncButton <: UIControl
+    title::String = "Button"
+    callback::Union{Nothing,Function} = nothing
+end
+
+"""
+    Popup(; label::String = "", items::Vector{<:UIControl})
+
+    !!! Note: You cannot use a Button to open a Popup. Use a SyncButton instead.
+"""
+@kwdef mutable struct Popup <: UIControl
+    label::String = ""
+    items::Vector{<:UIControl} = []
+end
+
 # module Poptart.Desktop

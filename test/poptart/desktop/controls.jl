@@ -26,6 +26,9 @@ check1 = Checkbox(label="check1", value=true)
 check2 = Checkbox(label="check2", value=false)
 push!(window1.items, check1, check2)
 
+popup1 = Popup(label="popup1", items = [Label("A popup")])
+push!(window1.items, popup1)
+
 pause(app)
 
 end # module test_poptart_desktop_controls

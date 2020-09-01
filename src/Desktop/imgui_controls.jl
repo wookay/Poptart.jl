@@ -71,6 +71,10 @@ function imgui_control_item(imctx::Ptr, item::Button)
     CImGui.Button(item.title) && @async Mouse.leftClick(item)
 end
 
+function imgui_control_item(imctx::Ptr, item::SyncButton)
+    CImGui.Button(item.title) && Mouse.leftClick(item)
+end
+
 function imgui_control_item(imctx::Ptr, item::Canvas)
     draw_list = CImGui.GetWindowDrawList()
     window_pos = CImGui.GetCursorScreenPos()
@@ -87,5 +91,14 @@ function imgui_control_item(imctx::Ptr, item::Checkbox)
         @async Mouse.leftClick(item)
     end
 end
+
+# Popup
+function imgui_control_item(imctx::Ptr, item::Popup)
+    if CImGui.BeginPopup(item.label)
+        imgui_control_item.(Ref(imctx), item.items)
+        CImGui.EndPopup()
+    end
+end
+
 
 # module Poptart.Desktop
