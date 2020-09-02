@@ -103,8 +103,4 @@ function imgui_control_item(imctx::Ptr, item::Popup)
     end
 end
 
-function open_popup(popup::Popup)
-    CImGui.OpenPopup(popup.label)
-end
-
 # module Poptart.Desktop

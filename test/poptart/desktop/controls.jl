@@ -31,10 +31,8 @@ popup1 = Popup(label="popup1", items = [Label("A popup")])
 push!(window1.items, popup1)
 
 didClick(popup_button) do event
-    open_popup(popup1)
+    OpenPopup(popup1)
 end
-# For now, you cannot use Mouse.leftClick to open a popup
-# Mouse.leftClick(popup_button)
 
 pause(app)
 

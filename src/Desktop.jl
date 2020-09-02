@@ -1,7 +1,7 @@
 module Desktop # Poptart
 
 export Application, Window
-export Button, InputText, Label, Slider, Checkbox, Popup, open_popup
+export Button, InputText, Label, Slider, Checkbox, Popup, OpenPopup
 export Canvas
 export ScatterPlot, Spy, BarPlot, LinePlot, MultiLinePlot, Histogram
 export Separator, SameLine, NewLine, Spacing, Group
@@ -40,6 +40,7 @@ include("Desktop/imgui_controls.jl")
 include("Desktop/imgui_drawings.jl")
 include("Desktop/menus.jl")
 include("Desktop/events.jl")
+include("Desktop/popups.jl")
 
 env = Dict{Ptr{Cvoid},UIApplication}()
 include("Desktop/glfw.jl") # env exit_on_esc
