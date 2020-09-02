@@ -68,11 +68,14 @@ function imgui_control_item(imctx::Ptr, item::Slider)
 end
 
 function imgui_control_item(imctx::Ptr, item::Button)
-    CImGui.Button(item.title) && @async Mouse.leftClick(item)
-end
-
-function imgui_control_item(imctx::Ptr, item::SyncButton)
-    CImGui.Button(item.title) && Mouse.leftClick(item)
+    CImGui.Button(item.title) || return
+    if item.async
+        @info "async pressed"
+        @async Mouse.leftClick(item)
+    else
+        @info "sync pressed"
+        Mouse.leftClick(item)
+    end
 end
 
 function imgui_control_item(imctx::Ptr, item::Canvas)
@@ -100,5 +103,8 @@ function imgui_control_item(imctx::Ptr, item::Popup)
     end
 end
 
+function open_popup(popup::Popup)
+    CImGui.OpenPopup(popup.label)
+end
 
 # module Poptart.Desktop

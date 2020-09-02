@@ -26,8 +26,15 @@ check1 = Checkbox(label="check1", value=true)
 check2 = Checkbox(label="check2", value=false)
 push!(window1.items, check1, check2)
 
+popup_button = Button(title="Open Popup", async=false)
 popup1 = Popup(label="popup1", items = [Label("A popup")])
 push!(window1.items, popup1)
+
+didClick(popup_button) do event
+    open_popup(popup1)
+end
+# For now, you cannot use Mouse.leftClick to open a popup
+# Mouse.leftClick(popup_button)
 
 pause(app)
 
