@@ -16,6 +16,7 @@ end
     title::String = "Button"
     callback::Union{Nothing,Function} = nothing
     frame::NamedTuple{(:width, :height)} = (width=0, height=0) # deprecated
+    async::Bool = false
 end
 
 """
@@ -49,6 +50,16 @@ end
     label::String = ""
     value::Bool = false
     callback::Union{Nothing,Function} = nothing
+end
+
+"""
+    Popup(; label::String = "", items::Vector{<:UIControl})
+
+    !!! Note: You must use a sync Button (`Button(async=false)`) to open a Popup.
+"""
+@kwdef mutable struct Popup <: UIControl
+    label::String = ""
+    items::Vector{<:UIControl} = []
 end
 
 # module Poptart.Desktop

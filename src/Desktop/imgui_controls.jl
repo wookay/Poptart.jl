@@ -68,7 +68,14 @@ function imgui_control_item(imctx::Ptr, item::Slider)
 end
 
 function imgui_control_item(imctx::Ptr, item::Button)
-    CImGui.Button(item.title) && @async Mouse.leftClick(item)
+    CImGui.Button(item.title) || return
+    if item.async
+        @info "async pressed"
+        @async Mouse.leftClick(item)
+    else
+        @info "sync pressed"
+        Mouse.leftClick(item)
+    end
 end
 
 function imgui_control_item(imctx::Ptr, item::Canvas)
@@ -85,6 +92,14 @@ function imgui_control_item(imctx::Ptr, item::Checkbox)
     if CImGui.Checkbox(item.label, refvalue)
         item.value = refvalue[]
         @async Mouse.leftClick(item)
+    end
+end
+
+# Popup
+function imgui_control_item(imctx::Ptr, item::Popup)
+    if CImGui.BeginPopup(item.label)
+        imgui_control_item.(Ref(imctx), item.items)
+        CImGui.EndPopup()
     end
 end
 
