@@ -3,7 +3,7 @@ uuid = "197b51f5-fdb5-5f35-aa9f-0a14f35f5b28"
 keywords = ["GUI"]
 license = "MIT"
 desc = "GUI programming in Julia based on CImGui.jl"
-authors = ["WooKyoung Noh <wookay.noh@gmail.com>"]
+authors = ["WooKyoung Noh <wookay.noh@gmail.com>", "Zhang Shitian https://github.com/Eggiverse"]
 version = "0.3.1"
 
 [deps]
@@ -18,19 +18,17 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 UnicodePlots = "b8865327-cd53-5732-bb35-84acbb429228"
 
 [compat]
-CImGui = "1.77"
+CImGui = "1.78"
 ColorTypes = "0.10"
 Colors = "0.12"
 FixedPointNumbers = "0.8"
-GLFW = "3.2"
 Jive = "0.2"
 UnicodePlots = "1.2"
 julia = "1"
 
 [extras]
-GLFW = "f7f18e0c-5ee9-5ccd-a5bf-e8befd85ed98"
-Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [targets]
-test = ["Test", "Random", "GLFW"]
+test = ["Test", "Random"]
