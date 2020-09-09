@@ -49,11 +49,11 @@ end
 
 function setup_window(ctx, window::Window)
     show_closing = window.props[:show_window_closing_widget]
-    if ~show_closing
+    if !show_closing
         window.props[:isopen] = C_NULL
-    elseif ~haskey(window.props, :isopen)
+    elseif !haskey(window.props, :isopen)
         window.props[:isopen] = Ref(show_closing)
-    elseif ~window.props[:isopen][]
+    elseif !window.props[:isopen][]
         return
     end
 
