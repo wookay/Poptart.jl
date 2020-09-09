@@ -70,10 +70,8 @@ end
 function imgui_control_item(imctx::Ptr, item::Button)
     CImGui.Button(item.title) || return
     if item.async
-        @info "async pressed"
         @async Mouse.leftClick(item)
     else
-        @info "sync pressed"
         Mouse.leftClick(item)
     end
 end

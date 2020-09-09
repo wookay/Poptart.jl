@@ -17,6 +17,7 @@ Button
 Slider
 Canvas
 InputText
+Checkbox
 ```
 
 ### layouts
@@ -43,6 +44,12 @@ Histogram
 MenuBar
 Menu
 MenuItem
+```
+
+### popups
+```@docs
+Popup
+OpenPopup
 ```
 
 ### events
