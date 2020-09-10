@@ -44,17 +44,25 @@ function Base.getproperty(window::W, prop::Symbol) where {W <: UIWindow}
 end
 
 function properties(::W) where {W <: UIWindow}
-    (:title, :frame, :name, :show_window_closing_widget, :flags, )
+    (:title, :frame, :name, :show_window_closing_widget, :flags, :isopen)
 end
 
 function setup_window(ctx, window::Window)
+    show_closing = window.props[:show_window_closing_widget]
+    if !show_closing
+        window.props[:isopen] = C_NULL
+    elseif !haskey(window.props, :isopen)
+        window.props[:isopen] = Ref(show_closing)
+    elseif !window.props[:isopen][]
+        return
+    end
+
     (x, y) = (window.frame.x, window.frame.y)
     (width, height) = (window.frame.width, window.frame.height)
     CImGui.SetNextWindowPos((x, y), CImGui.ImGuiCond_FirstUseEver)
     CImGui.SetNextWindowSize((width, height), CImGui.ImGuiCond_FirstUseEver)
     name = something(window.props[:name], window.props[:title])
-    p_open = Ref(window.props[:show_window_closing_widget])
-    CImGui.Begin(name, p_open, window.props[:flags]) || (CImGui.End(); return)
+    CImGui.Begin(name, window.props[:isopen], window.props[:flags]) || (CImGui.End(); return)
     for item in window.items
         imgui_control_item(ctx, item)
     end
