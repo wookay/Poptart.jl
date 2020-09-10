@@ -66,9 +66,13 @@ Open the window if it is closed.
 """
 function OpenWindow(window::Window)
     isopen(window) && return
+    open_window(window)
+end
+
+function open_window(window::Window)
     if !window.props[:show_window_closing_widget]
         window.props[:isopen] = C_NULL
-    elseif !haskey(window.props, :isopen)
+    else
         window.props[:isopen] = Ref(true)
     end
     return
@@ -83,11 +87,9 @@ isopen(::Ptr{Nothing}) = true
 isopen(x::Ref{Bool}) = x[]
 
 function setup_window(ctx, window::Window)
-    if !window.props[:show_window_closing_widget]
-        window.props[:isopen] = C_NULL
-    elseif !haskey(window.props, :isopen)
-        window.props[:isopen] = Ref(true)
-    elseif !window.props[:isopen][]
+    if !haskey(window.props, :isopen)
+        open_window(window)
+    elseif !isopen(window)
         return
     end
 
