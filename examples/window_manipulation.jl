@@ -12,18 +12,18 @@ btn2 = Button(title="win2")
 push!(window0.items, btn1, btn2)
 
 didClick(btn1) do event
-    if Desktop.isopen(window1)
-        CloseWindow(window1)
+    if isopen(window1)
+        close(window1)
     else
-        OpenWindow(window1)
+        open(window1)
     end
 end
 
 didClick(btn2) do event
-    if Desktop.isopen(window2)
-        CloseWindow(window2)
+    if isopen(window2)
+        close(window2)
     else
-        OpenWindow(window2)
+        open(window2)
     end
 end
 

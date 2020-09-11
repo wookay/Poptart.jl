@@ -1,6 +1,6 @@
 module Desktop # Poptart
 
-export Application, Window, OpenWindow, CloseWindow
+export Application, Window
 export Button, InputText, Label, Slider, Checkbox, Popup, OpenPopup
 export Canvas
 export ScatterPlot, Spy, BarPlot, LinePlot, MultiLinePlot, Histogram
