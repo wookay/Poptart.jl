@@ -47,13 +47,49 @@ function properties(::W) where {W <: UIWindow}
     (:title, :frame, :name, :show_window_closing_widget, :flags, :isopen)
 end
 
-function setup_window(ctx, window::Window)
-    show_closing = window.props[:show_window_closing_widget]
-    if !show_closing
+"""
+    close(window::Window)
+
+Close the window as if closing widget is clicked.
+
+Note: window object is not destroyed.
+"""
+function Base.close(window::Window)
+    window.props[:isopen] = Ref(false)
+    return
+end
+
+"""
+    open(window::Window)
+
+Open the window if it is closed.
+"""
+function Base.open(window::Window)
+    isopen(window) && return
+    open_window(window)
+end
+
+function open_window(window::Window)
+    if !window.props[:show_window_closing_widget]
         window.props[:isopen] = C_NULL
-    elseif !haskey(window.props, :isopen)
-        window.props[:isopen] = Ref(show_closing)
-    elseif !window.props[:isopen][]
+    else
+        window.props[:isopen] = Ref(true)
+    end
+    return
+end
+
+function Base.isopen(window::Window)
+    isopen_prop = window.props[:isopen]
+    window_isopen(isopen_prop)
+end
+
+window_isopen(::Ptr{Nothing}) = true
+window_isopen(x::Ref{Bool}) = x[]
+
+function setup_window(ctx, window::Window)
+    if !haskey(window.props, :isopen)
+        open_window(window)
+    elseif !isopen(window)
         return
     end
 
