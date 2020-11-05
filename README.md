@@ -1,8 +1,8 @@
 # Poptart.jl 🏂
 
-|  **Documentation**                        |  **Build Status**                                                |
-|:-----------------------------------------:|:----------------------------------------------------------------:|
-|  [![][docs-latest-img]][docs-latest-url]  |  [![][travis-img]][travis-url]  [![][codecov-img]][codecov-url]  |
+|  **Documentation**                        |  **Build Status**                                                  |
+|:-----------------------------------------:|:------------------------------------------------------------------:|
+|  [![][docs-latest-img]][docs-latest-url]  |  [![][actions-img]][actions-url]  [![][codecov-img]][codecov-url]  |
 
 
 GUI programming in Julia based on [CImGui.jl](https://github.com/Gnimuc/CImGui.jl)
@@ -75,8 +75,8 @@ Base.JLOptions().isinteractive==0 && wait(app.closenotify)
 [docs-latest-img]: https://img.shields.io/badge/docs-latest-blue.svg
 [docs-latest-url]: https://wookay.github.io/docs/Poptart.jl/
 
-[travis-img]: https://api.travis-ci.org/wookay/Poptart.jl.svg?branch=master
-[travis-url]: https://travis-ci.org/wookay/Poptart.jl
+[actions-img]: https://github.com/wookay/Poptart.jl/workflows/CI/badge.svg
+[actions-url]: https://github.com/wookay/Poptart.jl/actions
 
 [codecov-img]: https://codecov.io/gh/wookay/Poptart.jl/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/wookay/Poptart.jl/branch/master

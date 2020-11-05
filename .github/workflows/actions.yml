@@ -1,0 +1,35 @@
+name: CI
+
+on: [pull_request, push]
+
+jobs:
+  Test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        julia-version: [1.5.2]
+        julia-arch: [x64]
+        os: [ubuntu-latest]
+        include:
+          - julia-version: nightly
+            os: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: julia-actions/setup-julia@latest
+        with:
+          version: ${{ matrix.julia-version }}
+      - name: runtests
+        run: |
+             xvfb-run --auto-servernum --server-num=1 --server-args="-screen 0, 1280x720x24" julia --project=. -e 'using Pkg; Pkg.test()'
+
+  Coverage:
+    needs: Test
+    if: github.event.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: coverage
+        run: |
+             xvfb-run --auto-servernum --server-num=1 --server-args="-screen 0, 1280x720x24" julia --project=. -e 'using Pkg; Pkg.test(coverage=true)'
+             julia --project=. -e 'using Pkg; Pkg.add("Coverage"); using Coverage; cov = Coverage.process_folder(); mkdir("coverage"); Coverage.LCOV.writefile("coverage/lcov.info", cov)'
+      - uses: codecov/codecov-action@v1
