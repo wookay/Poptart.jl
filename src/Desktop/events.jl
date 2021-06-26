@@ -8,7 +8,7 @@ module Mouse # Poptart.Desktop
 function leftClick(item)
     if item.callback !== nothing
         event = (action=leftClick, )
-        item.callback(event)
+        Base.invokelatest(item.callback, event)
     end
 end
 
