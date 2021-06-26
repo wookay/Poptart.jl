@@ -1,17 +1,17 @@
 # module Poptart.Desktop
 
-error_callback(err::GLFW.GLFWError) = @error "GLFW ERROR: code $(err.code) msg: $(err.description)"
+using .LibGLFW: glfwGetCurrentContext, glfwMakeContextCurrent, glfwGetFramebufferSize, glfwSwapBuffers, glfwWindowShouldClose, glfwPollEvents, glfwDestroyWindow, glfwSetWindowTitle, glfwSetWindowSize, glfwSetKeyCallback, glfwSetWindowShouldClose, glfwWaitEventsTimeout, GLFWwindow, GLFW_FALSE, GLFW_PRESS, GLFW_KEY_ESCAPE
 
-function custom_key_callback(window::GLFW.Window, key, scancode, action, mods)
-    exit_on_esc() && action == GLFW.PRESS && key == GLFW.KEY_ESCAPE && GLFW.SetWindowShouldClose(window, true)
-    GLFWBackend.ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods)
+function custom_key_callback(window::Ptr{GLFWwindow}, key::Cint, scancode::Cint, action::Cint, mods::Cint)::Cvoid
+    exit_on_esc() && action == GLFW_PRESS && key == GLFW_KEY_ESCAPE && glfwSetWindowShouldClose(window, true)
+    ImGuiGLFWBackend.ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods)
 end
 
-function runloop(glwin, ctx, glsl_version, push_window, app::UIApplication)
-    GLFWBackend.ImGui_ImplGlfw_InitForOpenGL(glwin, true)
-    OpenGLBackend.ImGui_ImplOpenGL3_Init(glsl_version)
-    GLFW.SetKeyCallback(glwin, custom_key_callback)
-    GLFW.SetErrorCallback(error_callback)
+function runloop(imgui_ctx, window_ctx, gl_ctx, push_window, app::UIApplication)
+    ImGuiGLFWBackend.init(window_ctx)
+    ImGuiOpenGLBackend.init(gl_ctx)
+    glfwSetKeyCallback(window_ctx.Window, @cfunction(custom_key_callback, Cvoid, (Ptr{GLFWwindow}, Cint, Cint, Cint, Cint)))
+    window = ImGuiGLFWBackend.get_window(window_ctx)
     try
         quantum = 0.016666666f0
         bgcolor = nothing
@@ -19,60 +19,50 @@ function runloop(glwin, ctx, glsl_version, push_window, app::UIApplication)
             bgcolor = app.props[:bgcolor]
         end
         refresh()
-        while !GLFW.WindowShouldClose(glwin)
+        while glfwWindowShouldClose(window) == GLFW_FALSE
             yield()
-            GLFW.WaitEvents(quantum)
-            OpenGLBackend.ImGui_ImplOpenGL3_NewFrame()
-            GLFWBackend.ImGui_ImplGlfw_NewFrame()
-            CImGui.NewFrame()
+            glfwWaitEventsTimeout(quantum)
+            ImGuiOpenGLBackend.new_frame(gl_ctx)
+            ImGuiGLFWBackend.new_frame(window_ctx)
+            igNewFrame()
+
             push_window(app)
-            CImGui.Render()
-            display_w, display_h = GLFW.GetFramebufferSize(glwin)
-            ModernGL.glViewport(0, 0, display_w, display_h)
+
+            igRender()
             if app.dirty
                 refresh()
                 app.dirty = false
             end
-            ModernGL.glClearColor(bgcolor.r, bgcolor.g, bgcolor.b, bgcolor.alpha)
-            ModernGL.glClear(ModernGL.GL_COLOR_BUFFER_BIT)
-            OpenGLBackend.ImGui_ImplOpenGL3_RenderDrawData(CImGui.GetDrawData())
-            GLFW.SwapBuffers(glwin)
+            glClearColor(bgcolor.r, bgcolor.g, bgcolor.b, bgcolor.alpha)
+            glClear(GL_COLOR_BUFFER_BIT)
+            ImGuiOpenGLBackend.render(gl_ctx)
+            if unsafe_load(igGetIO().ConfigFlags) & ImGuiConfigFlags_ViewportsEnable == ImGuiConfigFlags_ViewportsEnable
+                backup_current_context = glfwGetCurrentContext()
+                igUpdatePlatformWindows()
+                GC.@preserve gl_ctx igRenderPlatformWindowsDefault(C_NULL, pointer_from_objref(gl_ctx))
+                glfwMakeContextCurrent(backup_current_context)
+            end
+
+            glfwSwapBuffers(window)
         end
     catch e
         @error "Error in renderloop!" exception=e
         Base.show_backtrace(stderr, catch_backtrace())
     finally
-        OpenGLBackend.ImGui_ImplOpenGL3_Shutdown()
-        GLFWBackend.ImGui_ImplGlfw_Shutdown()
-        CImGui.DestroyContext(ctx)
-        GLFW.HideWindow(glwin)
-        GLFW.DestroyWindow(glwin)
-        delete!(env, glwin.handle)
+        ImGuiOpenGLBackend.shutdown(gl_ctx)
+        ImGuiGLFWBackend.shutdown(window_ctx)
+        igDestroyContext(imgui_ctx)
+        glfwDestroyWindow(window)
+        delete!(env, gl_ctx)
         notify(app.closenotify)
     end
 end # function runloop()
 
-function create_window(app, vsync=true)
-    @static if Sys.isapple()
-        # OpenGL 3.2 + GLSL 150
-        glsl_version = 150
-        GLFW.WindowHint(GLFW.CONTEXT_VERSION_MAJOR, 3)
-        GLFW.WindowHint(GLFW.CONTEXT_VERSION_MINOR, 2)
-        GLFW.WindowHint(GLFW.OPENGL_PROFILE, GLFW.OPENGL_CORE_PROFILE) # 3.2+ only
-        GLFW.WindowHint(GLFW.OPENGL_FORWARD_COMPAT, ModernGL.GL_TRUE) # required on Mac
-    else
-        # OpenGL 3.0 + GLSL 130
-        glsl_version = 130
-        GLFW.WindowHint(GLFW.CONTEXT_VERSION_MAJOR, 3)
-        GLFW.WindowHint(GLFW.CONTEXT_VERSION_MINOR, 0)
-        # GLFW.WindowHint(GLFW.OPENGL_PROFILE, GLFW.OPENGL_CORE_PROFILE) # 3.2+ only
-        # GLFW.WindowHint(GLFW.OPENGL_FORWARD_COMPAT, ModernGL.GL_TRUE) # 3.0+ only
-    end
-    window = GLFW.CreateWindow(app.props[:frame].width, app.props[:frame].height, app.props[:title])
-    GLFW.MakeContextCurrent(window)
-    vsync && GLFW.SwapInterval(1)
-    ctx = CImGui.CreateContext()
-    (window, ctx, glsl_version)
+function create_window(app)
+    imgui_ctx = CImGui.igCreateContext(C_NULL)
+    window_ctx = ImGuiGLFWBackend.create_context()
+    gl_ctx = ImGuiOpenGLBackend.create_context()
+    (imgui_ctx, window_ctx, gl_ctx)
 end
 
 # module Poptart.Desktop

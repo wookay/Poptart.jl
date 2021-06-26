@@ -27,7 +27,7 @@ function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Dr
     rounding = get_prop(element, :rounding, 0)
     thickness = element.thickness # :thickness
     color = get_prop_color(element) # :color
-    rounding_corners_flags = CImGui.ImDrawCornerFlags_All
+    rounding_corners_flags = CImGui.ImDrawFlags_RoundCornersAll
     CImGui.AddRect(draw_list, a, b, color, rounding, rounding_corners_flags, thickness)
 end
 
@@ -35,7 +35,7 @@ function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Dr
     (a, b) = imgui_offset_rect(window_pos, element.rect) # :rect
     rounding = get_prop(element, :rounding, 0)
     color = get_prop_color(element) # :color
-    rounding_corners_flags = CImGui.ImDrawCornerFlags_All
+    rounding_corners_flags = CImGui.ImDrawFlags_RoundCornersAll
     CImGui.AddRectFilled(draw_list, a, b, color, rounding, rounding_corners_flags)
 end
 
@@ -159,7 +159,7 @@ function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Dr
     thickness = element.thickness # :thickness
     color = get_prop_color(element) # :color
     num_segments = 0
-    CImGui.AddBezierCurve(draw_list, pos0, cp0, cp1, pos1, color, thickness, num_segments)
+    CImGui.ImDrawList_AddBezierCubic(draw_list, pos0, cp0, cp1, pos1, color, thickness, num_segments)
 end
 
 function imgui_drawing_item(draw_list::Ptr{ImDrawList}, window_pos::ImVec2, ::Drawing{stroke}, element::Polyline)

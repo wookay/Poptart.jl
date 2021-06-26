@@ -1,5 +1,7 @@
 using Poptart.Desktop
 
+Desktop.exit_on_esc() = true
+
 window0 = Window(title="Main", show_window_closing_widget=false)
 window1 = Window(title="Win1")
 window2 = Window(title="Win2", show_window_closing_widget=false)

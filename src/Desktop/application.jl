@@ -11,7 +11,7 @@ mutable struct Application <: UIApplication
     windows::Vector{UIWindow}
     closenotify::Condition
     props::Dict{Symbol,Any}
-    imctx::Union{Nothing,Ptr}
+    imgui_ctx::Union{Nothing,Ptr}
     task::Union{Nothing,Task}
     dirty::Bool
 
@@ -20,8 +20,8 @@ mutable struct Application <: UIApplication
                            windows = UIWindow[Window(title="Title", frame=(x=0,y=0,frame...))],
                            bgcolor = RGBA(0.10, 0.18, 0.24, 1),
                            closenotify::Condition = Condition())
-        glwin = GLFW.GetCurrentContext()
-        glwin.handle !== C_NULL && haskey(env, glwin.handle) && return env[glwin.handle]
+        glwin = glfwGetCurrentContext()
+        glwin != C_NULL && haskey(env, glwin) && return env[glwin]
         props = Dict(:title => title, :frame => frame, :bgcolor => bgcolor)
         app = new(windows, closenotify, props, nothing, nothing, true)
         create_app(app)
@@ -47,12 +47,12 @@ function Base.setproperty!(app::A, prop::Symbol, val) where {A <: UIApplication}
         setfield!(app, prop, val)
     elseif prop in properties(app)
         app.props[prop] = val
-        glwin = GLFW.GetCurrentContext()
-        if glwin.handle !== C_NULL
+        glwin = glfwGetCurrentContext()
+        if glwin != C_NULL
             if prop === :title
-                GLFW.SetWindowTitle(glwin, val)
+                glfwSetWindowTitle(glwin, val)
             elseif prop === :frame
-                GLFW.SetWindowSize(glwin, val.width, val.height)
+                glfwSetWindowSize(glwin, val.width, val.height)
             elseif prop === :bgcolor
                 app.dirty = true
             end
@@ -64,7 +64,7 @@ end
 
 function setup_app(app::UIApplication)
     for window in app.windows
-        setup_window(app.imctx, window)
+        setup_window(app.imgui_ctx, window)
     end
 end
 
@@ -72,8 +72,8 @@ end
     resume(app::UIApplication)
 """
 function resume(app::UIApplication)
-    glwin = GLFW.GetCurrentContext()
-    glwin.handle !== C_NULL && haskey(env, glwin.handle) && return nothing
+    glwin = glfwGetCurrentContext()
+    glwin != C_NULL && haskey(env, glwin) && return nothing
     create_app(app)
     nothing
 end
@@ -82,17 +82,19 @@ end
     pause(::UIApplication)
 """
 function pause(::UIApplication)
-    glwin = GLFW.GetCurrentContext()
-    glwin.handle !== C_NULL && GLFW.SetWindowShouldClose(glwin, true)
+    glwin = glfwGetCurrentContext()
+    glwin != C_NULL && glfwSetWindowShouldClose(glwin, true)
+    nothing
 end
 
 function create_app(app::UIApplication)
-    glwin, imctx, glsl_version = create_window(app)
-    app.imctx = imctx
+    (imgui_ctx, window_ctx, gl_ctx) = create_window(app)
+    app.imgui_ctx = imgui_ctx
     custom_fonts(app)
-    task = @async runloop(glwin, imctx, glsl_version, setup_app, app)
+    # task = runloop(imgui_ctx, window_ctx, gl_ctx, setup_app, app)
+    task = @async runloop(imgui_ctx, window_ctx, gl_ctx, setup_app, app)
     app.task = task
-    env[glwin.handle] = app
+    env[gl_ctx] = app
     app
 end
 

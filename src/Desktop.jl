@@ -11,9 +11,10 @@ export pause, resume
 export RGBA
 
 using CImGui
-using .CImGui: GLFWBackend, OpenGLBackend
-using .GLFWBackend: GLFW
-using .OpenGLBackend: ModernGL
+using ImGuiGLFWBackend: ImGuiGLFWBackend, LibGLFW
+using ImGuiOpenGLBackend: ImGuiOpenGLBackend, ModernGL
+using .CImGui: igNewFrame, igRender, igGetIO, igDestroyContext, ImGuiConfigFlags_ViewportsEnable
+using .ModernGL: glViewport, glClearColor, glClear, GL_COLOR_BUFFER_BIT
 using Colors: RGBA
 using Base: @kwdef
 using ..Drawings: Drawing, TextBox, ImageBox
@@ -42,7 +43,7 @@ include("Desktop/menus.jl")
 include("Desktop/events.jl")
 include("Desktop/popups.jl")
 
-env = Dict{Ptr{Cvoid},UIApplication}()
+env = Dict{ImGuiOpenGLBackend.Context, UIApplication}()
 include("Desktop/glfw.jl") # env exit_on_esc
 include("Desktop/window.jl")
 include("Desktop/application.jl") # env custom_fonts

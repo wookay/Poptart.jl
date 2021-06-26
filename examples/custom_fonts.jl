@@ -2,7 +2,8 @@ using Poptart.Desktop
 using CImGui
 
 function Desktop.custom_fonts(::Application)
-    fonts = CImGui.GetIO().Fonts
+    io::Ptr{CImGui.ImGuiIO} = CImGui.igGetIO()
+    fonts = unsafe_load(io.Fonts)
     glyph_ranges = CImGui.GetGlyphRangesDefault(fonts)
                        #  GetGlyphRangesKorean
                        #  GetGlyphRangesJapanese
