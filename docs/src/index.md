@@ -39,7 +39,7 @@ didClick(slider2) do event
 end
 
 Desktop.exit_on_esc() = true
-Base.JLOptions().isinteractive==0 && wait(app.closenotify)
+!isinteractive() && wait(app.closenotify)
 ```
 
 ![slider.png](https://wookay.github.io/docs/Poptart.jl/assets/poptart/slider.png)
@@ -61,7 +61,7 @@ didClick(button1) do event
 end
 
 Desktop.exit_on_esc() = true
-Base.JLOptions().isinteractive==0 && wait(app.closenotify)
+!isinteractive() && wait(app.closenotify)
 ```
 
 ![inputtext.png](https://wookay.github.io/docs/Poptart.jl/assets/poptart/inputtext.png)

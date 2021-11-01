@@ -29,4 +29,4 @@ didClick(btn2) do event
     end
 end
 
-Base.JLOptions().isinteractive==0 && wait(app.closenotify)
+!isinteractive() && wait(app.closenotify)

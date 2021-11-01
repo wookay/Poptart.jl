@@ -49,4 +49,4 @@ push!(canvas.items,
     stroke(polygon1), fill(polygon2))
 
 Desktop.exit_on_esc() = true
-Base.JLOptions().isinteractive==0 && wait(app.closenotify)
+!isinteractive() && wait(app.closenotify)

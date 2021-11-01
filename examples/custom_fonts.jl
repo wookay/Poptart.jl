@@ -19,4 +19,4 @@ app = Application()
 push!(first(app.windows).items, InputText(buf="Hello world"))
 
 Desktop.exit_on_esc() = true
-Base.JLOptions().isinteractive==0 && wait(app.closenotify)
+!isinteractive() && wait(app.closenotify)
