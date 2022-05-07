@@ -26,7 +26,7 @@ end
 # CImGui.InputText
 function imgui_control_item(imctx::Ptr, item::InputText)
     null = '\0'
-    nullpad_buf = rpad(item.buf, item.buf_size, null)
+    nullpad_buf = rpad(item.buf, item.buf_size)
     value = @cstatic_var buf=nullpad_buf begin
         changed = CImGui.InputText(item.label, buf, item.buf_size)
     end
