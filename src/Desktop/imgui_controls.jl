@@ -23,10 +23,24 @@ function imgui_control_item(imctx::Ptr, item::Any)
     end
 end
 
+# code from https://github.com/JuliaLang/julia/blob/master/base/strings/util.jl#L464
+function _rpad_use_length_instead_of_textwidth(
+    s::Union{AbstractChar,AbstractString},
+    n::Integer,
+    p::Union{AbstractChar,AbstractString}=' ',
+) :: String
+    n = Int(n)::Int
+    m = signed(n) - Int(length(s))::Int # textwidth
+    m ≤ 0 && return string(s)
+    l = length(p) # textwidth
+    q, r = divrem(m, l)
+    r == 0 ? string(s, p^q) : string(s, p^q, first(p, r))
+end
+
 # CImGui.InputText
 function imgui_control_item(imctx::Ptr, item::InputText)
     null = '\0'
-    nullpad_buf = rpad(item.buf, item.buf_size, null)
+    nullpad_buf = _rpad_use_length_instead_of_textwidth(item.buf, item.buf_size, null)
     value = @cstatic_var buf=nullpad_buf begin
         changed = CImGui.InputText(item.label, buf, item.buf_size)
     end
